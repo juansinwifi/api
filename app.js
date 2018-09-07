@@ -6,9 +6,7 @@ app.use(express.json()); //Lee entradas en formato json
 
 /* DENTIX API */
 
-
 /* MANAGMENT SECTION */
-
 
 //'REQUERIMIENTOS' POST Method  
 
@@ -17,7 +15,9 @@ app.post('/api/admin/requirements', (req, res) => {
     // Tiempos (Inmediato, Apertura, Seguimiento), dias u horas. 
     const schema = {
         type: Joi.string().min(3).required(),
-        sms: Joi.boolean().required()
+        sms: Joi.boolean().required(),
+        written: Joi.boolean().required(),
+        medium: Joi.string().min(3).required()
     };
 
     const result = Joi.validate(req.body, schema);
@@ -25,12 +25,14 @@ app.post('/api/admin/requirements', (req, res) => {
         res.status(400).send(result.error.details[0].message);
     }
 
-    const customer = {
+    const requirement = {
         type: req.body.type,
-        sms: req.body.sms
+        sms: req.body.sms,
+        written: req.body.written,
+        medium: req.body.medium
     };
     //customers.push(customer);
-    res.send(customer);
+    res.send(requirement);
 });
 
 
