@@ -92,11 +92,23 @@ const requirements = [
 /*********** */
 /* PERFILES */
 /************/
-
-const profiles = [
-    { id: 1, type: 'CONSULTA', requirements: '', profiles: '', areas: '', users: '', typifications: '' }
+const typifications = [
+    { id: 1, name: 'ACUERDO DE PAGO', custom: 'La la la'},
+    { id: 2, name: 'NOVEDADES MONETARIAS', custom: 'Do Re Mi Fa'}
 ];
 
+const profiles = [
+    { id: 1, type: 'CONSULTA', permissions: 'R', requirements: 'True', profiles: 'True', areas: 'True', users: 'True', typifications: { enable: 'True', available: { }}, case: 'True', channel: 'True', contact: 'True', lights: 'True', rejection: 'True' },
+    { id: 2, type: 'RADICADOR', permissions: 'W', requirements: 'True', profiles: 'True', areas: 'True', users: 'True', typifications: { enable: 'False', available: { }}, case: 'True', channel: 'True', contact: 'True', lights: 'True', rejection: 'True' },
+    { id: 3, type: 'EJECUTOR', permissions: 'W', requirements: 'True', profiles: 'False', areas: 'False', users: 'True', typifications: { enable: 'False', available: { }}, case: 'True', channel: 'True', contact: 'True', lights: 'True', rejection: 'True' }
+];
+
+
+
+//'BUSCAR PERFILES' GET Method
+app.get('/api/admin/profiles', (req, res) => {
+    res.send(profiles);
+});
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}...`));
