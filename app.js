@@ -19,7 +19,8 @@ app.post('/api/admin/requirements', (req, res) => {
         written: Joi.boolean().required(),
         medium: Joi.string().min(3).required(),
         times: Joi.string().min(3).required(),
-        days: Joi.number().integer().required()
+        days: Joi.number().integer().required(),
+        hours: Joi.number().integer().required()
 
     };
 
@@ -34,7 +35,8 @@ app.post('/api/admin/requirements', (req, res) => {
         written: req.body.written,
         medium: req.body.medium,
         times: req.body.times,
-        days: req.body.days
+        days: req.body.days,
+        hours: req.body.hours
     };
     //customers.push(customer);
     res.send(requirement);
