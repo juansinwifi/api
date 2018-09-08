@@ -40,7 +40,7 @@ const requirements = [
         days: req.body.days,
         hours: req.body.hours
     };
-    requirement.push(requirements);
+    requirements.push(requirement);
     res.send(requirement);
     });    
 
