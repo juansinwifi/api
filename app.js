@@ -13,9 +13,9 @@ app.use(express.json()); //Lee entradas en formato json
 /******************/
 
 const requirements = [
-    { id: 1, type: 'Consulta', sms: 'No', written: 'No', medium: 'Email', times:'Inmediato', days:'0', hours:'0' },
-    { id: 2, type: 'Peticion', sms: 'Si', written: 'No', medium: 'Email', times:'Fecha de Apertura', days:'13', hours:'0' },
-    { id: 3, type: 'Queja', sms: 'Si', written: 'Si', medium: 'Fisico', times:'Fecha de Seguimiento', days:'2', hours:'3' }
+    { id: 1, type: 'Consulta', sms: 'True', written: 'False', medium: 'Email', times:'Inmediato', days:'0', hours:'0' },
+    { id: 2, type: 'Peticion', sms: 'True', written: 'True', medium: 'Email', times:'Fecha de Apertura', days:'13', hours:'0' },
+    { id: 3, type: 'Queja', sms: 'True', written: 'False', medium: 'Fisico', times:'Fecha de Seguimiento', days:'2', hours:'3' }
 ];
 
 //'BUSCAR REQUERIMIENTOS' GET Method
@@ -88,5 +88,16 @@ const requirements = [
         return  Joi.validate(requiement, schema);
     }
 
+
+/*********** */
+/* PERFILES */
+/************/
+
+const profiles = [
+    { id: 1, type: 'CONSULTA', requirements: '', profiles: '', areas: '', users: '', typifications: '' }
+];
+
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}...`));
+
