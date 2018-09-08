@@ -17,7 +17,10 @@ app.post('/api/admin/requirements', (req, res) => {
         type: Joi.string().min(3).required(),
         sms: Joi.boolean().required(),
         written: Joi.boolean().required(),
-        medium: Joi.string().min(3).required()
+        medium: Joi.string().min(3).required(),
+        times: Joi.string().min(3).required(),
+        days: Joi.number().integer().required()
+
     };
 
     const result = Joi.validate(req.body, schema);
@@ -29,7 +32,9 @@ app.post('/api/admin/requirements', (req, res) => {
         type: req.body.type,
         sms: req.body.sms,
         written: req.body.written,
-        medium: req.body.medium
+        medium: req.body.medium,
+        times: req.body.times,
+        days: req.body.days
     };
     //customers.push(customer);
     res.send(requirement);
