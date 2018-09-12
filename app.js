@@ -1,8 +1,9 @@
 const Joi = require('joi'); //Validacion de Inputs en el servicio
 const express = require('express');
+const cors = require('cors');
 const app = express();
 app.use(express.json()); //Lee entradas en formato json
-
+app.use(cors());
 
 /* DENTIX API */
 /* Elaborardo: Sebastian Otero - B612 Technologies s.a.s */
@@ -118,7 +119,6 @@ app.post('/api/admin/profiles', (req, res) => {
     if (error) return res.status(400).send(error.details[0].message);
 
     const fail = validateProfileTypifications(req.body.typifications);
-    console.log(fail.error)
     if (fail.error) return res.status(400).send(  JSON.stringify(fail.error._object) + ' ' + fail.error.details[0].message);
    
 
@@ -154,7 +154,6 @@ app.put('/api/admin/profiles/:id', (req, res) => {
     if (error) return res.status(400).send(error.details[0].message);
 
     const fail = validateProfileTypifications(req.body.typifications);
-    console.log(fail.error)
     if (fail.error) return res.status(400).send(  JSON.stringify(fail.error._object) + ' ' + fail.error.details[0].message);
    
     //Update Requierments
