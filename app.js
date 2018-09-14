@@ -24,6 +24,15 @@ app.get('/api/admin/requirements', (req, res) => {
     res.send(requirements);
 });
 
+//'BUSCAR UN REQUERIMIENTO ESPECIFICO' GET Method
+app.get('/api/admin/requirements/:id', (req, res) => {
+    //Look up the requierement
+    //If not existing, return 404 - Not Found
+    const requirement = requirements.find(r => r.id === parseInt(req.params.id));
+    if (!requirement) return res.status(404).send('Requerimiento no encontrado'); // Error 404 
+    res.send(requirement);
+});
+
 //'CREAR REQUERIMIENTO' POST Method  
 app.post('/api/admin/requirements', (req, res) => {
     //Validate Data
