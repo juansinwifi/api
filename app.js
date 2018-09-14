@@ -98,17 +98,36 @@ function validateRequiement(requiement) {
     return Joi.validate(requiement, schema);
 }
 
-
-/*********** */
-/* PERFILES */
-/************/
+/***************** */
+/* TIPIFICACIONES */
+/******************/
 const typifications = [
     { id: 1, name: 'ACUERDO DE PAGO', custom: 'La la la' },
     { id: 2, name: 'NOVEDADES MONETARIAS', custom: 'Do Re Mi Fa' }
 ];
 
+//'BUSCAR TIPIFICACIONES' GET Method
+app.get('/api/admin/typifications', (req, res) => {
+    res.send(typifications);
+});
+
+//'BUSCAR UNA TIPIFICACION ESPECIFICA' GET Method
+app.get('/api/admin/typifications/:id', (req, res) => {
+     //Look up the requierement
+    //If not existing, return 404 - Not Found
+    const typification = typifications.find(t => t.id === parseInt(req.params.id));
+    if (!typification) return res.status(404).send('Tipificación no encontrada'); // Error 404 
+    res.send(typification);
+});
+
+
+/*********** */
+/* PERFILES */
+/************/
+
+
 const profiles = [
-    { id: 1, type: 'CONSULTA', permissions: 'R', requirements: 'True', profiles: 'True', areas: 'True', users: 'True', typifications: { enable: 'True', available: [2,3] }, case: 'True', channel: 'True', contact: 'True', lights: 'True', rejection: 'True' },
+    { id: 1, type: 'CONSULTA', permissions: 'R', requirements: 'True', profiles: 'True', areas: 'True', users: 'True', typifications: { enable: 'True', available: [1,2] }, case: 'True', channel: 'True', contact: 'True', lights: 'True', rejection: 'True' },
     { id: 2, type: 'RADICADOR', permissions: 'W', requirements: 'True', profiles: 'True', areas: 'True', users: 'True', typifications: { enable: 'False', available: [] }, case: 'True', channel: 'True', contact: 'True', lights: 'True', rejection: 'True' },
     { id: 3, type: 'EJECUTOR', permissions: 'W', requirements: 'True', profiles: 'False', areas: 'False', users: 'True', typifications: { enable: 'False', available: [] }, case: 'True', channel: 'True', contact: 'True', lights: 'True', rejection: 'True' }
 ];
@@ -227,6 +246,7 @@ function validateProfileTypifications(requiement) {
 
         return Joi.validate(requiement, schema);
 }
+
 
 
 
