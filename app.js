@@ -6,7 +6,7 @@ app.use(express.json()); //Lee entradas en formato json
 app.use(cors());
 
 /* DENTIX API */
-/* Elaborardo: Sebastian Otero - B612 Technologies s.a.s */
+/* Elaborardo: Sebastian Otero - B612 Technologies S.A.S */
 /* Versión: 08-09-2018 */
 
 /**************** */
@@ -108,9 +108,9 @@ const typifications = [
 ];
 
 const profiles = [
-    { id: 1, type: 'CONSULTA', permissions: 'R', requirements: 'True', profiles: 'True', areas: 'True', users: 'True', typifications: { enable: 'True', available: {} }, case: 'True', channel: 'True', contact: 'True', lights: 'True', rejection: 'True' },
-    { id: 2, type: 'RADICADOR', permissions: 'W', requirements: 'True', profiles: 'True', areas: 'True', users: 'True', typifications: { enable: 'False', available: {} }, case: 'True', channel: 'True', contact: 'True', lights: 'True', rejection: 'True' },
-    { id: 3, type: 'EJECUTOR', permissions: 'W', requirements: 'True', profiles: 'False', areas: 'False', users: 'True', typifications: { enable: 'False', available: {} }, case: 'True', channel: 'True', contact: 'True', lights: 'True', rejection: 'True' }
+    { id: 1, type: 'CONSULTA', permissions: 'R', requirements: 'True', profiles: 'True', areas: 'True', users: 'True', typifications: { enable: 'True', available: [2,3] }, case: 'True', channel: 'True', contact: 'True', lights: 'True', rejection: 'True' },
+    { id: 2, type: 'RADICADOR', permissions: 'W', requirements: 'True', profiles: 'True', areas: 'True', users: 'True', typifications: { enable: 'False', available: [] }, case: 'True', channel: 'True', contact: 'True', lights: 'True', rejection: 'True' },
+    { id: 3, type: 'EJECUTOR', permissions: 'W', requirements: 'True', profiles: 'False', areas: 'False', users: 'True', typifications: { enable: 'False', available: [] }, case: 'True', channel: 'True', contact: 'True', lights: 'True', rejection: 'True' }
 ];
 
 
@@ -118,6 +118,15 @@ const profiles = [
 //'BUSCAR PERFILES' GET Method
 app.get('/api/admin/profiles', (req, res) => {
     res.send(profiles);
+});
+
+//'BUSCAR UN PERFIL ESPECIFICO' GET Method
+app.get('/api/admin/profiles/:id', (req, res) => {
+     //Look up the requierement
+    //If not existing, return 404 - Not Found
+    const profile = profiles.find(p => p.id === parseInt(req.params.id));
+    if (!profile) return res.status(404).send('Perfil no encontrado'); // Error 404 
+    res.send(profile);
 });
 
 //'CREAR PERFILES' POST Method
