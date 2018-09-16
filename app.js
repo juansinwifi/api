@@ -14,9 +14,9 @@ app.use(cors());
 /******************/
 
 const requirements = [
-    { id: 1, type: 'Consulta', sms: 'True', written: 'False', medium: 'Email', times: 'Inmediato', days: '0', hours: '0' },
-    { id: 2, type: 'Peticion', sms: 'True', written: 'True', medium: 'Email', times: 'Fecha de Apertura', days: '13', hours: '0' },
-    { id: 3, type: 'Queja', sms: 'True', written: 'False', medium: 'Fisico', times: 'Fecha de Seguimiento', days: '2', hours: '3' }
+    { id: 1, type: 'Consulta', sms: true, written: false, medium: 'Email', times: 'Inmediato', days: '0', hours: '0' },
+    { id: 2, type: 'Peticion', sms: true, written: true, medium: 'Email', times: 'Fecha de Apertura', days: '13', hours: '0' },
+    { id: 3, type: 'Queja', sms: true, written: false, medium: 'Fisico', times: 'Fecha de Seguimiento', days: '2', hours: '3' }
 ];
 
 //'BUSCAR REQUERIMIENTOS' GET Method
@@ -127,9 +127,9 @@ app.get('/api/admin/typifications/:id', (req, res) => {
 
 
 const profiles = [
-    { id: 1, type: 'CONSULTA', permissions: 'R', requirements: 'True', profiles: 'True', areas: 'True', users: 'True', typifications: { enable: 'True', available: [1,2] }, case: 'True', channel: 'True', contact: 'True', lights: 'True', rejection: 'True' },
-    { id: 2, type: 'RADICADOR', permissions: 'W', requirements: 'True', profiles: 'True', areas: 'True', users: 'True', typifications: { enable: 'False', available: [] }, case: 'True', channel: 'True', contact: 'True', lights: 'True', rejection: 'True' },
-    { id: 3, type: 'EJECUTOR', permissions: 'W', requirements: 'True', profiles: 'False', areas: 'False', users: 'True', typifications: { enable: 'False', available: [] }, case: 'True', channel: 'True', contact: 'True', lights: 'True', rejection: 'True' }
+    { id: 1, type: 'CONSULTA', permissions: 'R', requirements: true, profiles: true, areas: true, users: true, typifications: { enable: true, available: [1,2] }, case: true, channel: true, contact: true, lights: true, rejection: true },
+    { id: 2, type: 'RADICADOR', permissions: 'W', requirements: true, profiles: true, areas: true, users: true, typifications: { enable: false, available: [] }, case: true, channel: true, contact: true, lights: true, rejection: true },
+    { id: 3, type: 'EJECUTOR', permissions: 'W', requirements: true, profiles: false, areas: false, users: true, typifications: { enable: false, available: [] }, case: true, channel: true, contact: true, lights: true, rejection: true }
 ];
 
 
@@ -201,7 +201,7 @@ app.put('/api/admin/profiles/:id', (req, res) => {
     profile.areas = req.body.areas;
     profile.users = req.body.users;
     profile.typifications.enable = req.body.typifications.enable;
-    if (profile.typifications.enable == 'True') available = req.body.typifications.available;
+    if (profile.typifications.enable == true) available = req.body.typifications.available;
     profile.case = req.body.case;
     profile.channel = req.body.channel;
     profile.contact = req.body.contact;
@@ -241,7 +241,7 @@ function validateProfileTypifications(requiement) {
                 enable: Joi.boolean().required()
         };
 
-        if (requiement.enable == 'True') schema.available =  Joi.array().items(Joi.number().required()).required()
+        if (requiement.enable == true) schema.available =  Joi.array().items(Joi.number().required()).required()
        
 
         return Joi.validate(requiement, schema);
