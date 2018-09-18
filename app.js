@@ -1,7 +1,9 @@
 const Joi = require('joi'); //Validacion de Inputs en el servicio
 const express = require('express');
 const app = express();
+var cors = require('cors');
 app.use(express.json()); //Lee entradas en formato json
+app.use(cors());
 
 
 /* DENTIX API */
