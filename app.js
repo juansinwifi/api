@@ -296,23 +296,72 @@ app.get('/api/admin/areas/:id', (req, res) => {
     res.send(area);
 });
 
-//'CREAR PERFILES' POST Method
-app.post('/api/admin/areas', (req, res) => {
+//'CREAR AREA' POST Method
+app.post('/api/admin/areas/:id', (req, res) => {
     //Validate Data
     //If invalid, return 404 - Bad Request
     const { error } = validateArea(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
+    //if (error) return res.status(400).send(error.details[0].message);
+    if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
 
     const area = {
         id: areas.length + 1,
         name: req.body.name,
         attention: {
-            mon: { check: req.body.attention.mon.check, ini: req.body.attention.mon.ini, fin: req.body.attention.mon.fin }
+            mon: { check: req.body.attention.mon.check, ini: req.body.attention.mon.ini, fin: req.body.attention.mon.fin },
+            tue: { check: req.body.attention.tue.check, ini: req.body.attention.tue.ini, fin: req.body.attention.tue.fin },
+            wed: { check: req.body.attention.wed.check, ini: req.body.attention.wed.ini, fin: req.body.attention.wed.fin },
+            thu: { check: req.body.attention.thu.check, ini: req.body.attention.thu.ini, fin: req.body.attention.thu.fin },
+            fri: { check: req.body.attention.fri.check, ini: req.body.attention.fri.ini, fin: req.body.attention.fri.fin },
+            sat: { check: req.body.attention.sat.check, ini: req.body.attention.sat.ini, fin: req.body.attention.sat.fin },
+            sun: { check: req.body.attention.sun.check, ini: req.body.attention.sun.ini, fin: req.body.attention.sun.fin }
         },
         leader: req.body.leader,
         email: req.body.email
     };
     areas.push(area);
+    res.send(area);
+});
+
+//'MODIFICAR AREA' PUT Method
+app.put('/api/admin/areas/:id', (req, res) => {
+    //Look up the requierement
+    //If not existing, return 404 - Not Found
+    const area = areas.find(a => a.id === parseInt(req.params.id));
+    if (!area) return res.status(404).send('Area no encontrada'); // Error 404 
+
+    //Validate
+    //If invalid, return 404 - Bad Request
+    const { error } = validateArea(req.body);
+    if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
+
+    //Update AREA
+    area.name = req.body.name;
+    area.attention.mon.check = req.body.attention.mon.check;
+    area.attention.mon.ini = req.body.attention.mon.ini;
+    area.attention.mon.fin = req.body.attention.mon.fin;
+    area.attention.tue.check = req.body.attention.tue.check;
+    area.attention.tue.ini = req.body.attention.tue.ini;
+    area.attention.tue.fin = req.body.attention.tue.fin;
+    area.attention.wed.check = req.body.attention.wed.check;
+    area.attention.wed.ini = req.body.attention.wed.ini;
+    area.attention.wed.fin = req.body.attention.wed.fin;
+    area.attention.thu.check = req.body.attention.thu.check;
+    area.attention.thu.ini = req.body.attention.thu.ini;
+    area.attention.thu.fin = req.body.attention.thu.fin;
+    area.attention.fri.check = req.body.attention.fri.check;
+    area.attention.fri.ini = req.body.attention.fri.ini;
+    area.attention.fri.fin = req.body.attention.fri.fin;
+    area.attention.sat.check = req.body.attention.sat.check;
+    area.attention.sat.ini = req.body.attention.sat.ini;
+    area.attention.sat.fin = req.body.attention.sat.fin;
+    area.attention.sun.check = req.body.attention.sun.check;
+    area.attention.sun.ini = req.body.attention.sun.ini;
+    area.attention.sun.fin = req.body.attention.sun.fin;
+    area.leader = req.body.leader;
+    area.email = req.body.email;
+
+    //Return the updated course
     res.send(area);
 });
 
