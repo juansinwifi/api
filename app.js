@@ -133,7 +133,6 @@ const profiles = [
 ];
 
 
-
 //'BUSCAR PERFILES' GET Method
 app.get('/api/admin/profiles', (req, res) => {
     res.send(profiles);
@@ -196,7 +195,7 @@ app.put('/api/admin/profiles/:id', (req, res) => {
     if (fail.error) return res.status(400).send(JSON.stringify(fail.error._object) + ' ' + fail.error.details[0].message);
 
     const nPermits = countPermissions(req.body);
-    
+
     //Update Requierments
     profile.type = req.body.type;
     profile.permissions = req.body.permissions;
@@ -322,7 +321,7 @@ app.get('/api/admin/areas/:id', (req, res) => {
 });
 
 //'CREAR AREA' POST Method
-app.post('/api/admin/areas/:id', (req, res) => {
+app.post('/api/admin/areas', (req, res) => {
     //Validate Data
     //If invalid, return 404 - Bad Request
     const { error } = validateArea(req.body);
@@ -433,12 +432,108 @@ function validateArea(requiement) {
             })
         }),
         leader: Joi.string().min(3).required(),
-        email: Joi.string().email().required()
+        email: Joi.string().email({ minDomainAtoms: 2 }).required()
     };
 
     return Joi.validate(requiement, schema);
 }
 
+/**********/
+/* Users */
+/*********/
+
+const users = [
+    {id: 1, active: true, user: 'pf@dentix.co', password: 'HFK99$$e3#', identification: 1019023277, name: 'Pedro Ficticio', email: 'pedrito.ficticio@gmail.com', profile: 'EJECUTOR', area: 'Clinica Cll90', country: 'Colombia' },
+    {id: 2, active: true, user: 'jf@dentix.co', password: 'HFK99$$e3#', identification: 1020023254, name: 'Juan Ficticio', email: 'juanito.ficticio@outlook.com', profile: 'CONSULTA', area: 'Clinica Restrepo', country: 'Colombia' },
+    {id: 3, active: false, user: 'af@dentix.co', password: 'HFK99$$e3#', identification: 1018041188, name: 'Alejandra Ficticia', email: 'aleja.ficticia@gmail.com', profile: 'RADICADOR', area: 'OPERACIONES', country: 'Colombia' }
+];
+
+//'BUSCAR USUARIOS' GET Method
+app.get('/api/admin/users', (req, res) => {
+    res.send(users);
+});
+
+//Traer los perfiles del servicio Profiles
+//Traer las areas del servicio Areas
+
+//'BUSCAR UN USUARIP ESPECIFICO' GET Method
+app.get('/api/admin/users/:id', (req, res) => {
+    //Look up the requierement
+    //If not existing, return 404 - Not Found
+    const user = users.find(u => u.id === parseInt(req.params.id));
+    if (!user) return res.status(404).send('Usuario no encontrado'); // Error 404 
+    res.send(user);
+});
+
+//'CREAR USUARIO' POST Method
+app.post('/api/admin/users', (req, res) => {
+    //Validate Data
+    //If invalid, return 404 - Bad Request
+    const { error } = validateUser(req.body);
+    //if (error) return res.status(400).send(error.details[0].message);
+    if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
+
+    const user = {
+        id: users.length + 1,
+        active: req.body.active,
+        user: req.body.user,
+        password: req.body.password,
+        identification: req.body.identification,
+        name: req.body.name,
+        email: req.body.email,
+        profile: req.body.profile,
+        area: req.body.area,
+        conuntry: req.body.country
+    };
+    users.push(user);
+    res.send(user);
+});
+
+//'MODIFICAR AREA' PUT Method
+app.put('/api/admin/users/:id', (req, res) => {
+    //Look up the requierement
+    //If not existing, return 404 - Not Found
+    const user = users.find(u => u.id === parseInt(req.params.id));
+    if (!user) return res.status(404).send('Usuario no encontrado'); // Error 404 
+
+    //Validate Data
+    //If invalid, return 404 - Bad Request
+    const { error } = validateUser(req.body);
+    //if (error) return res.status(400).send(error.details[0].message);
+    if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
+
+    //Update AREA
+    user.active = req.body.active;
+    user.user = req.body.user;
+    user.password = req.body.password;
+    user.identification = req.body.identification;
+    user.name = req.body.name;
+    user.email = req.body.email;
+    user.profile = req.body.profile;
+    user.area = req.body.area;
+    user.country = req.body.country;
+   
+    //Return the updated course
+    res.send(user);
+});
+
+//Funcion de Validación de Campos de Usuario
+function validateUser(requiement) {
+
+    const schema = {
+        active: Joi.boolean().required(),
+        user: Joi.string().email({ minDomainAtoms: 2 }).required(),
+        password: Joi.string().required(),
+        identification: Joi.number().required(),
+        name: Joi.string().min(3).required(),
+        email: Joi.string().email({ minDomainAtoms: 2 }).required(),
+        profile: Joi.string().min(3).required(),
+        area: Joi.string().min(3).required(),
+        country: Joi.string().min(3).required()
+    };
+
+    return Joi.validate(requiement, schema);
+}
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}...`));
