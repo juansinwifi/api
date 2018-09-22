@@ -127,10 +127,12 @@ app.get('/api/admin/typifications/:id', (req, res) => {
 /************/
 
 const profiles = [
-    { id: 1, type: 'CONSULTA', permissions: 'R', requirements: true, profiles: true, areas: true, users: true, typifications: { enable: true, available: [1, 2] }, case: true, channel: true, contact: true, lights: true, rejection: true },
-    { id: 2, type: 'RADICADOR', permissions: 'W', requirements: true, profiles: true, areas: true, users: true, typifications: { enable: false, available: [] }, case: true, channel: true, contact: true, lights: true, rejection: true },
-    { id: 3, type: 'EJECUTOR', permissions: 'W', requirements: true, profiles: false, areas: false, users: true, typifications: { enable: false, available: [] }, case: true, channel: true, contact: true, lights: true, rejection: true }
+    { id: 1, type: 'CONSULTA', permissions: 'R', total: 10, requirements: true, profiles: true, areas: true, users: true, typifications: { enable: true, available: [1, 2] }, case: true, channel: true, contact: true, lights: true, rejection: true },
+    { id: 2, type: 'RADICADOR', permissions: 'W', total: 9, requirements: true, profiles: true, areas: true, users: true, typifications: { enable: false, available: [] }, case: true, channel: true, contact: true, lights: true, rejection: true },
+    { id: 3, type: 'EJECUTOR', permissions: 'W', total: 7, requirements: true, profiles: false, areas: false, users: true, typifications: { enable: false, available: [] }, case: true, channel: true, contact: true, lights: true, rejection: true }
 ];
+
+
 
 //'BUSCAR PERFILES' GET Method
 app.get('/api/admin/profiles', (req, res) => {
@@ -156,11 +158,13 @@ app.post('/api/admin/profiles', (req, res) => {
     const fail = validateProfileTypifications(req.body.typifications);
     if (fail.error) return res.status(400).send(JSON.stringify(fail.error._object) + ' ' + fail.error.details[0].message);
 
+    const nPermits = countPermissions(req.body);
 
     const profile = {
         id: profiles.length + 1,
         type: req.body.type,
         permissions: req.body.permissions,
+        total: nPermits,
         requirements: req.body.requirements,
         profiles: req.body.profiles,
         areas: req.body.areas,
@@ -191,9 +195,12 @@ app.put('/api/admin/profiles/:id', (req, res) => {
     const fail = validateProfileTypifications(req.body.typifications);
     if (fail.error) return res.status(400).send(JSON.stringify(fail.error._object) + ' ' + fail.error.details[0].message);
 
+    const nPermits = countPermissions(req.body);
+    
     //Update Requierments
     profile.type = req.body.type;
     profile.permissions = req.body.permissions;
+    profile.total = nPermits,
     profile.requirements = req.body.requirements;
     profile.profiles = req.body.profiles;
     profile.areas = req.body.areas;
@@ -245,6 +252,24 @@ function validateProfileTypifications(requiement) {
     return Joi.validate(requiement, schema);
 }
 
+//Cuenta el numero de Permisos que tiene (# Trues)
+function countPermissions(requiement) {
+    
+    let countPermissions = 0
+
+    if (requiement.requirements) countPermissions++;
+    if (requiement.profiles) countPermissions++;
+    if (requiement.areas) countPermissions++;
+    if (requiement.users) countPermissions++;
+    if (requiement.typifications.enable) countPermissions++;
+    if (requiement.case) countPermissions++;
+    if (requiement.channel) countPermissions++;
+    if (requiement.contact) countPermissions++;
+    if (requiement.lights) countPermissions++;
+    if (requiement.rejection) countPermissions++;
+
+    return countPermissions;
+}
 
 /**********/
 /* Areas */
