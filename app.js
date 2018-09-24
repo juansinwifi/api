@@ -103,20 +103,20 @@ function validateRequiement(requiement) {
 /* TIPIFICACIONES */
 /******************/
 const typifications = [
-    { id: 1, name: 'ACUERDO DE PAGO'},
-    { id: 2, name: 'NOVEDADES MONETARIAS'}
+    { id: 1, name: 'ACUERDO DE PAGO' },
+    { id: 2, name: 'NOVEDADES MONETARIAS' }
 ];
 
-const childTypifications= [
-    { id: 1, idParent: 1, name: 'REDIFERIDO', description: 'Acuerdo de pago en un nuevo numero de cuotas', forms: [{ id: 1, description: 'Numero de Cuotas', type: 2} ,{ id: 2, description: 'Valor Cuota', type: 3}], levels: [ { id: 1, area: 1, user: 2, profile: 2, days: 2, hours: 5 }], maxTime: 21  },
-    { id: 2, idParent: 2, name: 'CAMBIO DE CICLO', description: 'Novedad de nueva fecha de pagos', forms: [{ id: 1, description: 'Nuevas Fechas de Pago', type: 4}] , levels: [ { id: 1, area: 2, user: 1, profile: 3, days: 5, hours: 8 },{ id: 2, area: 1, user: 1, profile: 1, days: 1, hours: 0 }],  maxTime: 56 },
+const childTypifications = [
+    { id: 1, idParent: 1, name: 'REDIFERIDO', description: 'Acuerdo de pago en un nuevo numero de cuotas', forms: [{ id: 1, description: 'Numero de Cuotas', type: 2 }, { id: 2, description: 'Valor Cuota', type: 3 }], levels: [{ id: 1, area: 1, user: 2, profile: 2, days: 2, hours: 5 }], maxTime: 21 },
+    { id: 2, idParent: 2, name: 'CAMBIO DE CICLO', description: 'Novedad de nueva fecha de pagos', forms: [{ id: 1, description: 'Nuevas Fechas de Pago', type: 4 }], levels: [{ id: 1, area: 2, user: 1, profile: 3, days: 5, hours: 8 }, { id: 2, area: 1, user: 1, profile: 1, days: 1, hours: 0 }], maxTime: 56 },
 ];
 
 const varTypes = [
-    { id: 1, name: 'texto', type: 'string'},
-    { id: 2, name: 'Numero', type: 'number'},
-    { id: 3, name: 'Moneda', type: 'number'},
-    { id: 4, name: 'Fecha', type: 'date'}
+    { id: 1, name: 'texto', type: 'string' },
+    { id: 2, name: 'Numero', type: 'number' },
+    { id: 3, name: 'Moneda', type: 'number' },
+    { id: 4, name: 'Fecha', type: 'date' }
 ];
 
 //'BUSCAR TIPIFICACIONES' GET Method
@@ -185,16 +185,16 @@ app.post('/api/admin/childtypifications', (req, res) => {
 
     let nForms = 0;
     let nLevels = 0;
-    
-    while (req.body.forms[nForms]){
+
+    while (req.body.forms[nForms]) {
         const validateForm = validateForms(req.body.forms[nForms]);
-        if (validateForm.error) return res.status(400).send(validateForm.error.details[0].message + '. PATH: Forms[' + nForms + '] ' + validateForm.error.details[0].path.toString()); 
+        if (validateForm.error) return res.status(400).send(validateForm.error.details[0].message + '. PATH: Forms[' + nForms + '] ' + validateForm.error.details[0].path.toString());
         nForms++;
     }
 
-    while (req.body.levels[nLevels]){
+    while (req.body.levels[nLevels]) {
         const validateLevel = validateLevels(req.body.levels[nLevels]);
-        if (validateLevel.error) return res.status(400).send(validateLevel.error.details[0].message + '. PATH: Levels[' + nLevels + '] ' + validateLevel.error.details[0].path.toString()); 
+        if (validateLevel.error) return res.status(400).send(validateLevel.error.details[0].message + '. PATH: Levels[' + nLevels + '] ' + validateLevel.error.details[0].path.toString());
         nLevels++;
     }
 
@@ -245,26 +245,26 @@ app.put('/api/admin/childtypifications/:id', (req, res) => {
 
     let nForms = 0;
     let nLevels = 0;
-    
-    while (req.body.forms[nForms]){
+
+    while (req.body.forms[nForms]) {
         const validateForm = validateForms(req.body.forms[nForms]);
-        if (validateForm.error) return res.status(400).send(validateForm.error.details[0].message + '. PATH: Forms[' + nForms + '] ' + validateForm.error.details[0].path.toString()); 
+        if (validateForm.error) return res.status(400).send(validateForm.error.details[0].message + '. PATH: Forms[' + nForms + '] ' + validateForm.error.details[0].path.toString());
         nForms++;
     }
 
-    while (req.body.levels[nLevels]){
+    while (req.body.levels[nLevels]) {
         const validateLevel = validateLevels(req.body.levels[nLevels]);
-        if (validateLevel.error) return res.status(400).send(validateLevel.error.details[0].message + '. PATH: Levels[' + nLevels + '] ' + validateLevel.error.details[0].path.toString()); 
+        if (validateLevel.error) return res.status(400).send(validateLevel.error.details[0].message + '. PATH: Levels[' + nLevels + '] ' + validateLevel.error.details[0].path.toString());
         nLevels++;
     }
 
     //Update Child Typification
     childTypification.idParent = req.body.idParent,
-    childTypification.name = req.body.name,
-    childTypification.description = req.body.description,
-    childTypification.forms = req.body.forms,
-    childTypification.levels = req.body.levels,
-    childTypification.maxTime = req.body.maxTime
+        childTypification.name = req.body.name,
+        childTypification.description = req.body.description,
+        childTypification.forms = req.body.forms,
+        childTypification.levels = req.body.levels,
+        childTypification.maxTime = req.body.maxTime
 
     //Return the Typification
     res.send(childTypification);
@@ -400,7 +400,7 @@ app.put('/api/admin/profiles/:id', (req, res) => {
     profile.type = req.body.type;
     profile.permissions = req.body.permissions;
     profile.total = nPermits,
-    profile.requirements = req.body.requirements;
+        profile.requirements = req.body.requirements;
     profile.profiles = req.body.profiles;
     profile.areas = req.body.areas;
     profile.users = req.body.users;
@@ -453,7 +453,7 @@ function validateProfileTypifications(requiement) {
 
 //Cuenta el numero de Permisos que tiene (# Trues)
 function countPermissions(requiement) {
-    
+
     let countPermissions = 0
 
     if (requiement.requirements) countPermissions++;
@@ -478,13 +478,13 @@ const areas = [{
         id: 1,
         name: "OPERACIONES",
         attention: {
-            mon: { check: true, ini: "0700", fin: "1700" },
-            tue: { check: true, ini: "0700", fin: "1700" },
-            wed: { check: true, ini: "0700", fin: "1700" },
-            thu: { check: true, ini: "07:00", fin: "1700" },
-            fri: { check: true, ini: "0700", fin: "1700" },
-            sat: { check: false, ini: "0000", fin: "0000" },
-            sun: { check: false, ini: "0000", fin: "0000" },
+            mon: { check: true, start: { h: 7, m: 0 }, fin: { h: 17, m: 0 } },
+            tue: { check: true, start: { h: 7, m: 0 }, fin: { h: 17, m: 0 } },
+            wed: { check: true, start: { h: 7, m: 0 }, fin: { h: 17, m: 0 } },
+            thu: { check: true, start: { h: 7, m: 0 }, fin: { h: 17, m: 0 } },
+            fri: { check: true, start: { h: 7, m: 0 }, fin: { h: 17, m: 0 } },
+            sat: { check: false, start: { h: 0, m: 0 }, fin: { h: 0, m: 0 } },
+            sun: { check: false, start: { h: 0, m: 0 }, fin: { h: 0, m: 0 } },
         },
         leader: "Pedro Ficticio",
         email: "pficticio@dentix.com"
@@ -493,13 +493,13 @@ const areas = [{
         id: 2,
         name: "CLINICA  CALLE 90",
         attention: {
-            mon: { check: true, ini: "0700", fin: "1700" },
-            tue: { check: true, ini: "0700", fin: "1700" },
-            wed: { check: true, ini: "0700", fin: "1700" },
-            thu: { check: true, ini: "07:00", fin: "1700" },
-            fri: { check: true, ini: "0700", fin: "1700" },
-            sat: { check: true, ini: "0800", fin: "1200" },
-            sun: { check: false, ini: "0000", fin: "0000" },
+            mon: { check: true, start: { h: 7, m: 0 }, fin: { h: 17, m: 0 } },
+            tue: { check: true, start: { h: 7, m: 0 }, fin: { h: 17, m: 0 } },
+            wed: { check: true, start: { h: 7, m: 0 }, fin: { h: 17, m: 0 } },
+            thu: { check: true, start: { h: 7, m: 0 }, fin: { h: 17, m: 0 } },
+            fri: { check: true, start: { h: 7, m: 0 }, fin: { h: 17, m: 0 } },
+            sat: { check: true, start: { h: 8, m: 0 }, fin: { h: 12, m: 0 } },
+            sun: { check: false, start: { h: 0, m: 0 }, fin: { h: 0, m: 0 } },
         },
         leader: "Juan Perez",
         email: "jperez@dentix.com"
@@ -532,13 +532,13 @@ app.post('/api/admin/areas', (req, res) => {
         id: areas.length + 1,
         name: req.body.name,
         attention: {
-            mon: { check: req.body.attention.mon.check, ini: req.body.attention.mon.ini, fin: req.body.attention.mon.fin },
-            tue: { check: req.body.attention.tue.check, ini: req.body.attention.tue.ini, fin: req.body.attention.tue.fin },
-            wed: { check: req.body.attention.wed.check, ini: req.body.attention.wed.ini, fin: req.body.attention.wed.fin },
-            thu: { check: req.body.attention.thu.check, ini: req.body.attention.thu.ini, fin: req.body.attention.thu.fin },
-            fri: { check: req.body.attention.fri.check, ini: req.body.attention.fri.ini, fin: req.body.attention.fri.fin },
-            sat: { check: req.body.attention.sat.check, ini: req.body.attention.sat.ini, fin: req.body.attention.sat.fin },
-            sun: { check: req.body.attention.sun.check, ini: req.body.attention.sun.ini, fin: req.body.attention.sun.fin }
+            mon: { check: req.body.attention.mon.check, start: req.body.attention.start, fin: req.body.attention.fin },
+            tue: { check: req.body.attention.tue.check, start: req.body.attention.start, fin: req.body.attention.fin },
+            wed: { check: req.body.attention.wed.check, start: req.body.attention.start, fin: req.body.attention.fin },
+            thu: { check: req.body.attention.thu.check, start: req.body.attention.start, fin: req.body.attention.fin },
+            fri: { check: req.body.attention.fri.check, start: req.body.attention.start, fin: req.body.attention.fin },
+            sat: { check: req.body.attention.sat.check, start: req.body.attention.start, fin: req.body.attention.fin },
+            sun: { check: req.body.attention.sun.check, start: req.body.attention.start, fin: req.body.attention.fin }
         },
         leader: req.body.leader,
         email: req.body.email
@@ -562,25 +562,25 @@ app.put('/api/admin/areas/:id', (req, res) => {
     //Update AREA
     area.name = req.body.name;
     area.attention.mon.check = req.body.attention.mon.check;
-    area.attention.mon.ini = req.body.attention.mon.ini;
+    area.attention.mon.start = req.body.attention.mon.start;
     area.attention.mon.fin = req.body.attention.mon.fin;
     area.attention.tue.check = req.body.attention.tue.check;
-    area.attention.tue.ini = req.body.attention.tue.ini;
+    area.attention.tue.start = req.body.attention.tue.start;
     area.attention.tue.fin = req.body.attention.tue.fin;
     area.attention.wed.check = req.body.attention.wed.check;
-    area.attention.wed.ini = req.body.attention.wed.ini;
+    area.attention.wed.start = req.body.attention.wed.start;
     area.attention.wed.fin = req.body.attention.wed.fin;
     area.attention.thu.check = req.body.attention.thu.check;
-    area.attention.thu.ini = req.body.attention.thu.ini;
+    area.attention.thu.start = req.body.attention.thu.start;
     area.attention.thu.fin = req.body.attention.thu.fin;
     area.attention.fri.check = req.body.attention.fri.check;
-    area.attention.fri.ini = req.body.attention.fri.ini;
+    area.attention.fri.start = req.body.attention.fri.start;
     area.attention.fri.fin = req.body.attention.fri.fin;
     area.attention.sat.check = req.body.attention.sat.check;
-    area.attention.sat.ini = req.body.attention.sat.ini;
+    area.attention.sat.start = req.body.attention.sat.start;
     area.attention.sat.fin = req.body.attention.sat.fin;
     area.attention.sun.check = req.body.attention.sun.check;
-    area.attention.sun.ini = req.body.attention.sun.ini;
+    area.attention.sun.start = req.body.attention.sun.start;
     area.attention.sun.fin = req.body.attention.sun.fin;
     area.leader = req.body.leader;
     area.email = req.body.email;
@@ -597,38 +597,80 @@ function validateArea(requiement) {
         attention: Joi.object().required().keys({
             mon: Joi.object().required().keys({
                 check: Joi.boolean().required(),
-                ini: Joi.string().isoDate().required(),
-                fin: Joi.string().isoDate().required()
+                start: Joi.object().required().keys({
+                    h: Joi.number().max(24).required(),
+                    m: Joi.number().max(60).required()
+                }),
+                fin: Joi.object().required().keys({
+                    h: Joi.number().max(24).required(),
+                    m: Joi.number().max(60).required()
+                })
             }),
             tue: Joi.object().required().keys({
                 check: Joi.boolean().required(),
-                ini: Joi.string().isoDate().required(),
-                fin: Joi.string().isoDate().required()
+                start: Joi.object().required().keys({
+                    h: Joi.number().max(24).required(),
+                    m: Joi.number().max(60).required()
+                }),
+                fin: Joi.object().required().keys({
+                    h: Joi.number().max(24).required(),
+                    m: Joi.number().max(60).required()
+                })
             }),
             wed: Joi.object().required().keys({
                 check: Joi.boolean().required(),
-                ini: Joi.string().isoDate().required(),
-                fin: Joi.string().isoDate().required()
+                start: Joi.object().required().keys({
+                    h: Joi.number().max(24).required(),
+                    m: Joi.number().max(60).required()
+                }),
+                fin: Joi.object().required().keys({
+                    h: Joi.number().max(24).required(),
+                    m: Joi.number().max(60).required()
+                })
             }),
             thu: Joi.object().required().keys({
                 check: Joi.boolean().required(),
-                ini: Joi.string().isoDate().required(),
-                fin: Joi.string().isoDate().required()
+                start: Joi.object().required().keys({
+                    h: Joi.number().max(24).required(),
+                    m: Joi.number().max(60).required()
+                }),
+                fin: Joi.object().required().keys({
+                    h: Joi.number().max(24).required(),
+                    m: Joi.number().max(60).required()
+                })
             }),
             fri: Joi.object().required().keys({
                 check: Joi.boolean().required(),
-                ini: Joi.string().isoDate().required(),
-                fin: Joi.string().isoDate().required()
+                start: Joi.object().required().keys({
+                    h: Joi.number().max(24).required(),
+                    m: Joi.number().max(60).required()
+                }),
+                fin: Joi.object().required().keys({
+                    h: Joi.number().max(24).required(),
+                    m: Joi.number().max(60).required()
+                })
             }),
             sat: Joi.object().required().keys({
                 check: Joi.boolean().required(),
-                ini: Joi.string().isoDate().required(),
-                fin: Joi.string().isoDate().required()
+                start: Joi.object().required().keys({
+                    h: Joi.number().max(24).required(),
+                    m: Joi.number().max(60).required()
+                }),
+                fin: Joi.object().required().keys({
+                    h: Joi.number().max(24).required(),
+                    m: Joi.number().max(60).required()
+                })
             }),
             sun: Joi.object().required().keys({
                 check: Joi.boolean().required(),
-                ini: Joi.string().isoDate().required(),
-                fin: Joi.string().isoDate().required()
+                start: Joi.object().required().keys({
+                    h: Joi.number().max(24).required(),
+                    m: Joi.number().max(60).required()
+                }),
+                fin: Joi.object().required().keys({
+                    h: Joi.number().max(24).required(),
+                    m: Joi.number().max(60).required()
+                })
             })
         }),
         leader: Joi.string().min(3).required(),
@@ -643,9 +685,9 @@ function validateArea(requiement) {
 /*********/
 
 const users = [
-    {id: 1, active: true, user: 'pf@dentix.co', password: 'HFK99$$e3#', identification: 1019023277, name: 'Pedro Ficticio', email: 'pedrito.ficticio@gmail.com', profile: [1,2], area: 1, country: 'Colombia' },
-    {id: 2, active: true, user: 'jf@dentix.co', password: 'HFK99$$e3#', identification: 1020023254, name: 'Juan Ficticio', email: 'juanito.ficticio@outlook.com', profile: [2], area: 3, country: 'Colombia' },
-    {id: 3, active: false, user: 'af@dentix.co', password: 'HFK99$$e3#', identification: 1018041188, name: 'Alejandra Ficticia', email: 'aleja.ficticia@gmail.com', profile: [1,2,3], area: 2, country: 'Colombia' }
+    { id: 1, active: true, user: 'pf@dentix.co', password: 'HFK99$$e3#', identification: 1019023277, name: 'Pedro Ficticio', email: 'pedrito.ficticio@gmail.com', profile: [1, 2], area: 1, country: 'Colombia' },
+    { id: 2, active: true, user: 'jf@dentix.co', password: 'HFK99$$e3#', identification: 1020023254, name: 'Juan Ficticio', email: 'juanito.ficticio@outlook.com', profile: [2], area: 3, country: 'Colombia' },
+    { id: 3, active: false, user: 'af@dentix.co', password: 'HFK99$$e3#', identification: 1018041188, name: 'Alejandra Ficticia', email: 'aleja.ficticia@gmail.com', profile: [1, 2, 3], area: 2, country: 'Colombia' }
 ];
 
 //'BUSCAR USUARIOS' GET Method
@@ -712,7 +754,7 @@ app.put('/api/admin/users/:id', (req, res) => {
     user.profile = req.body.profile;
     user.area = req.body.area;
     user.country = req.body.country;
-   
+
     //Return the updated course
     res.send(user);
 });
@@ -727,7 +769,7 @@ function validateUser(requiement) {
         identification: Joi.number().required(),
         name: Joi.string().min(3).required(),
         email: Joi.string().email({ minDomainAtoms: 2 }).required(),
-        profile:  Joi.array().items(Joi.number()).min(1).required(),
+        profile: Joi.array().items(Joi.number()).min(1).required(),
         area: Joi.number().min(1).required(),
         country: Joi.string().min(3).required()
     };
