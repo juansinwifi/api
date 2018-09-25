@@ -685,9 +685,9 @@ function validateArea(requiement) {
 /*********/
 
 const users = [
-    { id: 1, active: true, user: 'pf@dentix.co', password: 'HFK99$$e3#', identification: 1019023277, name: 'Pedro Ficticio', email: 'pedrito.ficticio@gmail.com', profile: [1, 2], area: 1, country: 'Colombia' },
-    { id: 2, active: true, user: 'jf@dentix.co', password: 'HFK99$$e3#', identification: 1020023254, name: 'Juan Ficticio', email: 'juanito.ficticio@outlook.com', profile: [2], area: 3, country: 'Colombia' },
-    { id: 3, active: false, user: 'af@dentix.co', password: 'HFK99$$e3#', identification: 1018041188, name: 'Alejandra Ficticia', email: 'aleja.ficticia@gmail.com', profile: [1, 2, 3], area: 2, country: 'Colombia' }
+    { id: 1, active: true, user: 'pf@dentix.co', password: 'HFK99$$e3#', identification: 1019023277, name: 'Pedro Ficticio', email: 'pedrito.ficticio@gmail.com', phone: "123124", profile: [1, 2], area: 1, country: 'Colombia' },
+    { id: 2, active: true, user: 'jf@dentix.co', password: 'HFK99$$e3#', identification: 1020023254, name: 'Juan Ficticio', email: 'juanito.ficticio@outlook.com', phone: "123124", profile: [2], area: 3, country: 'Colombia' },
+    { id: 3, active: false, user: 'af@dentix.co', password: 'HFK99$$e3#', identification: 1018041188, name: 'Alejandra Ficticia', email: 'aleja.ficticia@gmail.com', phone: "123124", profile: [1, 2, 3], area: 2, country: 'Colombia' }
 ];
 
 //'BUSCAR USUARIOS' GET Method
@@ -723,6 +723,7 @@ app.post('/api/admin/users', (req, res) => {
         identification: req.body.identification,
         name: req.body.name,
         email: req.body.email,
+        phone: req.body.phone,
         profile: req.body.profile,
         area: req.body.area,
         conuntry: req.body.country
@@ -751,6 +752,7 @@ app.put('/api/admin/users/:id', (req, res) => {
     user.identification = req.body.identification;
     user.name = req.body.name;
     user.email = req.body.email;
+    user.phone = req.body.phone;
     user.profile = req.body.profile;
     user.area = req.body.area;
     user.country = req.body.country;
@@ -769,6 +771,7 @@ function validateUser(requiement) {
         identification: Joi.number().required(),
         name: Joi.string().min(3).required(),
         email: Joi.string().email({ minDomainAtoms: 2 }).required(),
+        phone: Joi.number().min(7).required(),
         profile: Joi.array().items(Joi.number()).min(1).required(),
         area: Joi.number().min(1).required(),
         country: Joi.string().min(3).required()
@@ -777,7 +780,9 @@ function validateUser(requiement) {
     return Joi.validate(requiement, schema);
 }
 
-
+/**********/
+/* CASES */
+/*********/
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}...`));
