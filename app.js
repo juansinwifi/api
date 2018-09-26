@@ -1037,7 +1037,7 @@ app.get('/api/admin/lights/:id', (req, res) => {
 app.post('/api/admin/lights', (req, res) => {
     //Validate Data
     //If invalid, return 404 - Bad Request
-    const { error } = light(req.body);
+    const { error } = validateLight(req.body);
     //if (error) return res.status(400).send(error.details[0].message);
     if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
 
@@ -1061,7 +1061,7 @@ app.put('/api/admin/lights/:id', (req, res) => {
 
     //Validate Data
     //If invalid, return 404 - Bad Request
-    const { error } = light(req.body);
+    const { error } = validateLight(req.body);
     //if (error) return res.status(400).send(error.details[0].message);
     if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
 
