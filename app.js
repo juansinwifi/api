@@ -1045,7 +1045,8 @@ app.post('/api/admin/lights', (req, res) => {
         id: lights.length + 1,
         green: req.body.green,
         yellow: req.body.yellow,
-        red: req.body.red
+        red: req.body.red,
+        name: req.body.name
     };
     lights.push(light);
     res.send(light);
@@ -1069,6 +1070,7 @@ app.put('/api/admin/lights/:id', (req, res) => {
     light.green = req.body.green;
     light.yellow = req.body.yellow;
     light.red = req.body.red;
+    light.name = req.body.name;
     //Return the updated course
     res.send(light);
 });
