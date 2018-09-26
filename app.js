@@ -860,9 +860,9 @@ function validateCase(requiement) {
     return Joi.validate(requiement, schema);
 }
 
-/******************/
-/* COMMUNICATION CHANNEL */
-/****************/
+/*************************/
+/* COMUNICATION CHANNEL */
+/***********************/
 
 const channels = [
     { id: 1, name: 'Presencial' },
@@ -934,9 +934,9 @@ function validateChannel(requiement) {
     return Joi.validate(requiement, schema);
 }
 
-/**************************/
+/*************/
 /* CONTACTS */
-/************************/
+/************/
 
 const contacts = [
     { id: 1, name: 'Titular' },
@@ -1012,122 +1012,67 @@ function validateContact(requiement) {
 /* Lights */
 /**********/
 
-const userLights = [
-    { id: 1, green: 100 },
-    { id: 2, yellow: 50 },
-    { id: 3, red: 5 }
-];
-
-const caseLights = [
-    { id: 1, green: 100 },
-    { id: 2, yellow: 50 },
-    { id: 3, red: 5 }
+const lights = [
+    { id: 1, green: 100, yellow: 50, red: 5, name: "Usuarios" },
+    { id: 2, green: 100, yellow: 50, red: 5, name: "Casos" }
 ];
 
 //'BUSCAR Canal de Comunicaciones' GET Method
-app.get('/api/admin/userlights', (req, res) => {
-    res.send(userLights);
-});
-
-//'BUSCAR Canal de Comunicaciones' GET Method
-app.get('/api/admin/caselights', (req, res) => {
-    res.send(caseLights);
+app.get('/api/admin/lights', (req, res) => {
+    res.send(lights);
 });
 
 
 //'BUSCAR UN Semaforo' GET Method
-app.get('/api/admin/userlights/:id', (req, res) => {
+app.get('/api/admin/lights/:id', (req, res) => {
     //Look up the requierement
     //If not existing, return 404 - Not Found
-    const userLight = userLights.find(l => l.id === parseInt(req.params.id));
-    if (!userLight) return res.status(404).send('Semaforo no encontrado'); // Error 404 
-    res.send(userLight);
+    const light = lights.find(l => l.id === parseInt(req.params.id));
+    if (!light) return res.status(404).send('Semaforo no encontrado'); // Error 404 
+    res.send(light);
 });
 
-//'BUSCAR UN Canal de Semaforo' GET Method
-app.get('/api/admin/caselights/:id', (req, res) => {
-    //Look up the requierement
-    //If not existing, return 404 - Not Found
-    const caserLight = caseLights.find(l => l.id === parseInt(req.params.id));
-    if (!caseLight) return res.status(404).send('Semaforo no encontrado'); // Error 404 
-    res.send(caseLight);
-});
 
 //'CREAR Semaforo' POST Method
-app.post('/api/admin/userlights', (req, res) => {
+app.post('/api/admin/lights', (req, res) => {
     //Validate Data
     //If invalid, return 404 - Bad Request
-    const { error } = validateLight(req.body);
+    const { error } = light(req.body);
     //if (error) return res.status(400).send(error.details[0].message);
     if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
 
-    const userLight = {
-        id: userLights.length + 1,
+    const light = {
+        id: light.length + 1,
         green: req.body.green,
         yellow: req.body.yellow,
         red: req.body.red
     };
-    userLights.push(userLight);
-    res.send(userLight);
+    lights.push(light);
+    res.send(light);
 });
 
-//'CREAR Semaforo' POST Method
-app.post('/api/admin/caselights', (req, res) => {
-    //Validate Data
-    //If invalid, return 404 - Bad Request
-    const { error } = validateLight(req.body);
-    //if (error) return res.status(400).send(error.details[0].message);
-    if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
-
-    const caseLight = {
-        id: caseLights.length + 1,
-        green: req.body.green,
-        yellow: req.body.yellow,
-        red: req.body.red
-    };
-    caseLights.push(caseLight);
-    res.send(caseLight);
-});
 
 //'MODIFICAR Semaforo' PUT Method
-app.put('/api/admin/userlights/:id', (req, res) => {
+app.put('/api/admin/lights/:id', (req, res) => {
     //Look up the requierement
     //If not existing, return 404 - Not Found
-    const userLight = userLights.find(l => l.id === parseInt(req.params.id));
-    if (!userLight) return res.status(404).send('Semaforo no encontrado'); // Error 404 
+    const light = lights.find(l => l.id === parseInt(req.params.id));
+    if (!light) return res.status(404).send('Semaforo no encontrado'); // Error 404 
 
     //Validate Data
     //If invalid, return 404 - Bad Request
-    const { error } = validateLight(req.body);
+    const { error } = light(req.body);
     //if (error) return res.status(400).send(error.details[0].message);
     if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
 
     //Update Contact
-    caseLight.name = req.body.name;
-
+    light.green = req.body.green;
+    light.yellow = req.body.yellow;
+    light.red = req.body.red;
     //Return the updated course
-    res.send(caseLight);
+    res.send(light);
 });
 
-//'MODIFICAR Semaforo' PUT Method
-app.put('/api/admin/caselights/:id', (req, res) => {
-    //Look up the requierement
-    //If not existing, return 404 - Not Found
-    const caseLight = caseLights.find(l => l.id === parseInt(req.params.id));
-    if (!caseLight) return res.status(404).send('Semaforo no encontrado'); // Error 404 
-
-    //Validate Data
-    //If invalid, return 404 - Bad Request
-    const { error } = validateLight(req.body);
-    //if (error) return res.status(400).send(error.details[0].message);
-    if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
-
-    //Update Contact
-    caseLight.name = req.body.name;
-
-    //Return the updated course
-    res.send(caseLight);
-});
 
 //Funcion de Validación de Campos de Contactos
 function validateLight(requiement) {
@@ -1141,9 +1086,9 @@ function validateLight(requiement) {
     return Joi.validate(requiement, schema);
 }
 
-/**************************/
+/************/
 /* rejects */
-/************************/
+/***********/
 
 const rejects = [
     { id: 1, name: 'No procede' },
