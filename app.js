@@ -1080,7 +1080,8 @@ function validateLight(requiement) {
     const schema = {
         green: Joi.number().required(),
         yellow: Joi.number().required(),
-        red: Joi.number().required()
+        red: Joi.number().required(),
+        name: Joi.number().required()
     };
 
     return Joi.validate(requiement, schema);
