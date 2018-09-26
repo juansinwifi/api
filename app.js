@@ -1081,7 +1081,7 @@ function validateLight(requiement) {
         green: Joi.number().required(),
         yellow: Joi.number().required(),
         red: Joi.number().required(),
-        name: Joi.number().required()
+        name: Joi.string().min(3).required()
     };
 
     return Joi.validate(requiement, schema);
