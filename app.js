@@ -821,7 +821,7 @@ app.post('/api/admin/cases', (req, res) => {
         description: req.body.description,
         rejection: req.body.rejection
     };
-    users.push(myCase);
+    cases.push(myCase);
     res.send(myCase);
 });
 
@@ -861,85 +861,285 @@ function validateCase(requiement) {
 }
 
 /******************/
-/* COMMUNICATION */
+/* COMMUNICATION CHANNEL */
 /****************/
 
-const communications = [
-    { id: 1, name: 'RECHAZAR- DEVOLVER' },
-    { id: 2, name: 'FINALIZAR - AVANZAR' },
-    { id: 3, name: 'EN GESTION' }
+const channels = [
+    { id: 1, name: 'Presencial' },
+    { id: 2, name: 'inbound' },
+    { id: 3, name: 'outbound' }
 ];
 
-//'BUSCAR CASOS' GET Method
-app.get('/api/admin/cases', (req, res) => {
-    res.send(cases);
+//'BUSCAR Canal de Comunicaciones' GET Method
+app.get('/api/admin/channels', (req, res) => {
+    res.send(channels);
 });
 
-//Traer los perfiles del servicio Profiles
-//Traer las areas del servicio Areas
 
-//'BUSCAR UN CASO ESPECIFICO' GET Method
-app.get('/api/admin/cases/:id', (req, res) => {
+//'BUSCAR UN Canal de Comunicaciones ESPECIFICO' GET Method
+app.get('/api/admin/channels/:id', (req, res) => {
     //Look up the requierement
     //If not existing, return 404 - Not Found
-    const myCase = cases.find(c => c.id === parseInt(req.params.id));
-    if (!myCase) return res.status(404).send('Gestión no encontrada'); // Error 404 
-    res.send(myCase);
+    const channel = channels.find(c => c.id === parseInt(req.params.id));
+    if (!channel) return res.status(404).send('Canal de Comunicaciones no encontrada'); // Error 404 
+    res.send(channel);
 });
 
-//'CREAR CASOS' POST Method
-app.post('/api/admin/cases', (req, res) => {
+//'CREAR Canal de Comunicaciones' POST Method
+app.post('/api/admin/channels', (req, res) => {
     //Validate Data
     //If invalid, return 404 - Bad Request
-    const { error } = validateCase(req.body);
+    const { error } = validateChannel(req.body);
     //if (error) return res.status(400).send(error.details[0].message);
     if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
 
-    const myCase = {
-        id: cases.length + 1,
-        name: req.body.name,
-        description: req.body.description,
-        rejection: req.body.rejection
+    const channel = {
+        id: channels.length + 1,
+        name: req.body.name
     };
-    users.push(myCase);
-    res.send(myCase);
+    channels.push(channel);
+    res.send(channel);
 });
 
-//'MODIFICAR CASO' PUT Method
-app.put('/api/admin/cases/:id', (req, res) => {
+//'MODIFICAR Canal de Comunicaciones' PUT Method
+app.put('/api/admin/channels/:id', (req, res) => {
     //Look up the requierement
     //If not existing, return 404 - Not Found
-    const myCase = cases.find(c => c.id === parseInt(req.params.id));
-    if (!myCase) return res.status(404).send('Gestión no encontrado'); // Error 404 
+    const channel = channels.find(c => c.id === parseInt(req.params.id));
+    if (!channel) return res.status(404).send('Canal de Comunicaciones no encontrada'); // Error 404 
 
     //Validate Data
     //If invalid, return 404 - Bad Request
-    const { error } = validateCase(req.body);
+    const { error } = validateChannel(req.body);
     //if (error) return res.status(400).send(error.details[0].message);
     if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
 
     //Update AREA
-    myCase.name = req.body.name;
-    myCase.description = req.body.description;
-    myCase.rejection = req.body.rejection;
+    channel.name = req.body.name;
+    channel.description = req.body.description;
+    channel.rejection = req.body.rejection;
 
 
     //Return the updated course
-    res.send(myCase);
+    res.send(channel);
 });
 
 //Funcion de Validación de Campos de Casos
-function validateCase(requiement) {
+function validateChannel(requiement) {
 
     const schema = {
-        name: Joi.string().min(3).required(),
-        description: Joi.string().min(3).required(),
-        rejection: Joi.boolean().required()
+        name: Joi.string().min(3).required()
     };
 
     return Joi.validate(requiement, schema);
 }
 
+/**************************/
+/* CONTACTS */
+/************************/
+
+const contacts = [
+    { id: 1, name: 'Titular' },
+    { id: 2, name: 'Paciente' },
+    { id: 3, name: 'Clinica' }
+];
+
+//'BUSCAR Canal de Comunicaciones' GET Method
+app.get('/api/admin/contacts', (req, res) => {
+    res.send(contacts);
+});
+
+
+//'BUSCAR UN Canal de Comunicaciones ESPECIFICO' GET Method
+app.get('/api/admin/contacts/:id', (req, res) => {
+    //Look up the requierement
+    //If not existing, return 404 - Not Found
+    const contact = contacts.find(c => c.id === parseInt(req.params.id));
+    if (!contact) return res.status(404).send('Contacto no encontrado'); // Error 404 
+    res.send(contact);
+});
+
+//'CREAR Contacto' POST Method
+app.post('/api/admin/contacts', (req, res) => {
+    //Validate Data
+    //If invalid, return 404 - Bad Request
+    const { error } = validateContact(req.body);
+    //if (error) return res.status(400).send(error.details[0].message);
+    if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
+
+    const contact = {
+        id: contacts.length + 1,
+        name: req.body.name
+    };
+    contacts.push(contact);
+    res.send(contact);
+});
+
+//'MODIFICAR Contacto' PUT Method
+app.put('/api/admin/contacts/:id', (req, res) => {
+    //Look up the requierement
+    //If not existing, return 404 - Not Found
+    const contact = contacts.find(c => c.id === parseInt(req.params.id));
+    if (!contact) return res.status(404).send('Contacto no encontrado'); // Error 404 
+
+    //Validate Data
+    //If invalid, return 404 - Bad Request
+    const { error } = validateContact(req.body);
+    //if (error) return res.status(400).send(error.details[0].message);
+    if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
+
+    //Update Contact
+    contact.name = req.body.name;
+    contact.description = req.body.description;
+    contact.rejection = req.body.rejection;
+
+
+    //Return the updated course
+    res.send(contact);
+});
+
+//Funcion de Validación de Campos de Contactos
+function validateContact(requiement) {
+
+    const schema = {
+        name: Joi.string().min(3).required()
+    };
+
+    return Joi.validate(requiement, schema);
+}
+
+/***********/
+/* Lights */
+/**********/
+
+const userLights = [
+    { id: 1, green: 100 },
+    { id: 2, yellow: 50 },
+    { id: 3, red: 5 }
+];
+
+const caseLights = [
+    { id: 1, green: 100 },
+    { id: 2, yellow: 50 },
+    { id: 3, red: 5 }
+];
+
+//'BUSCAR Canal de Comunicaciones' GET Method
+app.get('/api/admin/userlights', (req, res) => {
+    res.send(userLights);
+});
+
+//'BUSCAR Canal de Comunicaciones' GET Method
+app.get('/api/admin/caselights', (req, res) => {
+    res.send(caseLights);
+});
+
+
+//'BUSCAR UN Semaforo' GET Method
+app.get('/api/admin/userlights/:id', (req, res) => {
+    //Look up the requierement
+    //If not existing, return 404 - Not Found
+    const userLight = userLights.find(l => l.id === parseInt(req.params.id));
+    if (!userLight) return res.status(404).send('Semaforo no encontrado'); // Error 404 
+    res.send(userLight);
+});
+
+//'BUSCAR UN Canal de Semaforo' GET Method
+app.get('/api/admin/caselights/:id', (req, res) => {
+    //Look up the requierement
+    //If not existing, return 404 - Not Found
+    const caserLight = caseLights.find(l => l.id === parseInt(req.params.id));
+    if (!caseLight) return res.status(404).send('Semaforo no encontrado'); // Error 404 
+    res.send(caseLight);
+});
+
+//'CREAR Semaforo' POST Method
+app.post('/api/admin/userlights', (req, res) => {
+    //Validate Data
+    //If invalid, return 404 - Bad Request
+    const { error } = validateLight(req.body);
+    //if (error) return res.status(400).send(error.details[0].message);
+    if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
+
+    const userLight = {
+        id: userLights.length + 1,
+        green: req.body.green,
+        yellow: req.body.yellow,
+        red: req.body.red
+    };
+    userLights.push(userLight);
+    res.send(userLight);
+});
+
+//'CREAR Semaforo' POST Method
+app.post('/api/admin/caselights', (req, res) => {
+    //Validate Data
+    //If invalid, return 404 - Bad Request
+    const { error } = validateLight(req.body);
+    //if (error) return res.status(400).send(error.details[0].message);
+    if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
+
+    const caseLight = {
+        id: caseLights.length + 1,
+        green: req.body.green,
+        yellow: req.body.yellow,
+        red: req.body.red
+    };
+    caseLights.push(caseLight);
+    res.send(caseLight);
+});
+
+//'MODIFICAR Semaforo' PUT Method
+app.put('/api/admin/userlights/:id', (req, res) => {
+    //Look up the requierement
+    //If not existing, return 404 - Not Found
+    const userLight = userLights.find(l => l.id === parseInt(req.params.id));
+    if (!userLight) return res.status(404).send('Semaforo no encontrado'); // Error 404 
+
+    //Validate Data
+    //If invalid, return 404 - Bad Request
+    const { error } = validateLight(req.body);
+    //if (error) return res.status(400).send(error.details[0].message);
+    if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
+
+    //Update Contact
+    caseLight.name = req.body.name;
+
+    //Return the updated course
+    res.send(caseLight);
+});
+
+//'MODIFICAR Semaforo' PUT Method
+app.put('/api/admin/caselights/:id', (req, res) => {
+    //Look up the requierement
+    //If not existing, return 404 - Not Found
+    const caseLight = caseLights.find(l => l.id === parseInt(req.params.id));
+    if (!caseLight) return res.status(404).send('Semaforo no encontrado'); // Error 404 
+
+    //Validate Data
+    //If invalid, return 404 - Bad Request
+    const { error } = validateLight(req.body);
+    //if (error) return res.status(400).send(error.details[0].message);
+    if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
+
+    //Update Contact
+    caseLight.name = req.body.name;
+
+    //Return the updated course
+    res.send(caseLight);
+});
+
+//Funcion de Validación de Campos de Contactos
+function validateLight(requiement) {
+
+    const schema = {
+        green: Joi.number().required(),
+        yellow: Joi.number().required(),
+        red: Joi.number().required()
+    };
+
+    return Joi.validate(requiement, schema);
+}
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}...`));
