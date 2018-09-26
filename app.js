@@ -1042,7 +1042,7 @@ app.post('/api/admin/lights', (req, res) => {
     if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
 
     const light = {
-        id: light.length + 1,
+        id: lights.length + 1,
         green: req.body.green,
         yellow: req.body.yellow,
         red: req.body.red
