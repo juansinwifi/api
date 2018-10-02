@@ -108,8 +108,8 @@ const typifications = [
 ];
 
 const childTypifications = [
-    { id: 1, idParent: 1, name: 'REDIFERIDO', description: 'Acuerdo de pago en un nuevo numero de cuotas', forms: [{ id: 1, description: 'Numero de Cuotas', type: 2 }, { id: 2, description: 'Valor Cuota', type: 3 }], levels: [{ id: 1, area: 1, user: 2, profile: 2, days: 2, hours: 5 }], maxTime: 21 },
-    { id: 2, idParent: 2, name: 'CAMBIO DE CICLO', description: 'Novedad de nueva fecha de pagos', forms: [{ id: 1, description: 'Nuevas Fechas de Pago', type: 4 }], levels: [{ id: 1, area: 2, user: 1, profile: 3, days: 5, hours: 8 }, { id: 2, area: 1, user: 1, profile: 1, days: 1, hours: 0 }], maxTime: 56 },
+    { id: 1, idParent: 1, name: 'REDIFERIDO', description: 'Acuerdo de pago en un nuevo numero de cuotas', requirement: 1 , forms: [{ id: 1, description: 'Numero de Cuotas', type: 2 }, { id: 2, description: 'Valor Cuota', type: 3 }], levels: [{ id: 1, area: 1, user: 2, profile: 2, days: 2, hours: 5 }], maxTime: 21 },
+    { id: 2, idParent: 2, name: 'CAMBIO DE CICLO', description: 'Novedad de nueva fecha de pagos', requirement: 2,  forms: [{ id: 1, description: 'Nuevas Fechas de Pago', type: 4 }], levels: [{ id: 1, area: 2, user: 1, profile: 3, days: 5, hours: 8 }, { id: 2, area: 1, user: 1, profile: 1, days: 1, hours: 0 }], maxTime: 56 },
 ];
 
 const varTypes = [
@@ -203,6 +203,7 @@ app.post('/api/admin/childtypifications', (req, res) => {
         idParent: req.body.idParent,
         name: req.body.name,
         description: req.body.description,
+        requirement: req.body.requirement,
         forms: req.body.forms,
         levels: req.body.levels,
         maxTime: req.body.maxTime
@@ -262,6 +263,7 @@ app.put('/api/admin/childtypifications/:id', (req, res) => {
     childTypification.idParent = req.body.idParent,
         childTypification.name = req.body.name,
         childTypification.description = req.body.description,
+        childTypification.requirement = req.body.requirement,
         childTypification.forms = req.body.forms,
         childTypification.levels = req.body.levels,
         childTypification.maxTime = req.body.maxTime
