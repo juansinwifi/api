@@ -25,7 +25,7 @@ router.get('/:id', async (req, res) => {
     //If not existing, return 404 - Not Found
     const user = await Users.findById(req.params.id);
     if (!user) return res.status(404).send('Usuario no encontrado'); // Error 404 
-    res.send(user);
+    res.send(_.pick(req.body, ['active', 'user', 'password', 'identification', 'name', 'email',  'phone', 'profiles', 'area', 'country' ]));
     }
     catch(ex){
         res.status(500).send('Algo salio mal :(');
