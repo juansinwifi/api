@@ -56,6 +56,7 @@ app.use('/api/admin/contacts', contacts); //Contactos
 app.use('/api/admin/lights', lights); //Semaforos
 app.use('/api/admin/rejects', rejects); //Causal de Rechazo
 app.use('/api/auth', auth); //Autenticacion de Usuarios
+app.use('/api/users/', users); //Autenticacion de Usuarios
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => startupDebugger(`Listening on port ${port}...`));

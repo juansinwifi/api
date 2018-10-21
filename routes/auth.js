@@ -19,12 +19,13 @@ router.post('/', async (req, res) => {
    //Buscamos el Usuario
    let user = await Users.findOne({ user: req.body.user});
    if (!user) return res.status(400).send('Usuario o Contraseña invalido');
-
+   if (!user.active) return res.status(400).send('El usuario no se encuentra activo.');
    const validPassword = await bcrypt.compare(req.body.password, user.password);
    if (!validPassword) return res.status(400).send('Usuario o Contraseña invalido');
 
     const token = user.generateAuthToken();
-    res.send(token);
+    const access = { "token": token };
+    res.send(access);
 });
 
 //Funcion de Validación de Campos de Usuario

@@ -11,6 +11,20 @@ const mongoose = require('mongoose');
 /* Users */
 /*********/
 
+//Buscar un Usuario con WebTokem
+router.get('/me', auth, async (req, res) => {
+  const user = await Users.findById(req.user._id).select('-password');  
+  const roles = [];
+  const operations = []
+
+  let i = 0;
+  while (i < user.profiles.length){
+    console.log(i);
+    i++;
+  }
+
+  res.send(user);
+});
 
 //'BUSCAR USUARIOS' GET Method
 router.get('/', auth, async (req, res) => {
