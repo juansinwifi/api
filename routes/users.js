@@ -6,7 +6,7 @@ const express = require('express');
 const router = express.Router();
 const Joi = require('joi'); //Validacion de Inputs en el servicio
 const mongoose = require('mongoose');
-const {Profiles} = require('../models/Profiles');
+const {Profiles} = require('../models/profiles');
 
 
 /**********/
