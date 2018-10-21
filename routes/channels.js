@@ -1,3 +1,4 @@
+const auth = require('../middleware/auth');
 const express = require('express');
 const router = express.Router();
 const Joi = require('joi'); //Validacion de Inputs en el servicio
@@ -13,13 +14,13 @@ const channels = [
 ];
 
 //'BUSCAR Canal de Comunicaciones' GET Method
-router.get('/', (req, res) => {
+router.get('/', auth, (req, res) => {
     res.send(channels);
 });
 
 
 //'BUSCAR UN Canal de Comunicaciones ESPECIFICO' GET Method
-router.get('/:id', (req, res) => {
+router.get('/:id', auth, (req, res) => {
     //Look up the requierement
     //If not existing, return 404 - Not Found
     const channel = channels.find(c => c.id === parseInt(req.params.id));
@@ -28,7 +29,7 @@ router.get('/:id', (req, res) => {
 });
 
 //'CREAR Canal de Comunicaciones' POST Method
-router.post('/', (req, res) => {
+router.post('/', auth, (req, res) => {
     //Validate Data
     //If invalid, return 404 - Bad Request
     const { error } = validateChannel(req.body);
@@ -44,7 +45,7 @@ router.post('/', (req, res) => {
 });
 
 //'MODIFICAR Canal de Comunicaciones' PUT Method
-router.put('/:id', (req, res) => {
+router.put('/:id', auth, (req, res) => {
     //Look up the requierement
     //If not existing, return 404 - Not Found
     const channel = channels.find(c => c.id === parseInt(req.params.id));

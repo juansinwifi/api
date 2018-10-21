@@ -1,3 +1,4 @@
+const auth = require('../middleware/auth');
 const express = require('express');
 const router = express.Router();
 const Joi = require('joi'); //Validacion de Inputs en el servicio
@@ -40,12 +41,12 @@ const areas = [{
 ];
 
 //'BUSCAR AREAS' GET Method
-router.get('/', (req, res) => {
+router.get('/', auth, (req, res) => {
 res.send(areas);
 });
 
 //'BUSCAR UN AREA ESPECIFICA' GET Method
-router.get('/:id', (req, res) => {
+router.get('/:id', auth, (req, res) => {
 //Look up the requierement
 //If not existing, return 404 - Not Found
 const area = areas.find(a => a.id === parseInt(req.params.id));
@@ -54,7 +55,7 @@ res.send(area);
 });
 
 //'CREAR AREA' POST Method
-router.post('/areas', (req, res) => {
+router.post('/areas', auth, (req, res) => {
 //Validate Data
 //If invalid, return 404 - Bad Request
 const { error } = validateArea(req.body);
@@ -81,7 +82,7 @@ res.send(area);
 });
 
 //'MODIFICAR AREA' PUT Method
-router.put('/:id', (req, res) => {
+router.put('/:id', auth, (req, res) => {
 //Look up the requierement
 //If not existing, return 404 - Not Found
 const area = areas.find(a => a.id === parseInt(req.params.id));

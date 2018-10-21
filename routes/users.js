@@ -1,3 +1,4 @@
+const auth = require('../middleware/auth');
 const bcrypt = require('bcryptjs');
 const _ = require('lodash');
 const {Users, validate} = require('../models/user');
@@ -12,14 +13,14 @@ const mongoose = require('mongoose');
 
 
 //'BUSCAR USUARIOS' GET Method
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
     const users = await Users.find().sort('name');
     res.send(users);
 });
 
 
 //'BUSCAR UN USUARIO ESPECIFICO' GET Method
-router.get('/:id', async (req, res) => {
+router.get('/:id', auth, async (req, res) => {
     try{
     //Look up the requierement
     //If not existing, return 404 - Not Found
@@ -33,7 +34,7 @@ router.get('/:id', async (req, res) => {
 });
 
 //'CREAR USUARIO' POST Method
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
     //Validate Data
     //If invalid, return 404 - Bad Request
     const { error } = validate(req.body);
@@ -60,7 +61,7 @@ router.post('/', async (req, res) => {
 });
 
 //'MODIFICAR USUARIO' PUT Method
-router.put('/:id', async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
     try{
         //Guardar los datos del usuario actual
         let currentUser = await Users.findById(req.params.id);

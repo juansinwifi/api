@@ -4,6 +4,7 @@
 /* Versión 2: 13-10-2018 */
 /* Node Version: 5.6.0   */
 
+const config = require('config');
 const startupDebugger = require('debug')('app:startup');
 const dbDebuger = require('debug')('app:db');
 const hemlet = require('helmet'); //Protege sobre vulnerabilidades de la cabeceras HTTP
@@ -12,6 +13,13 @@ const cors = require('cors'); //Permite Conexiones desde cualquier origen
 const mongoose = require('mongoose'); //Manejador de Node.js con MongoDB
 //Install NPM lodash 
 //Install NPM bcryptjs
+//Install NPM jsonwebtoken
+//Instal NPM config
+
+if (!config.get('jwtPrivateKey')){
+    startupDebugger('FATAL ERROR: jwtPrivateKey  is not defined,');
+    process.exit(1);   
+}
 
 const requirements = require('./routes/requirements');
 const typifications = require('./routes/typifications');

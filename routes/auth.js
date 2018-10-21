@@ -1,3 +1,5 @@
+const config = require('config');
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const _ = require('lodash');
 const {Users} = require('../models/user');
@@ -21,7 +23,8 @@ router.post('/', async (req, res) => {
    const validPassword = await bcrypt.compare(req.body.password, user.password);
    if (!validPassword) return res.status(400).send('Usuario o Contraseña invalido');
 
-   res.send(true);
+    const token = user.generateAuthToken();
+    res.send(token);
 });
 
 //Funcion de Validación de Campos de Usuario

@@ -1,3 +1,4 @@
+const auth = require('../middleware/auth');
 const express = require('express');
 const router = express.Router();
 const Joi = require('joi'); //Validacion de Inputs en el servicio
@@ -23,12 +24,12 @@ const varTypes = [
 ];
 
 //'BUSCAR TIPIFICACIONES' GET Method
-router.get('/api/admin/typifications', (req, res) => {
+router.get('/api/admin/typifications', auth, (req, res) => {
     res.send(typifications);
 });
 
 //'BUSCAR UNA TIPIFICACION ' GET Method
-router.get('/api/admin/typifications/:id', (req, res) => {
+router.get('/api/admin/typifications/:id', auth, (req, res) => {
     //Look up the requierement
     //If not existing, return 404 - Not Found
     const typification = typifications.find(t => t.id === parseInt(req.params.id));
@@ -37,12 +38,12 @@ router.get('/api/admin/typifications/:id', (req, res) => {
 });
 
 //'BUSCAR TIPIFICACIONES ESPECIFICAS' GET Method
-router.get('/api/admin/childtypifications', (req, res) => {
+router.get('/api/admin/childtypifications', auth, (req, res) => {
     res.send(childTypifications);
 });
 
 //'BUSCAR UNA TIPIFICACION ESPECIFICA' GET Method
-router.get('/api/admin/childtypifications/:id', (req, res) => {
+router.get('/api/admin/childtypifications/:id', auth, (req, res) => {
     //Look up the Child Typification
     //If not existing, return 404 - Not Found
     const child = childTypifications.find(c => c.id === parseInt(req.params.id));
@@ -51,12 +52,12 @@ router.get('/api/admin/childtypifications/:id', (req, res) => {
 });
 
 //'BUSCAR TIPOS DE VARIABLES' GET Method
-router.get('/api/admin/vartypes', (req, res) => {
+router.get('/api/admin/vartypes', auth, (req, res) => {
     res.send(varTypes);
 });
 
 //'BUSCAR UNA TIPO DE VARIABLE' GET Method
-router.get('/api/admin/vartypes/:id', (req, res) => {
+router.get('/api/admin/vartypes/:id', auth, (req, res) => {
     //Look up the varTypes
     //If not existing, return 404 - Not Found
     const varType = varTypes.find(v => v.id === parseInt(req.params.id));
@@ -65,7 +66,7 @@ router.get('/api/admin/vartypes/:id', (req, res) => {
 });
 
 //'CREAR TIPIFICACIÓN' POST Method
-router.post('/api/admin/typifications', (req, res) => {
+router.post('/api/admin/typifications', auth, (req, res) => {
     //Validate Data
     //If invalid, return 404 - Bad Request
     const { error } = validateTypifications(req.body);
@@ -80,7 +81,7 @@ router.post('/api/admin/typifications', (req, res) => {
 });
 
 //'CREAR TIPIFICACIÓN ESPECIFICAS' POST Method
-router.post('/api/admin/childtypifications', (req, res) => {
+router.post('/api/admin/childtypifications', auth, (req, res) => {
     //Validate Data
     //If invalid, return 404 - Bad Request
     const { error } = validateChildTypifications(req.body);
@@ -117,7 +118,7 @@ router.post('/api/admin/childtypifications', (req, res) => {
 });
 
 //'MODIFICAR TIPIFICACIÓN' PUT Method
-router.put('/api/admin/typifications/:id', (req, res) => {
+router.put('/api/admin/typifications/:id', auth, (req, res) => {
     //Look up the data
     //If not existing, return 404 - Not Found
     const typification = typifications.find(t => t.id === parseInt(req.params.id));
@@ -136,7 +137,7 @@ router.put('/api/admin/typifications/:id', (req, res) => {
 });
 
 //'MODIFICAR TIPIFICACIÓN ESPECIFICA' PUT Method
-router.put('/api/admin/childtypifications/:id', (req, res) => {
+router.put('/api/admin/childtypifications/:id', auth, (req, res) => {
     //Look up the data
     //If not existing, return 404 - Not Found
     const childTypification = childTypifications.find(c => c.id === parseInt(req.params.id));

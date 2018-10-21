@@ -1,3 +1,4 @@
+const auth = require('../middleware/auth');
 const {Cases, validate} = require('../models/case');
 const mongoose = require('mongoose');
 const express = require('express');
@@ -9,13 +10,13 @@ const router = express.Router();
 /*******************/
 
 //'BUSCAR CASOS' GET Method
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
     const myCases = await Cases.find().sort('name');
     res.send(myCases);
 });
 
 //'BUSCAR UN CASO ESPECIFICO' GET Method
-router.get('/:id', async (req, res) => {
+router.get('/:id', auth, async (req, res) => {
     try{
         //Buscar un  caso especifico
         //Si no existe, return 404 - Not Found
@@ -29,7 +30,7 @@ router.get('/:id', async (req, res) => {
 });
 
 //'CREAR CASOS' POST Method
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
     //Validate Data
     //If invalid, return 404 - Bad Request
     const { error } = validate(req.body);
@@ -45,7 +46,7 @@ router.post('/', async (req, res) => {
 });
 
 //'MODIFICAR CASO' PUT Method
-router.put('/:id', async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
     //Look up the requierement
 
     //Validate Data
