@@ -30,7 +30,7 @@ router.get('/me', auth, async (req, res) => {
         while (i < user.profiles.length){
             // const p  =  await Profiles.findById("5bc4e2376ac06b1dcce19822"); 
             // console.log(p);
-            me.roles.push({"_id": me._id});
+            me.roles.push({"_id": user.profiles[i]});
             i++;
         }
         
