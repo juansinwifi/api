@@ -79,7 +79,7 @@ function validateUser(user) {
         name: Joi.string().min(3).required(),
         email: Joi.string().email({ minDomainAtoms: 2 }).required(),
         phone: Joi.number().min(7).required(),
-        profiles: Joi.array().items(Joi.number()).min(1).required(),
+        profiles: Joi.array().items(Joi.string()).min(1).required(),
         area: Joi.number().min(1).required(),
         country: Joi.string().min(3).required()
     };

@@ -6,6 +6,8 @@ const express = require('express');
 const router = express.Router();
 const Joi = require('joi'); //Validacion de Inputs en el servicio
 const mongoose = require('mongoose');
+const {Profiles} = require('../models/Profiles');
+
 
 /**********/
 /* Users */
@@ -13,17 +15,32 @@ const mongoose = require('mongoose');
 
 //Buscar un Usuario con WebTokem
 router.get('/me', auth, async (req, res) => {
-  const user = await Users.findById(req.user._id).select('-password');  
-  const roles = [];
-  const operations = []
+    try{
+        const user = await Users.findOne({_id : req.user._id}).select('-password');  
+        const me = _.pick(user, ['_id','user', 'identification', 'name', 'email',  'phone', 'area', 'country']);  
+        
+        const roles = [];
+        const operations = 'R';
+        me.roles = roles;
+        me.operations = operations;
+        me.operations = operations;
+        // const p  =  await Profiles.findById("5bc4e2376ac06b1dcce19822"); 
+        // console.log(p);
+        let i = 0;
+        while (i < user.profiles.length){
+            // const p  =  await Profiles.findById("5bc4e2376ac06b1dcce19822"); 
+            // console.log(p);
+            me.roles.push({"_id": me._id});
+            i++;
+        }
+        
+        //const profiles = await Users.findById(req.user._id)
 
-  let i = 0;
-  while (i < user.profiles.length){
-    console.log(i);
-    i++;
-  }
-
-  res.send(user);
+        res.send(me);
+    }
+    catch(ex){
+        console.log(ex);
+    }
 });
 
 //'BUSCAR USUARIOS' GET Method
