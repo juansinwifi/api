@@ -77,7 +77,9 @@ router.put('/:id', auth, async (req, res) => {
     const { error } = validateProfile(req.body);
     //if (error) return res.status(400).send(error.details[0].message);
     if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
+    const nPermits = countPermissions(req.body);
 
+    req.body.total = nPermits;
     const profile = await Profiles.findByIdAndUpdate(req.params.id,_.pick(
         req.body, ['type', 'permissions', 'total', 'requirements', 'profiles', 'areas', 'users',  'typifications','case','channel', 'contact', 'lights', 'rejection'  ])
     ,{

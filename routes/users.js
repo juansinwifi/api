@@ -17,16 +17,58 @@ const {Profiles} = require('../models/profiles');
 router.get('/me', auth, async (req, res) => {
     try{
         const user = await Users.findOne({_id : req.user._id}).select('-password');  
-        const me = _.pick(user, ['_id','user', 'identification', 'name', 'email',  'phone', 'area', 'country']);  
-        
+        const me = _.pick(user, ['_id','user', 'identification', 'name', 'email',  'phone', 'area', 'country', 'profiles']);  
         const roles = [];
-        const operations = 'R';
+        const operations = {
+            "typifications": false,
+            "requirements": false,
+            "profiles": false,
+            "areas": false,
+            "users": false,
+            "case": false,
+            "channel": false,
+            "contact": false,
+            "lights": false,
+            "rejection": false
+        };
+
         me.roles = roles;
         me.operations = operations;
    
         let i = 0;
         while (i < user.profiles.length){
-            const userProfile = await Profiles.findOne({_id : user.profiles[i]});
+           const userProfile = await Profiles.findOne({_id : user.profiles[i]});
+
+           const typifications = userProfile.typifications.enable; //Enable solo aplica para este caso
+           if (typifications)  me.operations.typifications = true;
+
+           const requirements = userProfile.requirements;
+           if (requirements)  me.operations.requirements = true;
+
+           const profiles = userProfile.profiles;
+           if (profiles)  me.operations.profiles = true;
+
+           const areas = userProfile.areas;
+           if (areas)  me.operations.areas = true;
+
+           const users = userProfile.users;
+           if (users)  me.operations.users = true;
+
+           const cases = userProfile.case;
+           if (cases)  me.operations.case = true;
+
+           const channel = userProfile.channel;
+           if (channel)  me.operations.channel = true;
+
+           const contact = userProfile.contact;
+           if (contact)  me.operations.contact = true;
+
+           const lights = userProfile.lights;
+           if (lights)  me.operations.lights = true;
+
+           const rejection = userProfile.rejection;
+           if (rejection)  me.operations.rejection = true;
+
             me.roles.push(userProfile);
             i++;
         }
