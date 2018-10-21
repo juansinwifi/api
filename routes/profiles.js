@@ -1,5 +1,5 @@
 const auth = require('../middleware/auth');
-const {Profiles, validateProfile, validateProfileTypifications, countPermissions} = require('../models/Profiles');
+const {Profiles, validateProfile, validateProfileTypifications, countPermissions} = require('../models/profiles');
 const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
