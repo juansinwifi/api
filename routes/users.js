@@ -23,19 +23,13 @@ router.get('/me', auth, async (req, res) => {
         const operations = 'R';
         me.roles = roles;
         me.operations = operations;
-        me.operations = operations;
-        // const p  =  await Profiles.findById("5bc4e2376ac06b1dcce19822"); 
-        // console.log(p);
+   
         let i = 0;
         while (i < user.profiles.length){
-            // const p  =  await Profiles.findById("5bc4e2376ac06b1dcce19822"); 
-            // console.log(p);
-            me.roles.push({"_id": user.profiles[i]});
+            const userProfile = await Profiles.findOne({_id : user.profiles[i]});
+            me.roles.push(userProfile);
             i++;
         }
-        
-        //const profiles = await Users.findById(req.user._id)
-
         res.send(me);
     }
     catch(ex){
