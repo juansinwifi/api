@@ -31,7 +31,8 @@ const channels = require('./routes/channels');
 const contacts = require('./routes/contacts');
 const lights = require('./routes/lights');
 const rejects = require('./routes/rejects');
-const auth = require('./routes/auth')
+const auth = require('./routes/auth');
+const customers = require('./routes/customer');
 
 const express = require('express');
 const app = express();
@@ -57,6 +58,7 @@ app.use('/api/admin/lights', lights); //Semaforos
 app.use('/api/admin/rejects', rejects); //Causal de Rechazo
 app.use('/api/auth', auth); //Autenticacion de Usuarios
 app.use('/api/users/', users); //Autenticacion de Usuarios
+app.use('/api/customers', customers); //Información de Clientes
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => startupDebugger(`Listening on port ${port}...`));
