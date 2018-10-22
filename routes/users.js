@@ -19,6 +19,18 @@ router.get('/me', auth, async (req, res) => {
         const user = await Users.findOne({_id : req.user._id}).select('-password');  
         const me = _.pick(user, ['_id','user', 'identification', 'name', 'email',  'phone', 'area', 'country', 'profiles']);  
         const roles = [];
+        const permissions = {
+            "typifications": 0,
+            "requirements": 0,
+            "profiles": 0,
+            "areas": 0,
+            "users": 0,
+            "case": 0,
+            "channel": 0,
+            "contact": 0,
+            "lights": 0,
+            "rejection": 0
+        };
         const operations = {
             "typifications": false,
             "requirements": false,
@@ -34,45 +46,80 @@ router.get('/me', auth, async (req, res) => {
 
         me.roles = roles;
         me.operations = operations;
+        me.permissions = permissions;
    
         let i = 0;
         while (i < user.profiles.length){
            const userProfile = await Profiles.findOne({_id : user.profiles[i]});
 
            const typifications = userProfile.typifications.enable; //Enable solo aplica para este caso
-           if (typifications)  me.operations.typifications = true;
+           if (typifications){  
+               me.operations.typifications = true;
+               if (userProfile.permissions == "W") me.permissions.typifications = 1
+            }
 
            const requirements = userProfile.requirements;
-           if (requirements)  me.operations.requirements = true;
+           if (requirements){
+            me.operations.requirements = true; 
+            if (userProfile.permissions == "W") me.permissions.requirements = 1
+           }  
 
            const profiles = userProfile.profiles;
-           if (profiles)  me.operations.profiles = true;
+           if (profiles){
+            me.operations.profiles = true;
+            if (userProfile.permissions == "W") me.permissions.profiles = 1
+           }
 
            const areas = userProfile.areas;
-           if (areas)  me.operations.areas = true;
+           if (areas)  {
+               me.operations.areas = true;
+               if (userProfile.permissions == "W") me.permissions.areas = 1
+
+            }
 
            const users = userProfile.users;
-           if (users)  me.operations.users = true;
+           if (users)  {
+               me.operations.users = true;
+               if (userProfile.permissions == "W") me.permissions.users = 1
+            }
 
            const cases = userProfile.case;
-           if (cases)  me.operations.case = true;
+           if (cases)  {
+               me.operations.case = true;
+               if (userProfile.permissions == "W") me.permissions.case = 1
+            }
 
            const channel = userProfile.channel;
-           if (channel)  me.operations.channel = true;
+           if (channel)  {
+               me.operations.channel = true;
+               if (userProfile.permissions == "W") me.permissions.channel = 1
+            }
 
            const contact = userProfile.contact;
-           if (contact)  me.operations.contact = true;
+           if (contact)  {
+               me.operations.contact = true;
+               if (userProfile.permissions == "W") me.permissions.contact = 1
+            }
 
            const lights = userProfile.lights;
-           if (lights)  me.operations.lights = true;
+           if (lights) { 
+               me.operations.lights = true;
+               if (userProfile.permissions == "W") me.permissions.lights = 1
+            }
 
            const rejection = userProfile.rejection;
-           if (rejection)  me.operations.rejection = true;
+           if (rejection)  {
+               me.operations.rejection = true;
+               if (userProfile.permissions == "W") me.permissions.rejection = 1
+            }
 
             me.roles.push(userProfile);
             i++;
         }
+       
         res.send(me);
+       
+
     }
     catch(ex){
         console.log(ex);
