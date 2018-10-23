@@ -2,11 +2,12 @@ const auth = require('../middleware/auth');
 const bcrypt = require('bcryptjs');
 const _ = require('lodash');
 const {Users, validate} = require('../models/user');
+const {Profiles} = require('../models/profiles');
 const express = require('express');
 const router = express.Router();
 const Joi = require('joi'); //Validacion de Inputs en el servicio
 const mongoose = require('mongoose');
-const {Profiles} = require('../models/profiles');
+
 
 
 /**********/
@@ -43,11 +44,15 @@ router.get('/me', auth, async (req, res) => {
             "lights": false,
             "rejection": false
         };
+ 
+        const myTypifications =[];
 
         me.roles = roles;
         me.operations = operations;
         me.permissions = permissions;
-   
+        me.typifications = myTypifications;
+
+       
         let i = 0;
         while (i < user.profiles.length){
            const userProfile = await Profiles.findOne({_id : user.profiles[i]});
@@ -56,6 +61,16 @@ router.get('/me', auth, async (req, res) => {
            if (typifications){  
                me.operations.typifications = true;
                if (userProfile.permissions == "W") me.permissions.typifications = 1
+
+               let j = 0;
+               const availables = userProfile.typifications.available;
+               console.log(availables);
+               while (j < availables.length){ 
+                    //  me.typifications.push({"id": availables[j]}); 
+                    const available = me.typifications.find(c => c.id === parseInt(availables[j]));
+                    if (!available) me.typifications.push({"id": availables[j]}); 
+                    j++;
+               }
             }
 
            const requirements = userProfile.requirements;
@@ -143,7 +158,7 @@ router.get('/:id', auth, async (req, res) => {
     res.send(_.pick(user, ['active', 'user', 'password', 'identification', 'name', 'email',  'phone', 'profiles', 'area', 'country']));  
     }
     catch(ex){
-        res.status(500).send('Algo salio mal :(');
+        res.status(500).send({'Error':'Algo salio mal :('});
     }
 });
 

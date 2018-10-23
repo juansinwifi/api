@@ -7,8 +7,8 @@ const Joi = require('joi'); //Validacion de Inputs en el servicio
 /* TIPIFICACIONES */
 /******************/
 const typifications = [
-    { id: 1, name: 'ACUERDO DE PAGO' },
-    { id: 2, name: 'NOVEDADES MONETARIAS' }
+    { _id: 1, name: 'ACUERDO DE PAGO' },
+    { _id: 2, name: 'NOVEDADES MONETARIAS' }
 ];
 
 const childTypifications = [

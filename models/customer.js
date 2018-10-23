@@ -4,7 +4,8 @@ const Joi = require('joi');
 const customersSchema = new mongoose.Schema({
     identification: {
         type: Number,
-        required: true
+        required: true,
+        unique: true
     },
     name:{
         type: String,
