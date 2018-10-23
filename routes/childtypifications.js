@@ -31,7 +31,7 @@ router.get('/:id', auth, async(req, res) => {
 });
 
 //'CREAR TIPIFICACIÓN ESPECIFICAS' POST Method
-router.post('/', auth, (req, res) => {
+router.post('/', auth, async (req, res) => {
 
     //Validate Data
     //If invalid, return 404 - Bad Request

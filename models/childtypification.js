@@ -3,7 +3,7 @@ const Joi = require('joi');
 
 const childtypificationSchema = new mongoose.Schema({
     idParent: {
-        type: ObjectId,
+        type: String,
         required: true
     },
     name: {
@@ -42,7 +42,7 @@ const childtypificationSchema = new mongoose.Schema({
 
 });
 
-const ChildTypifications = mongoose.model('Typification', caseSchema);
+const ChildTypifications = mongoose.model('ChildTypifications', childtypificationSchema);
 
 //Funcion de Validación de Campos del Tipificaciones Especificas
 function validateChildTypifications(requiement) {
