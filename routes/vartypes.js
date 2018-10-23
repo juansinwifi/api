@@ -2,6 +2,12 @@ const auth = require('../middleware/auth');
 const express = require('express');
 const router = express.Router();
 
+const varTypes = [
+    { id: 1, name: 'texto', type: 'string' },
+    { id: 2, name: 'Numero', type: 'number' },
+    { id: 3, name: 'Moneda', type: 'number' },
+    { id: 4, name: 'Fecha', type: 'date' }
+];
 
 //'BUSCAR TIPOS DE VARIABLES' GET Method
 router.get('/', auth, (req, res) => {
