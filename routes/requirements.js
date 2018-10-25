@@ -1,5 +1,7 @@
 
 const auth = require('../middleware/auth');
+const {Requirements, validate} = require('../models/requirements');
+const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 const Joi = require('joi'); //Validacion de Inputs en el servicio
@@ -8,35 +10,41 @@ const Joi = require('joi'); //Validacion de Inputs en el servicio
 /* REQUERIMIENTOS */
 /******************/
 
-const requirements = [
+const xxx = [
     { id: 1, type: 'Consulta', sms: true, written: false, medium: 'Email', times: 'Inmediato', days: '0', hours: '0' },
     { id: 2, type: 'Peticion', sms: true, written: true, medium: 'Email', times: 'Fecha de Apertura', days: '13', hours: '0' },
     { id: 3, type: 'Queja', sms: true, written: false, medium: 'Fisico', times: 'Fecha de Seguimiento', days: '2', hours: '3' }
 ];
 
 //'BUSCAR REQUERIMIENTOS' GET Method
-router.get('/', auth, (req, res) => {
+router.get('/', auth, async (req, res) => {
+    const requirements = await Requirements.find().sort('name');
     res.send(requirements);
 });
 
 //'BUSCAR UN REQUERIMIENTO ESPECIFICO' GET Method
-router.get('/:id', auth, (req, res) => {
-    //Look up the requierement
-    //If not existing, return 404 - Not Found
-    const requirement = requirements.find(r => r.id === parseInt(req.params.id));
-    if (!requirement) return res.status(404).send('Requerimiento no encontrado'); // Error 404 
-    res.send(requirement);
+router.get('/:id', auth, async (req, res) => {
+    try{
+        //Buscar un  caso especifico
+        //Si no existe, return 404 - Not Found
+        const requirements = await Requirements.findById(req.params.id);
+        if (!requirements) return res.status(404).send('Requerimiento no encontrado'); // Error 404 
+        res.send(requirements);
+    }
+    catch (ex){
+        res.status(500).send({'Error': 'Algo salio mal :('})
+    }
 });
 
 //'CREAR REQUERIMIENTO' POST Method  
-router.post('/', auth, (req, res) => {
-    //Validate Data
+router.post('/', auth, async (req, res) => {
+    
+    try{//Validate Data
     //If invalid, return 404 - Bad Request
-    const { error } = validateRequiement(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
+    const { error } = validate(req.body);
+    if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
 
-    const requirement = {
-        id: requirements.length + 1,
+    let requirements = new Requirements({
         type: req.body.type,
         sms: req.body.sms,
         written: req.body.written,
@@ -44,53 +52,42 @@ router.post('/', auth, (req, res) => {
         times: req.body.times,
         days: req.body.days,
         hours: req.body.hours
-    };
-    requirements.push(requirement);
-    res.send(requirement);
+    });
+    requirements = await requirements.save();
+    res.send(requirements);}
+    catch(ex){
+        res.status(500).send( ex )
+    }
 });
 
 //'MODIFICAR REQUERIMIENTO' PUT Method   
-router.put('/:id', auth, (req, res) => {
+router.put('/:id', auth, async (req, res) => {
     //Look up the requierement
-    //If not existing, return 404 - Not Found
-    const requierement = requirements.find(r => r.id === parseInt(req.params.id));
-    if (!requierement) return res.status(404).send('Requerimiento no encontrado'); // Error 404 
 
-    //Validate
+    //Validate Data
     //If invalid, return 404 - Bad Request
-    const { error } = validateRequiement(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
+    const { error } = validate(req.body);
+    //if (error) return res.status(400).send(error.details[0].message);
+    if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
 
+   const requirements = await Requirements.findByIdAndUpdate(req.params.id, {
+        type: req.body.type,
+        sms: req.body.sms,
+        written: req.body.written,
+        medium: req.body.medium,
+        times: req.body.times,
+        days: req.body.days,
+        hours: req.body.hours
+    },{
+        new: true
+    });
 
-    //Update Requierments
-
-    requierement.type = req.body.type;
-    requierement.sms = req.body.sms;
-    requierement.written = req.body.written;
-    requierement.medium = req.body.medium;
-    requierement.times = req.body.times;
-    requierement.days = req.body.days;
-    requierement.hours = req.body.hours;
+    //If not existing, return 404 - Not Found
+    if (!requirements) return res.status(404).send('Requerimiento no encontrado'); // Error 404 
 
     //Return the updated course
-    res.send(requierement);
+    res.send(requirements);
 });
 
-//Funcion de Validación de Campos del Requirimieto
-function validateRequiement(requiement) {
-
-    const schema = {
-        type: Joi.string().min(3).required(),
-        sms: Joi.boolean().required(),
-        written: Joi.boolean().required(),
-        medium: Joi.string().min(3).required(),
-        times: Joi.string().min(3).required(),
-        days: Joi.number().integer().required(),
-        hours: Joi.number().integer().required()
-
-    };
-
-    return Joi.validate(requiement, schema);
-}
 
 module.exports = router;
