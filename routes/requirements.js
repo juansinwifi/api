@@ -10,12 +10,6 @@ const Joi = require('joi'); //Validacion de Inputs en el servicio
 /* REQUERIMIENTOS */
 /******************/
 
-const xxx = [
-    { id: 1, type: 'Consulta', sms: true, written: false, medium: 'Email', times: 'Inmediato', days: '0', hours: '0' },
-    { id: 2, type: 'Peticion', sms: true, written: true, medium: 'Email', times: 'Fecha de Apertura', days: '13', hours: '0' },
-    { id: 3, type: 'Queja', sms: true, written: false, medium: 'Fisico', times: 'Fecha de Seguimiento', days: '2', hours: '3' }
-];
-
 //'BUSCAR REQUERIMIENTOS' GET Method
 router.get('/', auth, async (req, res) => {
     const requirements = await Requirements.find().sort('name');
