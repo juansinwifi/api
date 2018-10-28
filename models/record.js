@@ -42,12 +42,23 @@ const recordSchema = new mongoose.Schema({
 
 const Records = mongoose.model('Records', recordSchema);
 
+
+//Contador de Radicados
+
+const countRecordsSchema = new mongoose.Schema({
+    count: {
+        type: Number,
+        required: true
+    } 
+});
+
+const CountRecords =  mongoose.model('Counters', countRecordsSchema);
+
+
 //Funcion de Validación de Campos del Radicado
 function validateRecords(requiement) {
 
     const schema = {
-
-        number:Joi.number().min(1).required(),
         date: Joi.string().min(8).required(),
         typification: Joi.string().min(1).required(),
         child: Joi.string().min(1).required(),
@@ -55,11 +66,11 @@ function validateRecords(requiement) {
         contact:Joi.string().min(1).required(),
         forms: Joi.array().items(Joi.object()).min(1).required(),
         file: Joi.string().min(1)
-
     };
 
     return Joi.validate(requiement, schema);
 }
 
 module.exports.Records = Records;
+module.exports.Counter = CountRecords;
 module.exports.validate = validateRecords;
