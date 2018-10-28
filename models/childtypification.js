@@ -52,7 +52,7 @@ function validateChildTypifications(requiement) {
         idParent: Joi.string().required(),
         name: Joi.string().min(3).required(),
         description: Joi.string().required(),
-        requirement: Joi.number().min(1).required(),
+        requirement: Joi.string().min(3).required(),
         forms: Joi.array().items(Joi.object()).min(1).required(),
         levels: Joi.array().items(Joi.object()).min(1).required(),
         maxTime: Joi.number().min(1).required()
