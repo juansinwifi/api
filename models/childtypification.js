@@ -20,9 +20,8 @@ const childtypificationSchema = new mongoose.Schema({
         maxlength: 1000
     },
     requirement: {
-        type: Number,
-        required: true,
-        minlength: 1
+        type: String,
+        required: true
     },
     forms: {
         type: Array,

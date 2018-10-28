@@ -9,13 +9,8 @@ const Joi = require('joi'); //Validacion de Inputs en el servicio
 /* Lights */
 /**********/
 
-const lights = [
-    { id: 1, green: 100, yellow: 50, red: 5, name: "Usuarios" },
-    { id: 2, green: 100, yellow: 50, red: 5, name: "Casos" }
-];
-
 //'BUSCAR Canal de Comunicaciones' GET Method
-router.get('/', auth, async(req, res) => {
+router.get('/', async(req, res) => {
     try {
         const lights = await Lights.find().sort('name');
         res.send(lights);
@@ -28,7 +23,7 @@ router.get('/', auth, async(req, res) => {
 
 
 //'BUSCAR UN Semaforo' GET Method
-router.get('/:id', auth, async (req, res) => {
+router.get('/:id', async (req, res) => {
     try{
         //Look up the Profiles
         //If not existing, return 404 - Not Found
@@ -44,14 +39,14 @@ router.get('/:id', auth, async (req, res) => {
 
 
 //'CREAR Semaforo' POST Method
-router.post('/', auth, async (req, res) => {
+router.post('/', async (req, res) => {
 
     //Validate Data
     //If invalid, return 404 - Bad Request
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
-    let channel = new Channels({
+    let light = new Lights({
         green: req.body.green, 
         yellow: req.body.yellow, 
         red: req.body.red, 
@@ -59,21 +54,21 @@ router.post('/', auth, async (req, res) => {
         observations: req.body.observations 
     });
    
-    light = await Lights.save();
+    light = await light.save();
     res.send(light);
 
 });
 
 
 //'MODIFICAR Semaforo' PUT Method
-router.put('/:id', auth, async (req, res) => {
+router.put('/:id', async (req, res) => {
     //Validate Data
     //If invalid, return 404 - Bad Request
     const { error } = validate(req.body);
     //if (error) return res.status(400).send(error.details[0].message);
     if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
 
-   const channel = await Lights.findByIdAndUpdate(req.params.id, {
+   const light = await Lights.findByIdAndUpdate(req.params.id, {
         green: req.body.green, 
         yellow: req.body.yellow, 
         red: req.body.red, 
