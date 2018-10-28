@@ -76,9 +76,9 @@ function validateForms(requiement) {
 function validateLevels(requiement) {
 
     const schema = {
-        area: Joi.number().required(),
-        user: Joi.number().required(),
-        profile: Joi.number().required(),
+        area: Joi.string().required(),
+        user: Joi.string().required(),
+        profile: Joi.string().required(),
         days: Joi.number().max(24).required(),
         hours: Joi.number().max(24).required()
     };
