@@ -1,4 +1,6 @@
 const auth = require('../middleware/auth');
+const {Contacts, validate} = require('../models/contacts');
+const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 const Joi = require('joi'); //Validacion de Inputs en el servicio
@@ -8,74 +10,77 @@ const Joi = require('joi'); //Validacion de Inputs en el servicio
 /* CONTACTS */
 /************/
 
-const contacts = [
-    { id: 1, name: 'Titular' },
-    { id: 2, name: 'Paciente' },
-    { id: 3, name: 'Clinica' }
+const xxx = [
+    {  name: 'Titular' },
+    {  name: 'Paciente' },
+    {  name: 'Clinica' }
 ];
 
 //'BUSCAR Canal de Comunicaciones' GET Method
-router.get('/', auth, (req, res) => {
-    res.send(contacts);
+router.get('/', async (req, res) => {
+    try {
+        const contacts = await Contacts.find().sort('name');
+        res.send(contacts);
+        }
+        catch(ex){
+            console.log(ex);
+            res.status(500).send({ 'Error': 'Algo salio mal :('});
+        }
 });
 
 
 //'BUSCAR UN Canal de Comunicaciones ESPECIFICO' GET Method
-router.get('/:id', auth, (req, res) => {
-    //Look up the requierement
-    //If not existing, return 404 - Not Found
-    const contact = contacts.find(c => c.id === parseInt(req.params.id));
-    if (!contact) return res.status(404).send('Contacto no encontrado'); // Error 404 
-    res.send(contact);
+router.get('/:id', async (req, res) => {
+    try{
+        //Look up the Profiles
+        //If not existing, return 404 - Not Found
+        const contact = await Contacts.findOne(req.params.id);
+        if (!contact) return res.status(404).send('Tipo de contacto no encontrado'); // Error 404 
+        res.send(contact);
+    }
+    catch(ex){
+        console.log(ex);
+        res.status(500).send({ 'Error': 'Algo salio mal :('});
+    }
 });
 
 //'CREAR Contacto' POST Method
-router.post('/', auth, (req, res) => {
+router.post('/', async (req, res) => {
+
     //Validate Data
     //If invalid, return 404 - Bad Request
-    const { error } = validateContact(req.body);
-    //if (error) return res.status(400).send(error.details[0].message);
-    if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
+    const { error } = validate(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
 
-    const contact = {
-        id: contacts.length + 1,
+    let contact = new Contacts({
         name: req.body.name
-    };
-    contacts.push(contact);
+    });
+   
+    contact = await contact.save();
     res.send(contact);
 });
 
 //'MODIFICAR Contacto' PUT Method
-router.put('/:id', auth, (req, res) => {
-    //Look up the requierement
-    //If not existing, return 404 - Not Found
-    const contact = contacts.find(c => c.id === parseInt(req.params.id));
-    if (!contact) return res.status(404).send('Contacto no encontrado'); // Error 404 
+router.put('/:id', async (req, res) => {
 
     //Validate Data
     //If invalid, return 404 - Bad Request
-    const { error } = validateContact(req.body);
+    const { error } = validate(req.body);
     //if (error) return res.status(400).send(error.details[0].message);
     if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
 
-    //Update Contact
-    contact.name = req.body.name;
-    contact.description = req.body.description;
-    contact.rejection = req.body.rejection;
+   const contact = await Contacts.findByIdAndUpdate(req.params.id, {
+        name: req.body.name
+    },{
+        new: true
+    });
 
+    //If not existing, return 404 - Not Found
+    if (!contact) return res.status(404).send('Tipo de contacto no encontrado'); // Error 404 
 
     //Return the updated course
     res.send(contact);
+   
 });
-
-//Funcion de Validación de Campos de Contactos
-function validateContact(requiement) {
-
-    const schema = {
-        name: Joi.string().min(3).required()
-    };
-
-    return Joi.validate(requiement, schema);
-}
 
 module.exports = router;
