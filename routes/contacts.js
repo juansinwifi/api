@@ -17,7 +17,7 @@ const xxx = [
 ];
 
 //'BUSCAR Canal de Comunicaciones' GET Method
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
     try {
         const contacts = await Contacts.find().sort('name');
         res.send(contacts);
@@ -30,7 +30,7 @@ router.get('/', async (req, res) => {
 
 
 //'BUSCAR UN Canal de Comunicaciones ESPECIFICO' GET Method
-router.get('/:id', async (req, res) => {
+router.get('/:id', auth, async (req, res) => {
     try{
         //Look up the Profiles
         //If not existing, return 404 - Not Found
@@ -45,7 +45,7 @@ router.get('/:id', async (req, res) => {
 });
 
 //'CREAR Contacto' POST Method
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
 
     //Validate Data
     //If invalid, return 404 - Bad Request
@@ -61,7 +61,7 @@ router.post('/', async (req, res) => {
 });
 
 //'MODIFICAR Contacto' PUT Method
-router.put('/:id', async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
 
     //Validate Data
     //If invalid, return 404 - Bad Request
