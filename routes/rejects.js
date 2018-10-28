@@ -9,11 +9,7 @@ const Joi = require('joi'); //Validacion de Inputs en el servicio
 /* rejects */
 /***********/
 
-const xxxx = [
-    { id: 1, name: 'No procede' },
-    { id: 2, name: 'Mal radicado' },
-    { id: 3, name: 'Faltan info o soportes' }
-];
+
 
 //'BUSCAR Causal de Rechazo' GET Method
 router.get('/', async (req, res) => {
