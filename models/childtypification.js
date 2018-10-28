@@ -49,7 +49,7 @@ function validateChildTypifications(requiement) {
 
     //Para los niveles el ID debe ser menos de 10. 
     const schema = {
-        idParent: Joi.number().min(1).required(),
+        idParent: Joi.string().required(),
         name: Joi.string().min(3).required(),
         description: Joi.string().required(),
         requirement: Joi.number().min(1).required(),
