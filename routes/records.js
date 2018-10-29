@@ -3,7 +3,7 @@ const { Records, Counter, validate} = require('../models/record');
 const { Typifications } = require('../models/typification');
 const { ChildTypifications } = require('../models/childtypification');
 const { Users } = require('../models/user');
-const {validateCounter, updateCounter, createFlow} = require('../middleware/records');
+const {validateCounter, updateCounter, createFlow, createRecord} = require('../middleware/records');
 const appDebuger = require('debug')('app:app');
 const mongoose = require('mongoose');
 const express = require('express');
@@ -32,8 +32,10 @@ router.post('/',  async (req, res) => {
             timeZone: 'America/Bogota'
           });;
         req.body.date = currentTime;
+    
+        //Guardar el radicado
+        const saveRecord  = await createRecord(req.body);
         
-       
         //Get Final Time User
         const child = await ChildTypifications.findOne({"_id": req.body.child});
         if (!child) return res.status(404).send('Cliente no encontrado'); // Error 404 
@@ -65,7 +67,7 @@ router.post('/',  async (req, res) => {
         
         const saveflow  = await createFlow(flow);
 
-        res.send(saveflow);
+        res.send(saveRecord);
 
     } 
     catch (ex) {

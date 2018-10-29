@@ -15,7 +15,7 @@ router.get('/:id', async (req, res) => {
         //Look up the Profiles
         //If not existing, return 404 - Not Found
         console.log(req.params.id);
-        const flow = await Flow.findOne({"user._id": req.params.id});
+        const flow = await Flow.findOne({"user._id": req.params.id, "status": true});
         if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
         flow.userLight = 90;
         flow.caseLight = 80;
