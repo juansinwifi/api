@@ -12,7 +12,7 @@ const Joi = require('joi'); //Validacion de Inputs en el servicio
 
 
 //'BUSCAR Causal de Rechazo' GET Method
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
     try {
         const rejects = await Rejects.find().sort('name');
         res.send(rejects);
@@ -26,7 +26,7 @@ router.get('/', async (req, res) => {
 
 
 //'BUSCAR UN Causal de Rechazo ESPECIFICO' GET Method
-router.get('/:id', async (req, res) => {
+router.get('/:id', auth, async (req, res) => {
     try{
         //Look up the Profiles
         //If not existing, return 404 - Not Found
@@ -41,7 +41,7 @@ router.get('/:id', async (req, res) => {
 });
 
 //'CREAR Causal de Rechazo' POST Method
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
 
     //Validate Data
     //If invalid, return 404 - Bad Request
@@ -58,7 +58,7 @@ router.post('/', async (req, res) => {
 });
 
 //'MODIFICAR Causal de Rechazo' PUT Method
-router.put('/:id', async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
 
      //Validate Data
     //If invalid, return 404 - Bad Request

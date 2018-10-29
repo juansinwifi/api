@@ -36,6 +36,7 @@ const vartypes = require('./routes/vartypes');
 const auth = require('./routes/auth');
 const customers = require('./routes/customer');
 const records = require('./routes/records');
+const flow = require('./routes/flow');
 
 const express = require('express');
 const app = express();
@@ -65,6 +66,7 @@ app.use('/api/auth', auth); //Autenticacion de Usuarios
 app.use('/api/users/', users); //Autenticacion de Usuarios
 app.use('/api/customers', customers); //Información de Clientes
 app.use('/api/records', records); //Información de Radicados
+app.use('/inbox/', flow); //Información de Flujos de trabajo
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => startupDebugger(`Listening on port ${port}...`));

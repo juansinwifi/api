@@ -3,7 +3,7 @@ const { Records, Counter, validate} = require('../models/record');
 const { Typifications } = require('../models/typification');
 const { ChildTypifications } = require('../models/childtypification');
 const { Users } = require('../models/user');
-const {validateCounter, updateCounter} = require('../middleware/records');
+const {validateCounter, updateCounter, createFlow} = require('../middleware/records');
 const appDebuger = require('debug')('app:app');
 const mongoose = require('mongoose');
 const express = require('express');
@@ -54,15 +54,18 @@ router.post('/',  async (req, res) => {
         flow.record = currentCounter;
         flow.date = currentTime;
         flow.user = {"_id": child.levels[0].user, "name": currentUser.user};
-        flow.UserTime = finalUserTime;
-        flow.CaseTime = child.maxTime;
+        flow.userTime = finalUserTime;
+        flow.caseTime = child.maxTime;
+        flow.userLight = 100;
+        flow.caseLight = 100;
         flow.typification = {"_id": child.idParent, "name": currentTypification.name};
         flow.childTypification = {"_id": child._id, "name": child.name};
         flow.level = 0;
         flow.status = true;
-        appDebuger(flow);
+        
+        const saveflow  = await createFlow(flow);
 
-        res.send(flow);
+        res.send(saveflow);
 
     } 
     catch (ex) {

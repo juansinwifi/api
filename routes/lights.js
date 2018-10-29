@@ -10,7 +10,7 @@ const Joi = require('joi'); //Validacion de Inputs en el servicio
 /**********/
 
 //'BUSCAR Canal de Comunicaciones' GET Method
-router.get('/', async(req, res) => {
+router.get('/', auth, async(req, res) => {
     try {
         const lights = await Lights.find().sort('name');
         res.send(lights);
@@ -23,7 +23,7 @@ router.get('/', async(req, res) => {
 
 
 //'BUSCAR UN Semaforo' GET Method
-router.get('/:id', async (req, res) => {
+router.get('/:id', auth, async (req, res) => {
     try{
         //Look up the Profiles
         //If not existing, return 404 - Not Found
@@ -39,7 +39,7 @@ router.get('/:id', async (req, res) => {
 
 
 //'CREAR Semaforo' POST Method
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
 
     //Validate Data
     //If invalid, return 404 - Bad Request
@@ -61,7 +61,7 @@ router.post('/', async (req, res) => {
 
 
 //'MODIFICAR Semaforo' PUT Method
-router.put('/:id', async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
     //Validate Data
     //If invalid, return 404 - Bad Request
     const { error } = validate(req.body);
