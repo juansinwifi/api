@@ -36,6 +36,9 @@ const recordSchema = new mongoose.Schema({
        type: String,
        minlength: 3,
        maxlength: 100,
+   },
+   observations:{
+       type: String
    }
 
 });
@@ -64,7 +67,8 @@ function validateRecords(requiement) {
         channel: Joi.string().min(1).required(),
         contact:Joi.string().min(1).required(),
         forms: Joi.array().items(Joi.object()).min(1).required(),
-        file: Joi.string().min(1)
+        file: Joi.string().min(1),
+        observations: Joi.string()
     };
 
     return Joi.validate(requiement, schema);
