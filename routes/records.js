@@ -1,5 +1,6 @@
 const auth = require('../middleware/auth');
 const { Records, Counter, validate} = require('../models/record');
+const { ChildTypifications } = require('../models/childtypification');
 const {validateCounter, updateCounter} = require('../middleware/records');
 const appDebuger = require('debug')('app:app');
 const mongoose = require('mongoose');
@@ -29,8 +30,16 @@ router.post('/',  async (req, res) => {
             timeZone: 'America/Bogota'
           });;
         req.body.date = currentTime;
-
         
+        //Get Final Time User
+        const child = await ChildTypifications.findOne({"_id": req.body.child});
+        if (!child) return res.status(404).send('Cliente no encontrado'); // Error 404 
+        
+        let finalTime = null;
+        if (child.levels[0].days !== 0 ) finalTime = (child.levels[0].days * 24) + child.levels[0].hours;
+        finalTime = child.levels[0].hours;
+        appDebuger(finalTime);
+
         res.send(req.body);
 
     } 

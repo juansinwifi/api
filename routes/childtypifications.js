@@ -72,7 +72,7 @@ router.post('/', auth, async (req, res) => {
 //'MODIFICAR TIPIFICACIÓN ESPECIFICA' PUT Method
 router.put('/:id', auth, async(req, res) => {
 
-    //Validate Data
+    try {//Validate Data
     //If invalid, return 404 - Bad Request
     const { error } = validate(req.body);
     if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
@@ -93,7 +93,7 @@ router.put('/:id', auth, async(req, res) => {
     }
 
 
-    const childTypification = await childTypification.findByIdAndUpdate(req.params.id, {
+    const childTypification = await ChildTypifications.findByIdAndUpdate(req.params.id, {
         idParent: req.body.idParent,
         name: req.body.name,
         description: req.body.description,
@@ -108,7 +108,11 @@ router.put('/:id', auth, async(req, res) => {
     //If not existing, return 404 - Not Found
     if (!childTypification) return res.status(404).send('Tipificación Especifica no encontrada'); // Error 404 
 
-    res.send(childTypification);
+    res.send(childTypification);}
+    catch (ex) {
+        console.log(ex);
+        res.status(500).send({ 'Error': 'Algo salio mal :(' })
+    }
 });
 
 
