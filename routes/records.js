@@ -1,6 +1,8 @@
 const auth = require('../middleware/auth');
 const { Records, Counter, validate} = require('../models/record');
+const { Typifications } = require('../models/typification');
 const { ChildTypifications } = require('../models/childtypification');
+const { Users } = require('../models/user');
 const {validateCounter, updateCounter} = require('../middleware/records');
 const appDebuger = require('debug')('app:app');
 const mongoose = require('mongoose');
@@ -31,16 +33,36 @@ router.post('/',  async (req, res) => {
           });;
         req.body.date = currentTime;
         
+       
         //Get Final Time User
         const child = await ChildTypifications.findOne({"_id": req.body.child});
         if (!child) return res.status(404).send('Cliente no encontrado'); // Error 404 
         
-        let finalTime = null;
-        if (child.levels[0].days !== 0 ) finalTime = (child.levels[0].days * 24) + child.levels[0].hours;
-        finalTime = child.levels[0].hours;
-        appDebuger(finalTime);
+        let finalUserTime = null;
+        if (child.levels[0].days > 0 ) finalUserTime = (child.levels[0].days * 24) + child.levels[0].hours;
+        if (child.levels[0].days < 0 ) finalUserTime = child.levels[0].hours;
+        
+        //Get User
+        const currentUser = await Users.findOne({"_id": child.levels[0].user});
+        if (!child) return res.status(404).send('Usuario no encontrado'); // Error 404 
+        
+        //Get Typification 
+        const currentTypification = await Typifications.findOne({"_id": child.idParent});
+        if (!currentTypification) return res.status(404).send('Tipificación no encontrada'); // Error 404 
 
-        res.send(req.body);
+        const flow = {};
+        flow.record = currentCounter;
+        flow.date = currentTime;
+        flow.user = {"_id": child.levels[0].user, "name": currentUser.user};
+        flow.UserTime = finalUserTime;
+        flow.CaseTime = child.maxTime;
+        flow.typification = {"_id": child.idParent, "name": currentTypification.name};
+        flow.childTypification = {"_id": child._id, "name": child.name};
+        flow.level = 0;
+        flow.status = true;
+        appDebuger(flow);
+
+        res.send(flow);
 
     } 
     catch (ex) {

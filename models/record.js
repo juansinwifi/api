@@ -59,7 +59,6 @@ const CountRecords =  mongoose.model('Counters', countRecordsSchema);
 function validateRecords(requiement) {
 
     const schema = {
-        date: Joi.string().min(8).required(),
         typification: Joi.string().min(1).required(),
         child: Joi.string().min(1).required(),
         channel: Joi.string().min(1).required(),
