@@ -23,8 +23,9 @@ router.get('/:id', async (req, res) => {
         flow.caseLight = 80;
 
         
+//Timpo del Usuario 
 
-        let iniTime = moment(flow.date);
+        const iniTime = moment(flow.date);
         let finalTime = null;
         //myTime = myTime.format("ddd, h:mm:ss a");
         let iniDay = iniTime.format("ddd").toLocaleLowerCase();
@@ -41,12 +42,23 @@ router.get('/:id', async (req, res) => {
             if (areaschedule.start.h >= hour <= areaschedule.fin.h) spendHour = areaschedule.fin.h - hour;
         }
         finalTime = iniTime.add(spendHour, 'hour');
+
         //Ciclo para encontrar la fecha final
+        let userTime = flow.userTime;
+        let addDays = iniTime.add(1,'day');
+        let day = addDays.format("ddd").toLocaleLowerCase();
+        while (userTime > spendHour){
+            areaschedule = area.attention[day];
+            userTime = userTime - 1;
+            addDays = addDays.add(1,'day');
+            day = addDays.format("ddd").toLocaleLowerCase();
+            appDebuger({Time: userTime},{Spend: spend}, {day: day});
+        }
         // myTime = moment(flow.date).add(1,'day');
         // day = myTime.format("ddd").toLocaleLowerCase();
         // appDebuger(day);
 
-        
+       // appDebuger(flow);
         
         const recordTime = {};
         recordTime.ini = iniTime.format("dddd, MMMM Do YYYY, h:mm:ss a");

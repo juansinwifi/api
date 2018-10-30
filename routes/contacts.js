@@ -34,7 +34,7 @@ router.get('/:id', auth, async (req, res) => {
     try{
         //Look up the Profiles
         //If not existing, return 404 - Not Found
-        const contact = await Contacts.findOne(req.params.id);
+        const contact = await Contacts.findOne({"user._id": req.params.id});
         if (!contact) return res.status(404).send('Tipo de contacto no encontrado'); // Error 404 
         res.send(contact);
     }
