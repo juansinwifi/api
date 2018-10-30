@@ -65,6 +65,7 @@ async function createRecord ( req ) {
 
     let record = new Records( _.pick(req, [ 
         "number",
+        "customer",
         "date",
         "typification",
         "child",
@@ -72,7 +73,8 @@ async function createRecord ( req ) {
         "contact",
         "forms",
         "file",
-        "observations"
+        "observations",
+        "status"
     ]));
 
     record = await record.save();

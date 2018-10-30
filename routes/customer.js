@@ -38,7 +38,7 @@ router.get('/:id', auth, async (req, res) => {
 });
 
 //'CREAR CLIENTE' POST Method
-router.post('/', auth, async (req, res) => {
+router.post('/',  async (req, res) => {
     //Validate Data
     //If invalid, return 404 - Bad Request
     const { error } = validate(req.body);

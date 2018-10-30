@@ -6,6 +6,10 @@ const recordSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    customer:{
+        type: String,
+        required: true
+    },
     date:{
         type: String,
         required: true,
@@ -39,6 +43,10 @@ const recordSchema = new mongoose.Schema({
    },
    observations:{
        type: String
+   },
+   statud:{
+       type: Boolean,
+       required: true
    }
 
 });
@@ -132,13 +140,15 @@ const Flow =  mongoose.model('flow', flowSchema);
 function validateRecords(requiement) {
 
     const schema = {
+        customer: Joi.string().min(1).required(),
         typification: Joi.string().min(1).required(),
         child: Joi.string().min(1).required(),
         channel: Joi.string().min(1).required(),
         contact:Joi.string().min(1).required(),
         forms: Joi.array().items(Joi.object()).min(1).required(),
         file: Joi.string().min(1),
-        observations: Joi.string()
+        observations: Joi.string(),
+        status: Joi.Boolean().require()
     };
 
     return Joi.validate(requiement, schema);
