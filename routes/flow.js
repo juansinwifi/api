@@ -17,7 +17,7 @@ router.get('/:id', async (req, res) => {
     try{
         //Look up the Profiles
         //If not existing, return 404 - Not Found
-        const flow = await Flow.findOne({"user._id": req.params.id, "status": true});
+        const flow = await Flow.find({"user._id": req.params.id, "status": true});
         if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
         flow.userLight = 90;
         flow.caseLight = 80;
@@ -26,7 +26,8 @@ router.get('/:id', async (req, res) => {
 //Timpo del Usuario 
 
         const iniTime = moment(flow.date);
-        let finalTime = null;
+        let finalTime = moment(flow.date);
+        let deadTime = null;
         //myTime = myTime.format("ddd, h:mm:ss a");
         let iniDay = iniTime.format("ddd").toLocaleLowerCase();
 
@@ -41,30 +42,29 @@ router.get('/:id', async (req, res) => {
         if (areaschedule.check){
             if (areaschedule.start.h >= hour <= areaschedule.fin.h) spendHour = areaschedule.fin.h - hour;
         }
-        finalTime = iniTime.add(spendHour, 'hour');
+        
 
         //Ciclo para encontrar la fecha final
         let userTime = flow.userTime;
         let addDays = iniTime.add(1,'day');
         let day = addDays.format("ddd").toLocaleLowerCase();
-        // while (userTime > spendHour){
-        //     appDebuger({Time: userTime},{Spend: spendHour}, {day: day});
-        //     areaschedule = area.attention[day];
-        //     appDebuger(areaschedule);
-        //     if (areaschedule.check){
-        //          spendHour = areaschedule.fin.h - areaschedule.fin.h;
-        //     }
-                 
-        //     addDays = addDays.add(1,'day');
-        //     day = addDays.format("ddd").toLocaleLowerCase();
+        while (userTime > spendHour){
             
-        // }
-        // appDebuger({Time: userTime},{Spend: spendHour}, {day: day});
-        // myTime = moment(flow.date).add(1,'day');
-        // day = myTime.format("ddd").toLocaleLowerCase();
-        // appDebuger(day);
+            areaschedule = area.attention[day];
 
-        //appDebuger(flow);
+            if (areaschedule.check){
+                 spendHour += areaschedule.fin.h - areaschedule.start.h;
+                 //finalTime = finalTime.add(spendHour, 'hour');
+                 finalTime = finalTime.add(1,'day');
+                 appDebuger(finalTime.format("dddd, MMMM Do YYYY, h:mm:ss a"));
+            }  
+            
+            appDebuger({Time: userTime},{Spend: spendHour}, {day: day});
+            addDays = addDays.add(1,'day');
+            day = addDays.format("ddd").toLocaleLowerCase();
+            
+        }
+
         
         const recordTime = {};
         recordTime.ini = moment(flow.date).format("dddd, MMMM Do YYYY, h:mm:ss a");
