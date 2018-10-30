@@ -27,7 +27,7 @@ router.get('/:id', auth, async (req, res) => {
     try{
         //Look up the Profiles
         //If not existing, return 404 - Not Found
-        const channel = await Channels.findOne(req.params.id);
+        const channel = await Channels.findOne({"_id": req.params.id});
         if (!channel) return res.status(404).send('Canal de Comunicaciones no encontrado'); // Error 404 
         res.send(channel);
     }
