@@ -52,13 +52,13 @@ router.get('/:id', async (req, res) => {
             userTime = userTime - 1;
             addDays = addDays.add(1,'day');
             day = addDays.format("ddd").toLocaleLowerCase();
-            appDebuger({Time: userTime},{Spend: spend}, {day: day});
+            appDebuger({Time: userTime},{Spend: spendHour}, {day: day});
         }
         // myTime = moment(flow.date).add(1,'day');
         // day = myTime.format("ddd").toLocaleLowerCase();
         // appDebuger(day);
 
-       // appDebuger(flow);
+       appDebuger(flow);
         
         const recordTime = {};
         recordTime.ini = iniTime.format("dddd, MMMM Do YYYY, h:mm:ss a");

@@ -44,7 +44,7 @@ const recordSchema = new mongoose.Schema({
    observations:{
        type: String
    },
-   statud:{
+   status:{
        type: Boolean,
        required: true
    }
@@ -148,7 +148,7 @@ function validateRecords(requiement) {
         forms: Joi.array().items(Joi.object()).min(1).required(),
         file: Joi.string().min(1),
         observations: Joi.string(),
-        status: Joi.Boolean().require()
+        status: Joi.boolean().required()
     };
 
     return Joi.validate(requiement, schema);
