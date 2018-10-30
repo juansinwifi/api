@@ -44,7 +44,7 @@ function validateRequirements(requiement) {
         type: Joi.string().min(3).required(),
         sms: Joi.boolean().required(),
         written: Joi.boolean().required(),
-        medium: Joi.string().min(3).required(),
+        medium: Joi.string(),
         times: Joi.string().min(3).required(),
         days: Joi.number().integer().required(),
         hours: Joi.number().integer().required()
