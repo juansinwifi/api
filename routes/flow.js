@@ -32,43 +32,43 @@ router.get('/:id', async (req, res) => {
         let iniDay = iniTime.format("ddd").toLocaleLowerCase();
 
         //Buscar el area para saber los horarios
-        const area = await Areas.findOne({"_id": flow.area});
-        if (!area) return res.status(404).send('Area no encontrada'); // Error 404 
-        let areaschedule = area.attention[iniDay];
+        // // const area = await Areas.findOne({"_id": flow.area});
+        // if (!area) return res.status(404).send('Area no encontrada'); // Error 404 
+        // // let areaschedule = area.attention[iniDay];
 
-        //Pregunto si el dia en que esta creado el caso el area trabaja
-        let  hour  = iniTime.format('H');
-        let spendHour = 0; 
-        if (areaschedule.check){
-            if (areaschedule.start.h >= hour <= areaschedule.fin.h) spendHour = areaschedule.fin.h - hour;
-        }
+        // //Pregunto si el dia en que esta creado el caso el area trabaja
+        // let  hour  = iniTime.format('H');
+        // let spendHour = 0; 
+        // if (areaschedule.check){
+        //     if (areaschedule.start.h >= hour <= areaschedule.fin.h) spendHour = areaschedule.fin.h - hour;
+        // }
         
 
-        //Ciclo para encontrar la fecha final
-        let userTime = flow.userTime;
-        let addDays = iniTime.add(1,'day');
-        let day = addDays.format("ddd").toLocaleLowerCase();
-        while (userTime > spendHour){
+        // //Ciclo para encontrar la fecha final
+        // let userTime = flow.userTime;
+        // let addDays = iniTime.add(1,'day');
+        // let day = addDays.format("ddd").toLocaleLowerCase();
+        // while (userTime > spendHour){
             
-            areaschedule = area.attention[day];
+        //     areaschedule = area.attention[day];
 
-            if (areaschedule.check){
-                 spendHour += areaschedule.fin.h - areaschedule.start.h;
-                 //finalTime = finalTime.add(spendHour, 'hour');
-                 finalTime = finalTime.add(1,'day');
-                 appDebuger(finalTime.format("dddd, MMMM Do YYYY, h:mm:ss a"));
-            }  
+        //     if (areaschedule.check){
+        //          spendHour += areaschedule.fin.h - areaschedule.start.h;
+        //          //finalTime = finalTime.add(spendHour, 'hour');
+        //          finalTime = finalTime.add(1,'day');
+        //          appDebuger(finalTime.format("dddd, MMMM Do YYYY, h:mm:ss a"));
+        //     }  
             
-            appDebuger({Time: userTime},{Spend: spendHour}, {day: day});
-            addDays = addDays.add(1,'day');
-            day = addDays.format("ddd").toLocaleLowerCase();
+        //     appDebuger({Time: userTime},{Spend: spendHour}, {day: day});
+        //     addDays = addDays.add(1,'day');
+        //     day = addDays.format("ddd").toLocaleLowerCase();
             
-        }
+        // }
 
         
-        const recordTime = {};
-        recordTime.ini = moment(flow.date).format("dddd, MMMM Do YYYY, h:mm:ss a");
-        recordTime.final = finalTime.format("dddd, MMMM Do YYYY, h:mm:ss a");
+        // const recordTime = {};
+        // recordTime.ini = moment(flow.date).format("dddd, MMMM Do YYYY, h:mm:ss a");
+        // recordTime.final = finalTime.format("dddd, MMMM Do YYYY, h:mm:ss a");
 
         
         res.send(flow);
