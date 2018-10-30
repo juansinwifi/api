@@ -50,7 +50,7 @@ const userSchema = new mongoose.Schema({
         require: true
     },
     area:{
-        type: Number,
+        type: String,
         required: true,
         uppercase: true
     },
@@ -80,7 +80,7 @@ function validateUser(user) {
         email: Joi.string().email({ minDomainAtoms: 2 }).required(),
         phone: Joi.number().min(7).required(),
         profiles: Joi.array().items(Joi.string()).min(1).required(),
-        area: Joi.number().min(1).required(),
+        area: Joi.string().min(1).required(),
         country: Joi.string().min(3).required()
     };
 
