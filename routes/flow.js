@@ -47,25 +47,31 @@ router.get('/:id', async (req, res) => {
         let userTime = flow.userTime;
         let addDays = iniTime.add(1,'day');
         let day = addDays.format("ddd").toLocaleLowerCase();
-        while (userTime > spendHour){
-            areaschedule = area.attention[day];
-            userTime = userTime - 1;
-            addDays = addDays.add(1,'day');
-            day = addDays.format("ddd").toLocaleLowerCase();
-            appDebuger({Time: userTime},{Spend: spendHour}, {day: day});
-        }
+        // while (userTime > spendHour){
+        //     appDebuger({Time: userTime},{Spend: spendHour}, {day: day});
+        //     areaschedule = area.attention[day];
+        //     appDebuger(areaschedule);
+        //     if (areaschedule.check){
+        //          spendHour = areaschedule.fin.h - areaschedule.fin.h;
+        //     }
+                 
+        //     addDays = addDays.add(1,'day');
+        //     day = addDays.format("ddd").toLocaleLowerCase();
+            
+        // }
+        // appDebuger({Time: userTime},{Spend: spendHour}, {day: day});
         // myTime = moment(flow.date).add(1,'day');
         // day = myTime.format("ddd").toLocaleLowerCase();
         // appDebuger(day);
 
-       appDebuger(flow);
+        //appDebuger(flow);
         
         const recordTime = {};
-        recordTime.ini = iniTime.format("dddd, MMMM Do YYYY, h:mm:ss a");
+        recordTime.ini = moment(flow.date).format("dddd, MMMM Do YYYY, h:mm:ss a");
         recordTime.final = finalTime.format("dddd, MMMM Do YYYY, h:mm:ss a");
 
         
-        res.send(recordTime);
+        res.send(flow);
     }
     catch(ex){
         console.log(ex);
