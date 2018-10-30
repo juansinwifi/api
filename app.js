@@ -14,7 +14,8 @@ const mongoose = require('mongoose'); //Manejador de Node.js con MongoDB
 //Install NPM lodash 
 //Install NPM bcryptjs
 //Install NPM jsonwebtoken
-//Instal NPM config
+//Install NPM config
+//Install NPM moment
 
 if (!config.get('jwtPrivateKey')){
     startupDebugger('FATAL ERROR: jwtPrivateKey  is not defined,');

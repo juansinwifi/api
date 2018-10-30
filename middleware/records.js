@@ -51,6 +51,7 @@ async function createFlow ( req ) {
         "typification.name",
         "childTypification._id",
         "childTypification.name",
+        "area",
         "level",
         "status"
     ]));

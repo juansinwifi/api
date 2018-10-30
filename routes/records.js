@@ -9,6 +9,7 @@ const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 const Joi = require('joi'); //Validacion de Inputs en el servicio
+const moment = require('moment'); //Libreria para manejo de fechas
 
 //'CREAR TIPIFICACIÓN' POST Method
 router.post('/',  async (req, res) => {
@@ -28,9 +29,7 @@ router.post('/',  async (req, res) => {
         req.body.number = currentCounter;
           
         // Get Current Date
-        let currentTime = new Date().toLocaleString('en-US', {
-            timeZone: 'America/Bogota'
-          });;
+        let currentTime = moment().format();
         req.body.date = currentTime;
     
         //Guardar el radicado
@@ -62,10 +61,12 @@ router.post('/',  async (req, res) => {
         flow.caseLight = 100;
         flow.typification = {"_id": child.idParent, "name": currentTypification.name};
         flow.childTypification = {"_id": child._id, "name": child.name};
+        flow.area = child.levels[0].area;
         flow.level = 0;
         flow.status = true;
         
-        const saveflow  = await createFlow(flow);
+        let  saveflow = {};
+        if (saveRecord) saveflow = await createFlow(flow);
 
         res.send(saveRecord);
 

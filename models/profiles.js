@@ -105,7 +105,7 @@ function validateProfileTypifications(requiement) {
         enable: Joi.boolean().required()
     };
 
-    if (requiement.enable == true) schema.available = Joi.array().items(Joi.number().required()).required()
+    if (requiement.enable == true) schema.available = Joi.array().items(Joi.string().required()).required()
     if (requiement.enable == false) schema.available = Joi.array()
 
 
