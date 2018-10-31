@@ -1,69 +1,85 @@
 const mongoose = require('mongoose');
 const Joi = require('joi');
 
-const recordSchema = new mongoose.Schema({
-    number:{
-        type: Number,
-        required: true
-    },
-    customer:{
-        type: String,
-        required: true
-    },
-    date:{
-        type: String,
-        required: true,
-        minlength: 3,
-        maxlength: 100,
-        uppercase: true
-    },
-    typification: {
-        type: String,
-        required: true
-    },
-    child: {
-        type: String,
-        required: true
-    },
-    channel:{
-        type: String,
-        requerid: true
-    },
-    contact:{
-        type: String,
-        required: true
-    },
-   forms:{
-       type: Array
-   },
-   file:{
-       type: String,
-       minlength: 3,
-       maxlength: 100,
-   },
-   observations:{
-       type: String
-   },
-   status:{
-       type: Boolean,
-       required: true
-   }
-
-});
-
-const Records = mongoose.model('Records', recordSchema);
-
-
 //Contador de Radicados
-
 const countRecordsSchema = new mongoose.Schema({
     count: {
         type: Number,
         required: true
     } 
 });
-
 const CountRecords =  mongoose.model('Counters', countRecordsSchema);
+
+
+//Radicados
+const recordSchema = new mongoose.Schema({
+    number:{
+        type: Number,
+        required: true
+    },
+    customer:{
+        type: Number,
+        required: true
+    },
+    typification: {
+            type: String,
+            required: true
+    },
+    child: {
+            type: String,
+            required: true
+    },
+    channel: {
+        type: String,
+        required: true
+    },
+    contact: {
+        type: String,
+        required: true
+    },
+    forms: {
+        type: Array
+     },
+    file: {
+        type: String
+    },
+    status:{
+        type: Boolean,
+        required: true
+    },
+    date:{
+        type: String,
+        required: true
+    },
+    caseFinTime:{
+        type: Number,
+        required: true
+    },
+    caseFinDate: {
+        type: Number,
+        required: true
+    },
+    caseLight: {
+        type: Number,
+        required: true
+    },
+    area: {
+        type: String,
+        required: true
+    },
+    levels: {
+        type: Array,
+        required: true
+    }
+
+});
+
+const Records = mongoose.model('Records', recordSchema);
+
+
+
+
+
 
 //Esquema para el FLujo
 const flowSchema = new mongoose.Schema({
@@ -71,9 +87,15 @@ const flowSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    date:{
+    iniDate:{
         type: String,
         required: true
+    },
+    finDate:{
+        type: String
+    },
+    userFinDate:{
+        type: String
     },
     user: {
         _id:{
@@ -140,7 +162,7 @@ const Flow =  mongoose.model('flow', flowSchema);
 function validateRecords(requiement) {
 
     const schema = {
-        customer: Joi.string().min(1).required(),
+        customer: Joi.number().min(1).required(),
         typification: Joi.string().min(1).required(),
         child: Joi.string().min(1).required(),
         channel: Joi.string().min(1).required(),

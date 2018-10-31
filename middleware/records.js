@@ -40,7 +40,9 @@ async function createFlow ( req ) {
 
     let flow = new Flow( _.pick(req, [ 
         "record",
-        "date",
+        "iniDate",
+        "finDate",
+        "userFinDate",
         "user._id",
         "user.name",  
         "userTime",
@@ -64,17 +66,21 @@ async function createFlow ( req ) {
 async function createRecord ( req ) {
 
     let record = new Records( _.pick(req, [ 
-        "number",
         "customer",
-        "date",
-        "typification",
-        "child",
-        "channel",
-        "contact",
-        "forms",
-        "file",
-        "observations",
-        "status"
+    "typification",
+    "child",
+    "channel",
+    "contact",
+    "forms",
+    "file",
+    "status",
+    "number",
+    "date",
+    "caseFinTime",
+    "caseFinDate",
+    "caseLight",
+    "area",
+    "levels"
     ]));
 
     record = await record.save();
