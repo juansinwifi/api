@@ -56,7 +56,7 @@ const recordSchema = new mongoose.Schema({
         required: true
     },
     caseFinDate: {
-        type: Number,
+        type: String,
         required: true
     },
     caseLight: {
@@ -74,87 +74,27 @@ const recordSchema = new mongoose.Schema({
 
 });
 
-const Records = mongoose.model('Records', recordSchema);
+const Records = mongoose.model('records', recordSchema);
 
 
-
-
-
-
-//Esquema para el FLujo
+//FLujo
 const flowSchema = new mongoose.Schema({
     record:{
-        type: Number,
-        required: true
-    },
-    iniDate:{
         type: String,
         required: true
     },
-    finDate:{
-        type: String
-    },
-    userFinDate:{
-        type: String
-    },
-    user: {
-        _id:{
-            type: String,
-            required: true
-        },
-        name:{
-            type: String,
-            required: true
-        }
-    },
-    userTime:{
-        type: Number,
-        required: true
-    },
-    caseTime:{
-        type: Number,
-        required: true
-    },
-    userLight:{
-        type: Number,
-        required: true
-    },
-    caseLight:{
-        type: Number,
-        required: true
-    },
-    typification:{
-        _id:{
-            type: String,
-            required: true
-        },
-        name:{
-            type: String,
-            required: true
-        }
-    },
-    childTypification:{
-        _id:{
-            type: String,
-            required: true
-        },
-        name:{
-            type: String,
-            required: true
-        }
-    },
-    area:{
+    user:{
         type: String,
         required: true
     },
-    level:{
+    level:{     
         type: Number,
         required: true
-    },
+    },  
     status:{
         type: Boolean,
         required: true
-    }
+    }    
 });
 
 const Flow =  mongoose.model('flow', flowSchema);

@@ -40,20 +40,7 @@ async function createFlow ( req ) {
 
     let flow = new Flow( _.pick(req, [ 
         "record",
-        "iniDate",
-        "finDate",
-        "userFinDate",
-        "user._id",
-        "user.name",  
-        "userTime",
-        "caseTime",
-        "userLight",
-        "caseLight",
-        "typification._id",
-        "typification.name",
-        "childTypification._id",
-        "childTypification.name",
-        "area",
+        "user",
         "level",
         "status"
     ]));

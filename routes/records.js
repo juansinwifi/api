@@ -1,5 +1,5 @@
 const auth = require('../middleware/auth');
-const { Records, Counter, validate} = require('../models/record');
+const { Records, Flow, Counter, validate} = require('../models/record');
 const { Typifications } = require('../models/typification');
 const { ChildTypifications } = require('../models/childtypification');
 const { Users } = require('../models/user');
@@ -15,10 +15,10 @@ const moment = require('moment'); //Libreria para manejo de fechas
 //'BUSCAR RADICADO' GET Method
 router.get('/:id', auth, async (req, res) => {
     try{
-        //Look up the Profiles
         //If not existing, return 404 - Not Found
-        const records = await Records.find({"user._id": req.params.id, "status": true});
-        if (!records) return res.status(404).send('Radicados no encontrados'); // Error 404 
+        const records = await Records.find({"customer": req.params.id});
+        if (!records || records.length == 0) return res.status(404).send('No se encuentran Radicados para este cliente.'); // Error 404 
+        
         res.send(records);
     }
     catch(ex){
@@ -27,35 +27,6 @@ router.get('/:id', auth, async (req, res) => {
     }
 });
 
-//'BUSCAR RADICADO OPEN' GET Method
-router.get('/open/:id', auth, async (req, res) => {
-    try{
-        //Look up the Profiles
-        //If not existing, return 404 - Not Found
-        const records = await Records.find({"user._id": req.params.id, "status": false});
-        if (!records) return res.status(404).send('Radicados no encontrados'); // Error 404 
-        res.send(records);
-    }
-    catch(ex){
-        console.log(ex);
-        res.status(500).send({ 'Error': 'Algo salio mal :('});
-    }
-});
-
-//'BUSCAR RADICADO CLOSE' GET Method
-router.get('/close/:id', auth, async (req, res) => {
-    try{
-        //Look up the Profiles
-        //If not existing, return 404 - Not Found
-        const records = await Records.find({"user._id": req.params.id, "status": false});
-        if (!records) return res.status(404).send('Radicados no encontrados'); // Error 404 
-        res.send(records);
-    }
-    catch(ex){
-        console.log(ex);
-        res.status(500).send({ 'Error': 'Algo salio mal :('});
-    }
-});
 
 //'CREAR RADICADO' POST Method
 router.post('/',  async (req, res) => {
@@ -93,7 +64,7 @@ router.post('/',  async (req, res) => {
 
         //Tiempo Total y Area
         record.caseFinTime = child.maxTime;
-        record.caseFinDate = null;
+        record.caseFinDate = 'Sin Calcular';
         record.caseLight = 100;
         record.area = child.levels[0].area;
 
@@ -115,7 +86,7 @@ router.post('/',  async (req, res) => {
         record.caseLight = 100;
 
         //Guardar el radicado
-        //const saveRecord  = await createRecord(record);
+        const saveRecord  = await createRecord(record);
         
         
         //Get User
@@ -124,14 +95,14 @@ router.post('/',  async (req, res) => {
         
        
         //Crear Flujo si se crea el radicado
-        // if (saveRecord._id) {
-        // const flow = {};
-        // flow.record = saveRecord._id;
-        // flow.user = {"_id": child.levels[0].user, "name": currentUser.user};
-        // flow.level = 0;
-        // flow.status = true;
-        // saveflow =  createFlow(flow);
-        // }
+        if (saveRecord._id) {
+        const flow = {};
+        flow.record = saveRecord._id;
+        flow.user =  child.levels[0].user;
+        flow.level = 0;
+        flow.status = true;
+        saveflow =  createFlow(flow);
+        }
       
         res.send(record);
 
