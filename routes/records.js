@@ -15,10 +15,24 @@ const moment = require('moment'); //Libreria para manejo de fechas
 //'BUSCAR RADICADO' GET Method
 router.get('/:id', auth, async (req, res) => {
     try{
+
+        
         //If not existing, return 404 - Not Found
         const records = await Records.find({"customer": req.params.id});
         if (!records || records.length == 0) return res.status(404).send('No se encuentran Radicados para este cliente.'); // Error 404 
         
+        let i = records.length;
+        let p = i - 1;
+        let currentRecord;
+        while(i > 0){ 
+            let typification = await Typifications.findById(records[p].typification);
+            if (!typification || typification.length == 0) return res.status(404).send('No se econtro una tipificación.'); // Error 404 
+            appDebuger(records[p]);
+            //currentRecord[xxxx] = { "_id": records[p].typification, "name": typification.name }
+            
+            i = i - 1;
+            p = p - 1; 
+        }
         res.send(records);
     }
     catch(ex){
@@ -101,6 +115,7 @@ router.post('/',  async (req, res) => {
         flow.user =  child.levels[0].user;
         flow.level = 0;
         flow.status = true;
+        flow.observation = record.observation;
         saveflow =  createFlow(flow);
         }
       

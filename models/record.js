@@ -94,7 +94,10 @@ const flowSchema = new mongoose.Schema({
     status:{
         type: Boolean,
         required: true
-    }    
+    },
+    observations:{
+        type: String
+    }   
 });
 
 const Flow =  mongoose.model('flow', flowSchema);

@@ -42,7 +42,8 @@ async function createFlow ( req ) {
         "record",
         "user",
         "level",
-        "status"
+        "status",
+        "observations"
     ]));
 
     flow = await flow.save();
