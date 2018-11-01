@@ -87,7 +87,7 @@ router.get('/flow/:id', async (req, res) => {
         while ( i > 0){
             let user = await Users.findById(flow[p].user);
             if (!user || user.length == 0) return res.status(404).send('No se encontro el usuario.'); // Error 404 
-            flow[p].user = user;
+            flow[p].user = user.name;
             i = i - 1;
             p = p - 1;
         }
