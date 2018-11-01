@@ -36,6 +36,7 @@ router.get('/:id', async (req, res) => {
             
 
             const record = { 
+                _id: findRecord[0]._id,
                 number: findRecord[0].number,
                 userLight: flow[p].light,
                 caseLight: findRecord[0].caseLight,
