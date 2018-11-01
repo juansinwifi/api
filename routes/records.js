@@ -2,6 +2,8 @@ const auth = require('../middleware/auth');
 const { Records, Flow, Counter, validate} = require('../models/record');
 const { Typifications } = require('../models/typification');
 const { ChildTypifications } = require('../models/childtypification');
+const { Channels } = require('../models/channels');
+const { Contacts } = require('../models/contacts');
 const { Users } = require('../models/user');
 const {validateCounter, updateCounter, createFlow, createRecord} = require('../middleware/records');
 const appDebuger = require('debug')('app:app');
@@ -26,10 +28,23 @@ router.get('/:id', auth, async (req, res) => {
         let currentRecord;
         while(i > 0){ 
             let typification = await Typifications.findById(records[p].typification);
-            if (!typification || typification.length == 0) return res.status(404).send('No se econtro una tipificación.'); // Error 404 
-            appDebuger(records[p]);
-            //currentRecord[xxxx] = { "_id": records[p].typification, "name": typification.name }
+            if (!typification || typification.length == 0) return res.status(404).send('No se encontro una tipificación.'); // Error 404 
             
+            let child = await ChildTypifications.findById(records[p].child);
+            if (!child || child.length == 0) return res.status(404).send('No se encontro una tipificación especifica.'); // Error 404 
+            
+            let channel = await Channels.findById(records[p].channel);
+            if (!channel || channel.length == 0) return res.status(404).send('No se encontro una canal de comunicaciones.'); // Error 404 
+            
+            let contact = await Contacts.findById(records[p].contact);
+            if (!contact || contact.length == 0) return res.status(404).send('No se encontro un contacto.'); // Error 404 
+            
+
+            records[p].typification = typification.name;
+            records[p].child = child.name;
+            records[p].channel = channel.name;
+            records[p].contact = contact.name;
+
             i = i - 1;
             p = p - 1; 
         }
@@ -78,7 +93,7 @@ router.post('/',  async (req, res) => {
 
         //Tiempo Total y Area
         record.caseFinTime = child.maxTime;
-        record.caseFinDate = 'Sin Calcular';
+        record.caseFinDate = currentTime;
         record.caseLight = 100;
         record.area = child.levels[0].area;
 
