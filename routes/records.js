@@ -131,6 +131,8 @@ router.post('/',  async (req, res) => {
         flow.level = 0;
         flow.status = true;
         flow.observation = record.observation;
+        flow.finDate = currentTime;
+        flow.light = 100;
         saveflow =  createFlow(flow);
         }
       

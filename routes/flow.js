@@ -1,5 +1,7 @@
 const auth = require('../middleware/auth');
 const {Flow, Records} = require('../models/record');
+const { Typifications } = require('../models/typification');
+const { ChildTypifications } = require('../models/childtypification');
 const {Areas} = require('../models/areas');
 const appDebuger = require('debug')('app:app');
 const mongoose = require('mongoose');
@@ -18,17 +20,46 @@ router.get('/:id', async (req, res) => {
         
         const flow = await Flow.find({"user": req.params.id, "status": true});
         if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
-        let records =[];
+        
+        const response = [];
         i = flow.length;
+        p = i - 1 ;
         while ( i > 0){
-            j = i -1;
-            let record = await Records.find({"_id": flow[j].record});
-            if (!record || record.length == 0) return res.status(404).send('No se encuentran Radicados para este usuario.'); // Error 404 
-            records.push(record);
-            i = i -1;
+            const findRecord = await Records.find({"_id": flow[p].record});
+            if (!findRecord || findRecord.length == 0) return res.status(404).send('No se encuentran Radicados para este usuario.'); // Error 404 
+            
+            let typification = await Typifications.findById(findRecord[0].typification);
+            if (!typification || typification.length == 0) return res.status(404).send('No se encontro una tipificación.'); // Error 404 
+            
+            let child = await ChildTypifications.findById(findRecord[0].child);
+            if (!child || child.length == 0) return res.status(404).send('No se encontro una tipificación especifica.'); // Error 404 
+            
+
+            const record = { 
+                number: findRecord[0].number,
+                userLight: flow[p].light,
+                caseLight: findRecord[0].caseLight,
+                typification: typification.name,
+                child: child.name,
+                date: findRecord[0].date,
+            };
+            response.push(record);
+            i = i - 1;
+            p = p - 1;
         }
 
-        res.send(records);
+        // let response = {};
+        // let record = {};
+        // i = flow.length;
+        // while ( i > 0){
+        //     j = i -1;
+        //     record = await Records.find({"_id": flow[j].record});
+        //     if (!record || record.length == 0) return res.status(404).send('No se encuentran Radicados para este usuario.'); // Error 404 
+        //    response.j = record;
+        //     i = i -1;
+        // }
+
+        res.send(response);
     }
     catch(ex){
         console.log(ex);

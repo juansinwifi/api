@@ -97,6 +97,12 @@ const flowSchema = new mongoose.Schema({
     },
     observations:{
         type: String
+    },
+    finDate:{
+        type: String
+    },
+    light:{
+        type: Number
     }   
 });
 
