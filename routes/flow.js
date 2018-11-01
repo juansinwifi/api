@@ -2,6 +2,8 @@ const auth = require('../middleware/auth');
 const {Flow, Records} = require('../models/record');
 const { Typifications } = require('../models/typification');
 const { ChildTypifications } = require('../models/childtypification');
+const { Channels } = require('../models/channels');
+const { Contacts } = require('../models/contacts');
 const {Areas} = require('../models/areas');
 const appDebuger = require('debug')('app:app');
 const mongoose = require('mongoose');
@@ -49,17 +51,6 @@ router.get('/:id', async (req, res) => {
             p = p - 1;
         }
 
-        // let response = {};
-        // let record = {};
-        // i = flow.length;
-        // while ( i > 0){
-        //     j = i -1;
-        //     record = await Records.find({"_id": flow[j].record});
-        //     if (!record || record.length == 0) return res.status(404).send('No se encuentran Radicados para este usuario.'); // Error 404 
-        //    response.j = record;
-        //     i = i -1;
-        // }
-
         res.send(response);
     }
     catch(ex){
@@ -73,12 +64,32 @@ router.get('/flow/:id', async (req, res) => {
     try{
         const result = {}
         const records = await Records.find({"_id": req.params.id});
-        if (!records || records.length == 0) return res.status(404).send('No se encuentran Radicados para este cliente.'); // Error 404 
-        
+        if (!records || records.length == 0) return res.status(404).send('No se encuentran Radicados.'); // Error 404 
+        appDebuger(records);
         const flow = await Flow.find({"record": req.params.id, "status": true});
         if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
         
+        let typification = await Typifications.findById(records[0].typification);
+            if (!typification || typification.length == 0) return res.status(404).send('No se encontro una tipificación.'); // Error 404 
+            
+        let child = await ChildTypifications.findById(records[0].child);
+        if (!child || child.length == 0) return res.status(404).send('No se encontro una tipificación especifica.'); // Error 404 
+        
+        let channel = await Channels.findById(records[0].channel);
+        if (!channel || channel.length == 0) return res.status(404).send('No se encontro una canal de comunicaciones.'); // Error 404 
+        
+        let contact = await Contacts.findById(records[0].contact);
+        if (!contact || contact.length == 0) return res.status(404).send('No se encontro un contacto.'); // Error 404 
+        
+        
+        
+        records[0].typification = typification.name;
+        records[0].child = child.name;
+        records[0].channel = channel.name;
+        records[0].contact = contact.name;
+
         result.records = records;
+        
         result.flow = flow;
 
         res.send(result);
