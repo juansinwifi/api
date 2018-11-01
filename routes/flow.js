@@ -4,6 +4,7 @@ const { Typifications } = require('../models/typification');
 const { ChildTypifications } = require('../models/childtypification');
 const { Channels } = require('../models/channels');
 const { Contacts } = require('../models/contacts');
+const {Users} = require('../models/user');
 const {Areas} = require('../models/areas');
 const appDebuger = require('debug')('app:app');
 const mongoose = require('mongoose');
@@ -81,12 +82,14 @@ router.get('/flow/:id', async (req, res) => {
         let contact = await Contacts.findById(records[0].contact);
         if (!contact || contact.length == 0) return res.status(404).send('No se encontro un contacto.'); // Error 404 
         
-        
+        let user = await Users.findById(records[0].user);
+        if (!user || user.length == 0) return res.status(404).send('No se encontro el usuario.'); // Error 404 
         
         records[0].typification = typification.name;
         records[0].child = child.name;
         records[0].channel = channel.name;
         records[0].contact = contact.name;
+        records[0].user = user.name;
 
         result.records = records;
         
@@ -99,6 +102,31 @@ router.get('/flow/:id', async (req, res) => {
         console.log(ex);
         res.status(500).send({ 'Error': 'Algo salio mal :('});
     } 
+});
+
+//Guardo el estado del flujo
+router.post('/flow/:id', async(req, res) =>{
+
+    try{
+        const { error } = validateFlow(req.body);
+        //if (error) return res.status(400).send(error.details[0].message);
+        if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
+        
+        //Los casos estan "quemados" ver case.js si se mofican cambiaria la logica
+        const flow = {};
+        if (req.bodyid == 1)  flow = await backFlow(); //'Rechazar - Devolver'
+        if (req.bodyid == 2)  flow = await nextFlow(); //'Finalizar -Avanzar'
+        if (req.bodyid == 3)  flow = await updateFlow(); //'En Gestión'
+        if (req.bodyid == 4)  flow = await finishFlow(); //'Cerrar Caso'
+        if (req.bodyid == 5)  flow = await updateFlow(); //'Abierto'
+        if (req.bodyid == 6)  flow = await finishFlow(); //'Reasignar Caso'
+
+        res.send(flow);
+    }
+    catch(ex){
+        console.log(ex);
+        res.status(500).send({ 'Error': 'Algo salio mal :('});
+    }
 });
 
 module.exports = router;
