@@ -66,7 +66,7 @@ router.get('/flow/:id', async (req, res) => {
         const result = {}
         const records = await Records.find({"_id": req.params.id});
         if (!records || records.length == 0) return res.status(404).send('No se encuentran Radicados.'); // Error 404 
-        appDebuger(records);
+        
         const flow = await Flow.find({"record": req.params.id, "status": true});
         if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
         
@@ -82,14 +82,21 @@ router.get('/flow/:id', async (req, res) => {
         let contact = await Contacts.findById(records[0].contact);
         if (!contact || contact.length == 0) return res.status(404).send('No se encontro un contacto.'); // Error 404 
         
-        let user = await Users.findById(records[0].user);
-        if (!user || user.length == 0) return res.status(404).send('No se encontro el usuario.'); // Error 404 
+        let i = flow.length;
+        let p = i - 1;
+        while ( i > 0){
+            let user = await Users.findById(flow[p].user);
+            if (!user || user.length == 0) return res.status(404).send('No se encontro el usuario.'); // Error 404 
+            flow[p].user = user;
+            i = i - 1;
+            p = p - 1;
+        }
+     
         
         records[0].typification = typification.name;
         records[0].child = child.name;
         records[0].channel = channel.name;
         records[0].contact = contact.name;
-        records[0].user = user.name;
 
         result.records = records;
         
