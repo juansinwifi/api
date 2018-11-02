@@ -1,11 +1,13 @@
 const auth = require('../middleware/auth');
-const { Records, Flow, Counter, validate} = require('../models/record');
+const { Records, Counter, validate} = require('../models/record');
+const {Flow} = require('../models/flow');
 const { Typifications } = require('../models/typification');
 const { ChildTypifications } = require('../models/childtypification');
 const { Channels } = require('../models/channels');
 const { Contacts } = require('../models/contacts');
 const { Users } = require('../models/user');
-const {validateCounter, updateCounter, createFlow, createRecord} = require('../middleware/records');
+const {validateCounter, updateCounter, createRecord} = require('../middleware/records');
+const {createFlow} = require('../middleware/flow');
 const appDebuger = require('debug')('app:app');
 const mongoose = require('mongoose');
 const express = require('express');

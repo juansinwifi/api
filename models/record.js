@@ -10,7 +10,6 @@ const countRecordsSchema = new mongoose.Schema({
 });
 const CountRecords =  mongoose.model('Counters', countRecordsSchema);
 
-
 //Radicados
 const recordSchema = new mongoose.Schema({
     number:{
@@ -73,40 +72,8 @@ const recordSchema = new mongoose.Schema({
     }
 
 });
-
 const Records = mongoose.model('records', recordSchema);
 
-
-//FLujo
-const flowSchema = new mongoose.Schema({
-    record:{
-        type: String,
-        required: true
-    },
-    user:{
-        type: String,
-        required: true
-    },
-    level:{     
-        type: Number,
-        required: true
-    },  
-    status:{
-        type: Boolean,
-        required: true
-    },
-    observations:{
-        type: String
-    },
-    finDate:{
-        type: String
-    },
-    light:{
-        type: Number
-    }   
-});
-
-const Flow =  mongoose.model('flow', flowSchema);
 //Funcion de Validación de Campos del Radicado
 function validateRecords(requiement) {
 
@@ -127,5 +94,4 @@ function validateRecords(requiement) {
 
 module.exports.Records = Records;
 module.exports.Counter = CountRecords;
-module.exports.Flow = Flow;
 module.exports.validate = validateRecords;

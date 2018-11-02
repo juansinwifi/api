@@ -1,4 +1,5 @@
-const {Counter, Flow, Records } = require('../models/record');
+const {Counter, Records } = require('../models/record');
+const {Flow} = require('../models/flow');
 const appDebuger = require('debug')('app:app');
 const _ = require('lodash');
 const mongoose = require('mongoose');
@@ -36,23 +37,6 @@ async function updateCounter(){
     
 }
 
-async function createFlow ( req ) {
-
-    let flow = new Flow( _.pick(req, [ 
-        "record",
-        "user",
-        "level",
-        "status",
-        "observations",
-        "finDate",
-        "light"
-    ]));
-
-    flow = await flow.save();
-    return flow;
-
-}
-
 async function createRecord ( req ) {
 
     let record = new Records( _.pick(req, [ 
@@ -79,5 +63,4 @@ async function createRecord ( req ) {
 }
 module.exports.validateCounter = validateCounter;
 module.exports.updateCounter = updateCounter;
-module.exports.createFlow = createFlow;
 module.exports.createRecord = createRecord;
