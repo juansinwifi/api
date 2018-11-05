@@ -3,6 +3,7 @@ const { Records, Counter, validate} = require('../models/record');
 const {Flow} = require('../models/flow');
 const { Typifications } = require('../models/typification');
 const { ChildTypifications } = require('../models/childtypification');
+const {Holiday} = require('../models/holidays');
 const { Channels } = require('../models/channels');
 const { Contacts } = require('../models/contacts');
 const { Users } = require('../models/user');
@@ -36,7 +37,7 @@ router.post('/',  async (req, res) => {
         if (!counter) currentCounter =  1;
         if (counter) currentCounter =  await updateCounter();
         record.number = currentCounter; //Agrego el numero de radicado
-          
+        
         // Get Current Date
         let currentTime = moment().set({'date': 2, 'hour': 11, 'minute': 30, 'second': 0, 'millisecond': 0});;
         record.date = currentTime; //Agrego la fecha de creación

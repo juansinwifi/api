@@ -1,10 +1,11 @@
 const {Counter, Records } = require('../models/record');
 const {Flow} = require('../models/flow');
 const {ChildTypifications} = require('../models/childtypification');
+const {Holiday} = require('../models/holidays');
 const {Areas} = require('../models/areas');
 const appDebuger = require('debug')('app:app');
 const appDate = require('debug')('app:date');
-const appLevel2 = require('debug')('app:level2');
+const appHoliday = require('debug')('app:holiday');
 const _ = require('lodash');
 const mongoose = require('mongoose');
 const express = require('express');
@@ -67,6 +68,13 @@ async function createRecord ( req ) {
 
 }
 
+async function checkHoliday( date ){
+    let checkDate = moment(date).format("YYYY-MM-DD");
+    let myHoliday = await Holiday.findOne({'date': checkDate});
+    if(!myHoliday) return false;
+    return true; //Es Festivo, no trabajan
+}
+
 async function calcFinDate(date, child){
     const childTypification = await ChildTypifications.findById(child);
     if (!childTypification) return ({'ERROR': 'Tipificación Especifica no encontrada'}); // Error 404 
@@ -103,46 +111,49 @@ async function calcFinDate(date, child){
             let finTime = 0;
             let spendDay = 0;
             let fin = 0;
-            
+            let holiday = false;
+            holiday = await checkHoliday(iniDate);
+           
+            if(!holiday){
+                if(currentDay.check) {
+                        //Horas que puedo restar este dia
+                        iniH =  currentDay.start.h; //Hora Inicial
+                        iniM =  currentDay.start.m; //Minutos Iniciales
+                        iniTime = iniH + (iniM / 60); //Todo en Horas
+                        finH =  currentDay.fin.h; //Hora Final
+                        finM =  currentDay.fin.m; //Minutos Finales
+                        finTime = finH + (finM/60); //Todo en Hroas
 
-            if(currentDay.check) {
-               
-                //Horas que puedo restar este dia
-                 iniH =  currentDay.start.h; //Hora Inicial
-                 iniM =  currentDay.start.m; //Minutos Iniciales
-                 iniTime = iniH + (iniM / 60); //Todo en Horas
-                 finH =  currentDay.fin.h; //Hora Final
-                 finM =  currentDay.fin.m; //Minutos Finales
-                 finTime = finH + (finM/60); //Todo en Hroas
+                        //Establecer la hora inicial y hora final de atencion
+                        start = moment(iniDate).set({'hour': iniH, 'minute': iniM, 'second': 0, 'millisecond': 0});
+                        fin = moment(iniDate).set({'hour': finH, 'minute': finM, 'second': 0, 'millisecond': 0});
+                        
+                        
+                        /*Si la hora del radicado esta dentro del rango de atencion la hora inicial es la de creacion
+                        y no la de atencion */
+                        if( iniDate > start && iniDate < fin ){
+                            //appDate('Es verdad, dentro del rango');
+                            start = moment(iniDate); 
+                            iniH =  moment(iniDate).hours(); //Hora Inicial
+                            iniM =  moment(iniDate).minutes(); //Minutos Iniciales
+                            iniTime = iniH + (iniM / 60); //Todo en Horas
+                        }
 
-                 //Establecer la hora inicial y hora final de atencion
-                 start = moment(iniDate).set({'hour': iniH, 'minute': iniM, 'second': 0, 'millisecond': 0});
-                 fin = moment(iniDate).set({'hour': finH, 'minute': finM, 'second': 0, 'millisecond': 0});
-                 
-                 
-                 /*Si la hora del radicado esta dentro del rango de atencion la hora inicial es la de creacion
-                  y no la de atencion */
-                 if( iniDate > start && iniDate < fin ){
-                    appDate('Es verdad');
-                    start = moment(iniDate); 
-                    iniH =  moment(iniDate).hours(); //Hora Inicial
-                    iniM =  moment(iniDate).minutes(); //Minutos Iniciales
-                    iniTime = iniH + (iniM / 60); //Todo en Horas
-                 }
+                        spendDay = finTime - iniTime; //Tiempo que puedo gastar en ese dia
+                        closeTime = moment(start).add(total, 'h');
 
-                spendDay = finTime - iniTime; //Tiempo que puedo gastar en ese dia
-                closeTime = moment(start).add(total, 'h');
-
-                appDebuger('Inicia: ' + start.format("ddd YYYY-MM-DD HH:mm"));
-                appDebuger('Nivel ' + i + ' | Total: ' + total + ' | ' + myDay + ':' + spendDay);
-                
+                        //appDate('Inicia: ' + start.format("ddd YYYY-MM-DD HH:mm"));
+                        //appDate('Nivel ' + i + ' | Total: ' + total + ' | ' + myDay + ':' + spendDay);
+                    
+                }
             }
-            if(!currentDay.check)  appDebuger(myDay + ' No Trabaja ');
+            // if(holiday) appDate(myDay + ' Es festivo, No Trabaja ');
+            // if(!currentDay.check)  appDate(myDay + ' No Trabaja ');
 
             //Suamamos un dia y reiniciamos el horario inicial 
            
             iniDate = moment(iniDate).add(1 ,'day').set({'hour': 0, 'minute': 0, 'second': 0, 'millisecond': 0});
-            appDate('Nuevo Inicio: ' + iniDate.format("ddd YYYY-MM-DD HH:mm"));
+            //appDate('Nuevo Inicio: ' + iniDate.format("ddd YYYY-MM-DD HH:mm"));
             myDay = moment(iniDate).format("ddd").toLocaleLowerCase();
             currentDay = area.attention[myDay];
             total = total - spendDay;
@@ -151,7 +162,7 @@ async function calcFinDate(date, child){
         //Le asignamos la hora en que termino el ultimo nivel
         iniDate = closeTime;
        
-        appDebuger('Fin:' + moment(closeTime).format("YYYY-MM-DD HH:mm"));
+        appDate('Fin:' + moment(closeTime).format("YYYY-MM-DD HH:mm"));
     
         i++;
     }
