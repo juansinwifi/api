@@ -1,5 +1,5 @@
 const auth = require('../middleware/auth');
-const {backFlow} = require('../middleware/flow');
+const {backFlow, nextFlow, changeFlow, closeFlow} = require('../middleware/flow');
 const {Records} = require('../models/record');
 const {Flow, validateFlow} = require('../models/flow');
 const { Typifications } = require('../models/typification');
@@ -123,13 +123,12 @@ router.post('/flow/:id', async(req, res) =>{
         
         //Los casos estan "quemados" ver case.js si se mofican cambiaria la logica
         let flow = null;
-        
-        if (req.body.case == 1)  flow = await backFlow(req.body); //'Rechazar - Devolver'
-        if (req.body.case == 2)  flow = await nextFlow(); //'Finalizar -Avanzar'
-        if (req.body.case == 3)  flow = await updateFlow(); //'En Gestión'
-        if (req.body.case == 4)  flow = await finishFlow(); //'Cerrar Caso'
-        if (req.body.case == 5)  flow = await updateFlow(); //'Abierto'
-        if (req.body.case == 6)  flow = await finishFlow(); //'Reasignar Caso'
+        if (req.body.case == 1)  flow = await backFlow(req); //'Rechazar - Devolver'
+        if (req.body.case == 2)  flow = await nextFlow(req); //'Finalizar -Avanzar'
+        if (req.body.case == 3)  flow = await changeFlow(req); //'En Gestión'
+        if (req.body.case == 4)  flow = await closeFlow(req); //'Cerrar Caso'
+        if (req.body.case == 5)  flow = await changeFlow(req); //'Abierto'
+        if (req.body.case == 6)  flow = await changeFlow(req); //'Reasignar Caso'
         
         if (flow.ERROR) return res.status(400).send(flow);
         

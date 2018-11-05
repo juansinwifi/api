@@ -38,6 +38,7 @@ const auth = require('./routes/auth');
 const customers = require('./routes/customer');
 const records = require('./routes/records');
 const flow = require('./routes/flow');
+const ws = require('./routes/workspace');
 
 const express = require('express');
 const app = express();
@@ -68,6 +69,7 @@ app.use('/api/users/', users); //Autenticacion de Usuarios
 app.use('/api/customers', customers); //Información de Clientes
 app.use('/api/records', records); //Información de Radicados
 app.use('/inbox/', flow); //Información de Flujos de trabajo
+app.use('/ws/', ws); //Area de trabajo Dev
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => startupDebugger(`Listening on port ${port}...`));

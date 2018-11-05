@@ -86,7 +86,7 @@ function validateRecords(requiement) {
         forms: Joi.array().items(Joi.object()).min(1).required(),
         file: Joi.string().min(1),
         observations: Joi.string(),
-        status: Joi.boolean().required()
+        status: Joi.boolean()
     };
 
     return Joi.validate(requiement, schema);

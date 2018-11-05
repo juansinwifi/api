@@ -29,7 +29,7 @@ const flowSchema = new mongoose.Schema({
         type: Number
     },
     case:{
-        type: String
+        type: Number
     },
     reject:{
         type: String
@@ -42,7 +42,6 @@ const Flow =  mongoose.model('flow', flowSchema);
 function validateFlow(requiement) {
 
     const schema = {
-        _id: Joi.string().min(24).required(),
         record: Joi.string().min(24).required(),
         user: Joi.string().min(24).required(),
         observations: Joi.string().required(),

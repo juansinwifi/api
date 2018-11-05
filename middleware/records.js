@@ -1,10 +1,15 @@
 const {Counter, Records } = require('../models/record');
 const {Flow} = require('../models/flow');
+const {ChildTypifications} = require('../models/childtypification');
+const {Areas} = require('../models/areas');
 const appDebuger = require('debug')('app:app');
+const appDate = require('debug')('app:date');
+const appLevel2 = require('debug')('app:level2');
 const _ = require('lodash');
 const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
+const moment = require('moment'); //Libreria para manejo de fechas
 
 
 async function validateCounter () {
@@ -61,6 +66,99 @@ async function createRecord ( req ) {
     return record;
 
 }
+
+async function calcFinDate(date, child){
+    const childTypification = await ChildTypifications.findById(child);
+    if (!childTypification) return ({'ERROR': 'Tipificación Especifica no encontrada'}); // Error 404 
+
+   
+    let levels = childTypification.levels;
+    let i = 0;
+
+    let iniDate= moment(date);
+    let myDay  = moment(iniDate).format("ddd").toLocaleLowerCase();
+    appDate('RADICADO: ' + iniDate.format("ddd YYYY-MM-DD HH:mm"));
+    while (levels[i]){
+        //Tiempo en horas de cada nivel
+        let days = levels[i].days * 24;
+        let hours = levels[i].hours;
+        let total = days + hours;
+        let start = 0;
+        let closeTime = 0;
+        //Buscamos el tiempo en cada area
+        let areaId = levels[i].area;
+        const area = await Areas.findById(areaId);
+        if (!area) return ({'ERROR': 'Area no encontrada'}); // Error 404
+        
+        let currentDay = area.attention[myDay];
+    
+        while(total > 0){
+            // Restas las horas disponibles hasta que de 0 
+               
+            let iniH =  0;
+            let iniM =  0;
+            let iniTime = 0;
+            let finH =  0;
+            let finM =  0;
+            let finTime = 0;
+            let spendDay = 0;
+            let fin = 0;
+            
+
+            if(currentDay.check) {
+               
+                //Horas que puedo restar este dia
+                 iniH =  currentDay.start.h; //Hora Inicial
+                 iniM =  currentDay.start.m; //Minutos Iniciales
+                 iniTime = iniH + (iniM / 60); //Todo en Horas
+                 finH =  currentDay.fin.h; //Hora Final
+                 finM =  currentDay.fin.m; //Minutos Finales
+                 finTime = finH + (finM/60); //Todo en Hroas
+
+                 //Establecer la hora inicial y hora final de atencion
+                 start = moment(iniDate).set({'hour': iniH, 'minute': iniM, 'second': 0, 'millisecond': 0});
+                 fin = moment(iniDate).set({'hour': finH, 'minute': finM, 'second': 0, 'millisecond': 0});
+                 
+                 
+                 /*Si la hora del radicado esta dentro del rango de atencion la hora inicial es la de creacion
+                  y no la de atencion */
+                 if( iniDate > start && iniDate < fin ){
+                    appDate('Es verdad');
+                    start = moment(iniDate); 
+                    iniH =  moment(iniDate).hours(); //Hora Inicial
+                    iniM =  moment(iniDate).minutes(); //Minutos Iniciales
+                    iniTime = iniH + (iniM / 60); //Todo en Horas
+                 }
+
+                spendDay = finTime - iniTime; //Tiempo que puedo gastar en ese dia
+                closeTime = moment(start).add(total, 'h');
+
+                appDebuger('Inicia: ' + start.format("ddd YYYY-MM-DD HH:mm"));
+                appDebuger('Nivel ' + i + ' | Total: ' + total + ' | ' + myDay + ':' + spendDay);
+                
+            }
+            if(!currentDay.check)  appDebuger(myDay + ' No Trabaja ');
+
+            //Suamamos un dia y reiniciamos el horario inicial 
+           
+            iniDate = moment(iniDate).add(1 ,'day').set({'hour': 0, 'minute': 0, 'second': 0, 'millisecond': 0});
+            appDate('Nuevo Inicio: ' + iniDate.format("ddd YYYY-MM-DD HH:mm"));
+            myDay = moment(iniDate).format("ddd").toLocaleLowerCase();
+            currentDay = area.attention[myDay];
+            total = total - spendDay;
+            
+        }
+        //Le asignamos la hora en que termino el ultimo nivel
+        iniDate = closeTime;
+       
+        appDebuger('Fin:' + moment(closeTime).format("YYYY-MM-DD HH:mm"));
+    
+        i++;
+    }
+
+   
+}
 module.exports.validateCounter = validateCounter;
 module.exports.updateCounter = updateCounter;
 module.exports.createRecord = createRecord;
+module.exports.calcFinDate = calcFinDate;

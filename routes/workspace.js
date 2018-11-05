@@ -16,47 +16,7 @@ const Joi = require('joi'); //Validacion de Inputs en el servicio
 const moment = require('moment'); //Libreria para manejo de fechas
 
 
-//'BUSCAR RADICADO' GET Method
-router.get('/:id', auth, async (req, res) => {
-    try{
 
-        
-        //If not existing, return 404 - Not Found
-        const records = await Records.find({"customer": req.params.id});
-        if (!records || records.length == 0) return res.status(404).send('No se encuentran Radicados para este cliente.'); // Error 404 
-        
-        let i = records.length;
-        let p = i - 1;
-        let currentRecord;
-        while(i > 0){ 
-            let typification = await Typifications.findById(records[p].typification);
-            if (!typification || typification.length == 0) return res.status(404).send('No se encontro una tipificación.'); // Error 404 
-            
-            let child = await ChildTypifications.findById(records[p].child);
-            if (!child || child.length == 0) return res.status(404).send('No se encontro una tipificación especifica.'); // Error 404 
-            
-            let channel = await Channels.findById(records[p].channel);
-            if (!channel || channel.length == 0) return res.status(404).send('No se encontro una canal de comunicaciones.'); // Error 404 
-            
-            let contact = await Contacts.findById(records[p].contact);
-            if (!contact || contact.length == 0) return res.status(404).send('No se encontro un contacto.'); // Error 404 
-            
-
-            records[p].typification = typification.name;
-            records[p].child = child.name;
-            records[p].channel = channel.name;
-            records[p].contact = contact.name;
-
-            i = i - 1;
-            p = p - 1; 
-        }
-        res.send(records);
-    }
-    catch(ex){
-        console.log(ex);
-        res.status(500).send({ 'Error': 'Algo salio mal :('});
-    }
-});
 
 
 //'CREAR RADICADO' POST Method
@@ -78,7 +38,7 @@ router.post('/',  async (req, res) => {
         record.number = currentCounter; //Agrego el numero de radicado
           
         // Get Current Date
-        let currentTime = moment().format();
+        let currentTime = moment().set({'date': 2, 'hour': 11, 'minute': 30, 'second': 0, 'millisecond': 0});;
         record.date = currentTime; //Agrego la fecha de creación
 
         //Get Child Typification
@@ -95,7 +55,7 @@ router.post('/',  async (req, res) => {
 
         //Tiempo Total y Area
         record.caseFinTime = child.maxTime;
-        record.caseFinDate = await calcFinDate(currentTime);
+        record.caseFinDate = await calcFinDate(currentTime, child._id);
         record.caseLight = 100;
         record.area = child.levels[0].area;
 
@@ -110,36 +70,14 @@ router.post('/',  async (req, res) => {
             {userLight : 100}
         ];
         record.levels = levels;
-
-        record.status = false;
         // Calcular Semaforos
-
         record.caseLight = 100;
 
-        //Guardar el radicado
-        const saveRecord  = await createRecord(record);
-        
-        
-        //Get User
-        const currentUser = await Users.findOne({"_id": child.levels[0].user});
-        if (!child) return res.status(404).send('Usuario no encontrado'); // Error 404 
+        record.status = false;
+        res.send(record);
         
        
-        //Crear Flujo si se crea el radicado
-        if (saveRecord._id) {
-        const flow = {};
-        flow.record = saveRecord._id;
-        flow.user =  child.levels[0].user;
-        flow.level = 0;
-        flow.status = true;
-        flow.observations = record.observations;
-        flow.finDate = currentTime;
-        flow.light = 100;
-        flow.case = 5;
-        saveflow =  createFlow(flow);
-        }
-      
-        res.send(record);
+        
 
     } 
     catch (ex) {
