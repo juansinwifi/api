@@ -142,7 +142,7 @@ async function nextFlow(req){
 
     if(!flow.status){
         const updateRecord =  await Records.findOneAndUpdate({'_id':flow.record}, {
-            status: true
+            status: false
             },{
                 new: true
             });
