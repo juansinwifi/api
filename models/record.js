@@ -50,6 +50,10 @@ const recordSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    trackingDate:{
+        type: String,
+        required: true
+    },
     caseFinTime:{
         type: Number,
         required: true
@@ -86,6 +90,7 @@ function validateRecords(requiement) {
         forms: Joi.array().items(Joi.object()).min(1).required(),
         file: Joi.string().min(1),
         observations: Joi.string(),
+        trackingDate: Joi.date(),
         status: Joi.boolean()
     };
 

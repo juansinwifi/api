@@ -45,7 +45,8 @@ router.post('/', auth, async (req, res) => {
         medium: req.body.medium,
         times: req.body.times,
         days: req.body.days,
-        hours: req.body.hours
+        hours: req.body.hours,
+        trackingDate: req.body.trackingDate
     });
     requirements = await requirements.save();
     res.send(requirements);}
@@ -71,7 +72,8 @@ router.put('/:id', auth, async (req, res) => {
         medium: req.body.medium,
         times: req.body.times,
         days: req.body.days,
-        hours: req.body.hours
+        hours: req.body.hours,
+        trackingDate: req.body.trackingDate
     },{
         new: true
     });

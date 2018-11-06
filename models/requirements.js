@@ -32,6 +32,10 @@ const requirementsSchema = new mongoose.Schema({
     hours: {
         type: Number,
         required: true,
+    },
+    trackingDate:{
+        type: Boolean,
+        required: true
     } 
 });
 
@@ -47,7 +51,8 @@ function validateRequirements(requiement) {
         medium: Joi.string(),
         times: Joi.string().min(3).required(),
         days: Joi.number().integer().required(),
-        hours: Joi.number().integer().required()
+        hours: Joi.number().integer().required(),
+        trackingDate: Joi.boolean().required(),
 
     };
 

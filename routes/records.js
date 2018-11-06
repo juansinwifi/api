@@ -3,6 +3,7 @@ const { Records, Counter, validate} = require('../models/record');
 const {Flow} = require('../models/flow');
 const { Typifications } = require('../models/typification');
 const { ChildTypifications } = require('../models/childtypification');
+const { Requirements } = require('../models/requirements');
 const { Channels } = require('../models/channels');
 const { Contacts } = require('../models/contacts');
 const { Users } = require('../models/user');
@@ -88,17 +89,27 @@ router.post('/',  async (req, res) => {
         //Get Typification 
         const typification = await Typifications.findOne({"_id": child.idParent});
         if (!typification) return res.status(404).send('Tipificación no encontrada'); // Error 404 
+        
+        //Get Requirement P.Q.R
+        const requirement = await Requirements.findOne({"_id": child.requirement});
+        if (!requirement) return res.status(404).send('PQR/Requerimiento no encontrado'); // Error 404 
 
         //Guardo la tipificación general y especifica
         record.typification = typification._id;
         record.child = child._id;
 
-        //Tiempo Total y Area
+        //Tiempo Total 
+        const totalHours = (requirement.days * 24) + (requirement.hours);
+        deadTime = currentTime.add(totalHours ,'hours');
+      
+        //Tiempo de los Niveles
         closeTimes = await calcFinDate(currentTime, child._id);
         lastLevel = closeTimes.levels - 1; //Busco la maxima fecha
 
-        record.caseFinTime = child.maxTime;
-        record.caseFinDate = closeTimes[lastLevel];
+        record.caseFinTime = totalHours;
+        record.caseFinDate = deadTime;
+        if(requirement.times == 'Fecha de Seguimiento')  record.caseFinDate = moment(req.body.trakingDate).add(totalHours ,'hours');
+        
         record.caseLight = 100;
         record.area = child.levels[0].area;
 
@@ -119,8 +130,9 @@ router.post('/',  async (req, res) => {
         record.status = false;
 
         //Guardar el radicado
+        /***************************************** 
         const saveRecord  = await createRecord(record);
-        
+        */
         
         //Get User
         const currentUser = await Users.findOne({"_id": child.levels[0].user});
@@ -138,7 +150,9 @@ router.post('/',  async (req, res) => {
         flow.finDate = closeTimes[0];
         flow.light = 100;
         flow.case = 5; //Se crea como abierto
+        /***************************************** 
         saveflow =  createFlow(flow);
+        */
         }
       
         res.send(record);
