@@ -24,8 +24,8 @@ router.get('/:id', async (req, res) => {
     try{
         
         const flow = await Flow.find({"user": req.params.id, "status": true});
-        if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
-        
+        if (!flow || flow.length == 0) return res.status(404).send('Inbox no encontrado'); // Error 404 
+     
         const response = [];
         i = flow.length;
         p = i - 1 ;
@@ -39,7 +39,11 @@ router.get('/:id', async (req, res) => {
             let child = await ChildTypifications.findById(findRecord[0].child);
             if (!child || child.length == 0) return res.status(404).send('No se encontro una tipificación especifica.'); // Error 404 
             
-
+            //Verificar el estado del semaforo
+            let currentTime = moment().format();
+            appDebuger('Consulta: ' +  currentTime);
+            appDebuger('Vence: ' + flow[p].finDate);
+            
             const record = { 
                 _id: findRecord[0]._id,
                 number: findRecord[0].number,

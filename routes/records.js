@@ -78,7 +78,7 @@ router.post('/',  async (req, res) => {
         record.number = currentCounter; //Agrego el numero de radicado
         
         // Get Current Date
-        let currentTime = moment().set({'date': 2, 'hour': 11, 'minute': 30, 'second': 0, 'millisecond': 0});;
+        let currentTime = moment();
         record.date = currentTime; //Agrego la fecha de creación
 
         //Get Child Typification
