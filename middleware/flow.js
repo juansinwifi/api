@@ -83,7 +83,7 @@ async function createFlow ( req ) {
 
 async function updateFlow (req){
     const update =  await Flow.findOneAndUpdate({'_id':req}, {
-        status: false
+        status: true
         },{
             new: true
         });
@@ -139,6 +139,15 @@ async function nextFlow(req){
 
     let newFlow = await createFlow(flow);
     if (!newFlow) return ({'ERROR':'Algo salio mal al crear el flujo.'}); // Error 404 
+
+    if(!flow.status){
+        const updateRecord =  await Records.findOneAndUpdate({'_id':flow.record}, {
+            status: false
+            },{
+                new: true
+            });
+        if (!updateRecord) return ({'ERROR':'Algo salio mal al finalizar el radicado.'}); // Error 404 
+    } 
     /*****************************/
     //Update Status flujo anterior
     /*****************************/
@@ -220,6 +229,15 @@ async function closeFlow(req){
 
     let newFlow = await createFlow(flow);
     if (!newFlow) return ({'ERROR':'Algo salio mal al crear el flujo.'}); // Error 404 
+
+    if(!flow.status){
+        const updateRecord =  await Records.findOneAndUpdate({'_id':flow.record}, {
+            status: true
+            },{
+                new: true
+            });
+        if (!updateRecord) return ({'ERROR':'Algo salio mal al finalizar el radicado.'}); // Error 404 
+    } 
     /*****************************/
     //Update Status flujo anterior
     /*****************************/

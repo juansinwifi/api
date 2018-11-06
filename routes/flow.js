@@ -89,6 +89,7 @@ router.get('/flow/:id', async (req, res) => {
         while ( i > 0){
             let user = await Users.findById(flow[p].user);
             if (!user || user.length == 0) return res.status(404).send('No se encontro el usuario.'); // Error 404 
+            flow[p].userid = user._id;
             flow[p].user = user.name;
             i = i - 1;
             p = p - 1;
@@ -129,7 +130,7 @@ router.post('/flow/:id', async(req, res) =>{
         if (req.body.case == 4)  flow = await closeFlow(req); //'Cerrar Caso'
         if (req.body.case == 5)  flow = await changeFlow(req); //'Abierto'
         if (req.body.case == 6)  flow = await assingFlow(req); //'Reasignar Caso'
-        
+        if (req.body.case > 6)  return res.status(400).send('Gestión de caso no encontrado'); 
         if (flow.ERROR) return res.status(400).send(flow);
         
         res.send(flow);
