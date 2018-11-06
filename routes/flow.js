@@ -118,6 +118,23 @@ router.get('/flow/:id', async (req, res) => {
     } 
 });
 
+//Historial de Radicados
+router.get('/history/:id', async (req , res)  => {
+    const flow = await Flow.find({"record": req.params.id});
+    if (!flow) return res.status(404).send('Flujo no encontrado'); // Error 404 
+    let i = flow.length;
+        let p = i - 1;
+        while ( i > 0){
+            let user = await Users.findById(flow[p].user);
+            if (!user || user.length == 0) return res.status(404).send('No se encontro el usuario.'); // Error 404 
+          
+            flow[p].user = user.name;
+            i = i - 1;
+            p = p - 1;
+        }
+    res.send(flow);
+});
+
 //Guardo el estado del flujo
 router.post('/flow/:id', async(req, res) =>{
 
