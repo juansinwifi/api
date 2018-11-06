@@ -55,8 +55,11 @@ router.post('/',  async (req, res) => {
         record.child = child._id;
 
         //Tiempo Total y Area
+        closeTimes = await calcFinDate(currentTime, child._id);
+        lastLevel = closeTimes.levels - 1; //Busco la maxima fecha
+
         record.caseFinTime = child.maxTime;
-        record.caseFinDate = await calcFinDate(currentTime, child._id);
+        record.caseFinDate = closeTimes[lastLevel];
         record.caseLight = 100;
         record.area = child.levels[0].area;
 
@@ -70,7 +73,7 @@ router.post('/',  async (req, res) => {
             {userFinDate: null},
             {userLight : 100}
         ];
-        record.levels = levels;
+        record.levels = closeTimes;
         // Calcular Semaforos
         record.caseLight = 100;
 

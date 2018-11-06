@@ -38,6 +38,7 @@ const auth = require('./routes/auth');
 const customers = require('./routes/customer');
 const records = require('./routes/records');
 const flow = require('./routes/flow');
+const holidays = require('./routes/holidays')
 const ws = require('./routes/workspace');
 
 const express = require('express');
@@ -64,6 +65,7 @@ app.use('/api/admin/contacts', contacts); //Contactos
 app.use('/api/admin/lights', lights); //Semaforos
 app.use('/api/admin/rejects', rejects); //Causal de Rechazo
 app.use('/api/admin/vartypes', vartypes); //Tipos de Variables
+app.use('/api/admin/holidays', holidays); //Dias Festivos
 app.use('/api/auth', auth); //Autenticacion de Usuarios
 app.use('/api/users/', users); //Autenticacion de Usuarios
 app.use('/api/customers', customers); //Información de Clientes

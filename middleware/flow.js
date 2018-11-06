@@ -31,6 +31,10 @@ async function backFlow ( req ) {
     
     const newLevel = currentLevel - 1;
     
+
+    //Tiempo Total
+    // closeTimes = await calcFinDate(currentTime, child._id);
+    // lastLevel = closeTimes.levels - 1; //Busco la maxima fecha
     
     //Crear el nuevo flujo
        const flow = {};
@@ -228,6 +232,24 @@ async function closeFlow(req){
     return newFlow;
 }
 
+async function assingFlow( req){
+
+    //Buscar el Flujo Actual
+    const currentFlow = await Flow.findById(req.params.id);
+    if (!currentFlow) return ({'ERROR':'Flujo no econtrado'}); // Error 404 
+    if(!currentFlow.status) return ({'ERROR':'El Radicado le pertenece a otro usuario o ya fue cerrado.'});
+
+    const updateUser = await Flow.findByIdAndUpdate(req.params.id, {
+        user: req.body.user
+    },{
+        new: true
+    });
+
+    //Return the updated course
+    return updateUser;
+
+}
+
 async function calcFinDate(){
     let currentTime = moment().format();
     return currentTime;
@@ -243,3 +265,4 @@ module.exports.createFlow = createFlow;
 module.exports.nextFlow = nextFlow;
 module.exports.changeFlow = changeFlow;
 module.exports.closeFlow = closeFlow;
+module.exports.assingFlow = assingFlow;

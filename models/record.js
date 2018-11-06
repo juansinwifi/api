@@ -79,10 +79,10 @@ function validateRecords(requiement) {
 
     const schema = {
         customer: Joi.number().min(1).required(),
-        typification: Joi.string().min(1).required(),
-        child: Joi.string().min(1).required(),
-        channel: Joi.string().min(1).required(),
-        contact:Joi.string().min(1).required(),
+        typification: Joi.string().min(24).required(),
+        child: Joi.string().min(24).required(),
+        channel: Joi.string().min(24).required(),
+        contact:Joi.string().min(24).required(),
         forms: Joi.array().items(Joi.object()).min(1).required(),
         file: Joi.string().min(1),
         observations: Joi.string(),

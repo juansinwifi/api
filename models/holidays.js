@@ -4,7 +4,8 @@ const Joi = require('joi');
 //FLujo
 const holidaySchema = new mongoose.Schema({
     date:{
-        type: String
+        type: String,
+        unique: true
     }
 });
 
@@ -14,7 +15,8 @@ const Holiday =  mongoose.model('holiday', holidaySchema);
 function validateHoliday(requiement) {
 
     const schema = {
-        date: Joi.string().min(8).required()
+        //date: Joi.string().min(8).required()
+        date: Joi.date().required()
     };
 
     return Joi.validate(requiement, schema);
