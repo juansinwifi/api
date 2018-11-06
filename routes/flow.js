@@ -99,7 +99,8 @@ router.get('/flow/:id', async (req, res) => {
             p = p - 1;
         }
      
-        
+       
+
         records[0].typification = typification.name;
         records[0].child = child.name;
         records[0].channel = channel.name;
@@ -108,6 +109,18 @@ router.get('/flow/:id', async (req, res) => {
         result.records = records;
         
         result.flow = flow;
+
+        //Usuario actual en la tipificaión si se quiere reasignar.
+        const currentLevel = flow[0].level
+        const currentUser = child.levels[currentLevel].user;
+        let user = await Users.findById(currentUser);
+        if (!user || user.length == 0) return res.status(404).send('No se encontro el usuario.'); // Error 404 
+        
+        const reassing = {};
+        reassing.userId = user._id;
+        reassing.user   = user.name;
+       
+        result.reassing = reassing;
 
         res.send(result);
 
