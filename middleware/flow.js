@@ -178,7 +178,7 @@ async function changeFlow (req){
     //Crear el nuevo flujo
     const flow = {};
     flow.record = currentFlow.record;
-    flow.user = req.body.user;
+    flow.user = currentFlow.user;
     flow.level = currentFlow.level;;
     flow.status = true;
     flow.observations = req.body.observations;
@@ -218,7 +218,7 @@ async function closeFlow(req){
     //Crear el nuevo flujo
     const flow = {};
     flow.record = currentFlow.record;
-    flow.user = req.body.user;
+    flow.user = currentFlow.user;
     flow.level = currentFlow.level;;
     flow.status = false;
     flow.observations = req.body.observations;
