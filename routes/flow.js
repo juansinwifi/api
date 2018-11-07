@@ -6,10 +6,10 @@ const { Typifications } = require('../models/typification');
 const { ChildTypifications } = require('../models/childtypification');
 const { Channels } = require('../models/channels');
 const { Contacts } = require('../models/contacts');
+const {Lights} = require('../models/lights');
 const {Users} = require('../models/user');
 const {Areas} = require('../models/areas');
-const appDebuger = require('debug')('app:app');
-const appTime = require('debug')('app:time');
+const appFlow = require('debug')('app:flow');
 const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
@@ -40,15 +40,41 @@ router.get('/:id', async (req, res) => {
             let child = await ChildTypifications.findById(findRecord[0].child);
             if (!child || child.length == 0) return res.status(404).send('No se encontro una tipificación especifica.'); // Error 404 
             
+            const light = await Lights.findOne({"name": 'CASO'});
+            if (!light) return res.status(404).send('Semaforo de casos no encontrado'); // Error 404 
+
             //Verificar el estado del semaforo
             let currentTime = moment().format('YYYY-MM-DD HH:mm');
             let deadTime = moment(flow[p].finDate);
             let result = moment(currentTime).isBefore(deadTime);
-            const  userLight = 100;
-            appDebuger('Consulta: ' +  currentTime);
-            appDebuger('Vence: ' + flow[p].finDate);
-            if(result) appTime('Melos');
-            if(!result) userLight = 0;
+            const  caseLight = 100;
+            appFlow('Consulta: ' +  currentTime);
+            appFlow('Vence: ' + flow[p].finDate);
+            if(result) {
+                appFlow('Melos');
+                ctY = moment(currentTime).get('year');
+                ctM = moment(currentTime).get('month');  // 0 to 11
+                ctD = moment(currentTime).get('date');
+                ctH = moment(currentTime).get('hour');
+                ctMi =moment(currentTime).get('minute');
+                ctTotal = ctY + ctM + ctD + ctH + ctMi
+                
+                dtY = moment(currentTime).get('year');
+                dtM = moment(currentTime).get('month');  // 0 to 11
+                dtD = moment(currentTime).get('date');
+                dtH = moment(currentTime).get('hour');
+                dtMi =moment(currentTime).get('minute');
+                dtTotal = dtY + dtM + dtD + dtH + dtMi
+
+                caseLight = (ctTotal / dtTotal) * 100;
+                
+                if (caseLight >= ligth.red) caseLight = 0;
+                if (caseLight >= light.yellow) caseLight = 50;
+                if (caseLight >= light.green) caseLight = 100;
+
+                //Falta Actualizar los tiempos en el radicado
+            }
+            if(!result) caseLight = 0;
             
             
             
@@ -56,7 +82,7 @@ router.get('/:id', async (req, res) => {
                 _id: findRecord[0]._id,
                 number: findRecord[0].number,
                 userLight: flow[p].light,
-                caseLight: findRecord[0].caseLight,
+                caseLight: caseLight,
                 typification: typification.name,
                 child: child.name,
                 date: findRecord[0].date,
