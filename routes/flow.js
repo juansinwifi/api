@@ -42,7 +42,7 @@ router.get('/:id', async (req, res) => {
             
             const light = await Lights.findOne({"name": 'CASO'});
             if (!light) return res.status(404).send('Semaforo de casos no encontrado'); // Error 404 
-
+           
             //Verificar el estado del semaforo
             let currentTime = moment().format('YYYY-MM-DD HH:mm');
             let deadTime = moment(flow[p].finDate);
@@ -68,7 +68,7 @@ router.get('/:id', async (req, res) => {
 
                 caseLight = (ctTotal / dtTotal) * 100;
                 
-                if (caseLight >= ligth.red) caseLight = 0;
+                if (caseLight >= light.red) caseLight = 0;
                 if (caseLight >= light.yellow) caseLight = 50;
                 if (caseLight >= light.green) caseLight = 100;
 
