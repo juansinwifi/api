@@ -10,6 +10,7 @@ const {Lights} = require('../models/lights');
 const {Users} = require('../models/user');
 const {Areas} = require('../models/areas');
 const appFlow = require('debug')('app:flow');
+const appFlowUser = require('debug')('app:flowUser');
 const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
@@ -43,44 +44,76 @@ router.get('/:id', async (req, res) => {
             const light = await Lights.findOne({"name": 'CASO'});
             if (!light) return res.status(404).send('Semaforo de casos no encontrado'); // Error 404 
            
-            //Verificar el estado del semaforo
-            const creation =  findRecord[0].date;
-            const now = moment()
-            const then = findRecord[0].caseFinDate;
-            let  caseLight = 50; //Por Defecto el semaforo es amarillo
+            //Verificar el estado del semaforo del caso
+                const creation =  findRecord[0].date;
+                const now = moment()
+                const then = findRecord[0].caseFinDate;
+                let  caseLight = 50; //Por Defecto el semaforo es amarillo
 
-            const result = moment(now).isBefore(then);
-            
-         
-            if(result) {
-                appFlow('Radicado aun con tiempo.');
-                appFlow('/* Creado: ' + creation );
-                appFlow('/* Finaliza: ' + then);
-                appFlow('*/ Hoy: ' + now.format('YYYY-MM-DD HH:mm') );
-                const totalTime = await diffDate(creation, then);
-                const currentTime = await diffDate(now, then);
-                appFlow('Diferencia Total'); 
-                appFlow(totalTime);
-                appFlow('Diferencia Actual');
-                appFlow(currentTime);
+                const result = moment(now).isBefore(then);
                 
-                const totalHours = (totalTime.days * 24) + totalTime.hours + (totalTime.minutes/60);
-                const currentHours = (currentTime.days * 24) + currentTime.hours + (currentTime.minutes/60);
-
-                const percent = (currentHours/totalHours) * 100;
-                appFlow('Porcentaje: ' + percent);
-                if (percent <= light.red) caseLight = 0;
-                if (percent >= light.green) caseLight = 100;
-                appFlow('Semaforo: ' + caseLight);
-                //Falta Actualizar los tiempos en el radicado
-            }
-            if(!result) appFlow('Radicado Vencido.')
-            if(!result) caseLight = 0;
             
+                if(result) {
+                    appFlow('Radicado aun con tiempo.');
+                    appFlow('/* Creado: ' + creation );
+                    appFlow('/* Finaliza: ' + then);
+                    appFlow('*/ Hoy: ' + now.format('YYYY-MM-DD HH:mm') );
+                    const totalTime = await diffDate(creation, then);
+                    const currentTime = await diffDate(now, then);
+                    appFlow('Diferencia Total'); 
+                    appFlow(totalTime);
+                    appFlow('Diferencia Actual');
+                    appFlow(currentTime);
+                    
+                    const totalHours = (totalTime.days * 24) + totalTime.hours + (totalTime.minutes/60);
+                    const currentHours = (currentTime.days * 24) + currentTime.hours + (currentTime.minutes/60);
+
+                    const percent = (currentHours/totalHours) * 100;
+                    appFlow('Porcentaje: ' + percent);
+                    if (percent <= light.red) caseLight = 0;
+                    if (percent >= light.green) caseLight = 100;
+                    appFlow('Semaforo: ' + caseLight);
+                    //Falta Actualizar los tiempos en el radicado
+                }
+                if(!result) appFlow('Radicado Vencido.')
+                if(!result) caseLight = 0;
+            
+            //Verificar el estado del semaforo del usuario
+                const creationUser =  findRecord[0].date;
+                const nowUser = moment()
+                const thenUser = flow[p].finDate;
+                let  userLight = 50; //Por Defecto el semaforo es amarillo
+
+                const resultUser = moment(nowUser).isBefore(thenUser);
+                if(result) {
+                    appFlowUser('Usuario aun con tiempo.');
+                    appFlowUser('/* Creado: ' + creationUser );
+                    appFlowUser('/* Finaliza: ' + thenUser);
+                    appFlowUser('*/ Hoy: ' + nowUser.format('YYYY-MM-DD HH:mm') );
+                    const totalTimeUser = await diffDate(creationUser, thenUser);
+                    const currentTimeUser = await diffDate(nowUser, thenUser);
+                    appFlowUser('Diferencia Total'); 
+                    appFlowUser(totalTimeUser);
+                    appFlowUser('Diferencia Actual');
+                    appFlowUser(currentTimeUser);
+                    
+                    const totalHoursUser = (totalTimeUser.days * 24) + totalTimeUser.hours + (totalTimeUser.minutes/60);
+                    const currentHoursUser = (currentTimeUser.days * 24) + currentTimeUser.hours + (currentTimeUser.minutes/60);
+
+                    const percentUser = (currentHoursUser/totalHoursUser) * 100;
+                    appFlowUser('Porcentaje: ' + percentUser);
+                    if (percentUser <= light.red) userLight = 0;
+                    if (percentUser >= light.green) userLight = 100;
+                    appFlowUser('Semaforo: ' + userLight);
+                    //Falta Actualizar los tiempos en el radicado
+                }
+                if(!resultUser) appFlowUser('Radicado Vencido.')
+                if(!resultUser) userLight = 0;
+
             const record = { 
                 _id: findRecord[0]._id,
                 number: findRecord[0].number,
-                userLight: flow[p].light,
+                userLight: userLight,
                 caseLight: caseLight,
                 typification: typification.name,
                 child: child.name,
