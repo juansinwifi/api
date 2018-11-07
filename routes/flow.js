@@ -54,6 +54,9 @@ router.get('/:id', async (req, res) => {
          
             if(result) {
                 appFlow('Radicado aun con tiempo.');
+                appFlow('/* Creado: ' + creation );
+                appFlow('/* Finaliza: ' + then);
+                appFlow('*/ Hoy: ' + now.format('YYYY-MM-DD HH:mm') );
                 const totalTime = await diffDate(creation, then);
                 const currentTime = await diffDate(now, then);
                 appFlow('Diferencia Total'); 
@@ -68,7 +71,7 @@ router.get('/:id', async (req, res) => {
                 appFlow('Porcentaje: ' + percent);
                 if (percent <= light.red) caseLight = 0;
                 if (percent >= light.green) caseLight = 100;
-                appFlow('Porcentaje: ' + caseLight);
+                appFlow('Semaforo: ' + caseLight);
                 //Falta Actualizar los tiempos en el radicado
             }
             if(!result) appFlow('Radicado Vencido.')
