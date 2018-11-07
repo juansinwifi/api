@@ -108,7 +108,7 @@ router.post('/',  async (req, res) => {
 
         record.caseFinTime = totalHours;
         record.caseFinDate = deadTime;
-        if(requirement.times == 'Fecha de Seguimiento')  record.caseFinDate = moment(req.body.trakingDate).add(totalHours ,'hours');
+        if(requirement.trakingDate == true)  record.caseFinDate = moment(req.body.trakingDate).add(totalHours ,'hours');
         
         record.caseLight = 100;
         record.area = child.levels[0].area;
