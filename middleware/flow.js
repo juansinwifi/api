@@ -10,6 +10,26 @@ const express = require('express');
 const router = express.Router();
 const moment = require('moment'); //Libreria para manejo de fechas
 
+async function diffDate (ini, fin){
+
+    var now  = moment(ini).format('YYYY-MM-DD HH:mm');
+    var then = moment(fin).format('YYYY-MM-DD HH:mm');
+    var diff = moment.duration(moment(then).diff(moment(now)));
+
+    var days = parseInt(diff.asDays()); 
+    var hours = parseInt(diff.asHours()); 
+    hours = hours - days*24;  
+    var minutes = parseInt(diff.asMinutes()); 
+    minutes = minutes - (days*24*60 + hours*60); 
+
+    diff = {};
+    diff.days = days
+    diff.hours = hours;
+    diff.minutes = minutes;
+    
+    return diff;
+}
+
 async function backFlow ( req ) {
     
     //Buscar el Flujo Actual
@@ -284,3 +304,4 @@ module.exports.nextFlow = nextFlow;
 module.exports.changeFlow = changeFlow;
 module.exports.closeFlow = closeFlow;
 module.exports.assingFlow = assingFlow;
+module.exports.diffDate = diffDate;

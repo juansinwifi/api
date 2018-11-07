@@ -1,5 +1,5 @@
 const auth = require('../middleware/auth');
-const {backFlow, nextFlow, changeFlow, closeFlow, assingFlow} = require('../middleware/flow');
+const {backFlow, nextFlow, changeFlow, closeFlow, assingFlow, diffDate} = require('../middleware/flow');
 const {Records} = require('../models/record');
 const {Flow, validateFlow} = require('../models/flow');
 const { Typifications } = require('../models/typification');
@@ -44,39 +44,35 @@ router.get('/:id', async (req, res) => {
             if (!light) return res.status(404).send('Semaforo de casos no encontrado'); // Error 404 
            
             //Verificar el estado del semaforo
-            let currentTime = moment().format('YYYY-MM-DD HH:mm');
-            let deadTime = moment(flow[p].finDate);
-            let result = moment(currentTime).isBefore(deadTime);
-            let  caseLight = 100;
-            appFlow('Consulta: ' +  currentTime);
-            appFlow('Vence: ' + flow[p].finDate);
+            const creation =  findRecord[0].date;
+            const now = moment()
+            const then = findRecord[0].caseFinDate;
+            let  caseLight = 50; //Por Defecto el semaforo es amarillo
+
+            const result = moment(now).isBefore(then);
+            
+         
             if(result) {
-                appFlow('Melos');
-                ctY = moment(currentTime).get('year');
-                ctM = moment(currentTime).get('month');  // 0 to 11
-                ctD = moment(currentTime).get('date');
-                ctH = moment(currentTime).get('hour');
-                ctMi =moment(currentTime).get('minute');
-                ctTotal = ctY + ctM + ctD + ctH + ctMi
+                appFlow('Radicado aun con tiempo.');
+                const totalTime = await diffDate(creation, then);
+                const currentTime = await diffDate(now, then);
+                appFlow('Diferencia Total'); 
+                appFlow(totalTime);
+                appFlow('Diferencia Actual');
+                appFlow(currentTime);
                 
-                dtY = moment(currentTime).get('year');
-                dtM = moment(currentTime).get('month');  // 0 to 11
-                dtD = moment(currentTime).get('date');
-                dtH = moment(currentTime).get('hour');
-                dtMi =moment(currentTime).get('minute');
-                dtTotal = dtY + dtM + dtD + dtH + dtMi
+                const totalHours = (totalTime.days * 24) + totalTime.hours + (totalTime.minutes/60);
+                const currentHours = (currentTime.days * 24) + currentTime.hours + (currentTime.minutes/60);
 
-                caseLight = (ctTotal / dtTotal) * 100;
-                
-                if (caseLight >= light.red) caseLight = 0;
-                if (caseLight >= light.yellow) caseLight = 50;
-                if (caseLight >= light.green) caseLight = 100;
-
+                const percent = (currentHours/totalHours) * 100;
+                appFlow('Porcentaje: ' + percent);
+                if (percent <= light.red) caseLight = 0;
+                if (percent >= light.green) caseLight = 100;
+                appFlow('Porcentaje: ' + caseLight);
                 //Falta Actualizar los tiempos en el radicado
             }
+            if(!result) appFlow('Radicado Vencido.')
             if(!result) caseLight = 0;
-            
-            
             
             const record = { 
                 _id: findRecord[0]._id,
@@ -87,6 +83,7 @@ router.get('/:id', async (req, res) => {
                 child: child.name,
                 date: findRecord[0].date,
             };
+
             response.push(record);
             i = i - 1;
             p = p - 1;

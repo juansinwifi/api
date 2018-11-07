@@ -80,7 +80,7 @@ router.post('/',  async (req, res) => {
         
         // Get Current Date
         let currentTime = moment();
-        record.date = currentTime; //Agrego la fecha de creación
+        record.date = currentTime.format('YYYY-MM-DD HH:mm'); //Agrego la fecha de creación
 
         //Get Child Typification
         const child = await ChildTypifications.findOne({"_id": req.body.child});
@@ -107,7 +107,7 @@ router.post('/',  async (req, res) => {
         lastLevel = closeTimes.levels - 1; //Busco la maxima fecha
 
         record.caseFinTime = totalHours;
-        record.caseFinDate = deadTime;
+        record.caseFinDate = deadTime.format();
         appDebuger(requirement.trackingDate);
         if(requirement.trackingDate == true)  record.caseFinDate = moment(req.body.trackingDate).add(totalHours ,'hours');
         
