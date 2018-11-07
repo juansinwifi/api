@@ -9,6 +9,7 @@ const { Contacts } = require('../models/contacts');
 const {Users} = require('../models/user');
 const {Areas} = require('../models/areas');
 const appDebuger = require('debug')('app:app');
+const appTime = require('debug')('app:time');
 const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
@@ -40,9 +41,16 @@ router.get('/:id', async (req, res) => {
             if (!child || child.length == 0) return res.status(404).send('No se encontro una tipificación especifica.'); // Error 404 
             
             //Verificar el estado del semaforo
-            let currentTime = moment().format();
+            let currentTime = moment().format('YYYY-MM-DD HH:mm');
+            let deadTime = moment(flow[p].finDate);
+            let result = moment(currentTime).isBefore(deadTime);
+            const  userLight = 100;
             appDebuger('Consulta: ' +  currentTime);
             appDebuger('Vence: ' + flow[p].finDate);
+            if(result) appTime('Melos');
+            if(!result) userLight = 0;
+            
+            
             
             const record = { 
                 _id: findRecord[0]._id,

@@ -51,8 +51,7 @@ const recordSchema = new mongoose.Schema({
         required: true
     },
     trackingDate:{
-        type: String,
-        required: true
+        type: String
     },
     caseFinTime:{
         type: Number,

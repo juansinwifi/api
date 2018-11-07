@@ -108,7 +108,8 @@ router.post('/',  async (req, res) => {
 
         record.caseFinTime = totalHours;
         record.caseFinDate = deadTime;
-        if(requirement.trakingDate == true)  record.caseFinDate = moment(req.body.trakingDate).add(totalHours ,'hours');
+        appDebuger(requirement.trackingDate);
+        if(requirement.trackingDate == true)  record.caseFinDate = moment(req.body.trackingDate).add(totalHours ,'hours');
         
         record.caseLight = 100;
         record.area = child.levels[0].area;
@@ -130,9 +131,9 @@ router.post('/',  async (req, res) => {
         record.status = false;
 
         //Guardar el radicado
-        /***************************************** 
+        
         const saveRecord  = await createRecord(record);
-        */
+        
         
         //Get User
         const currentUser = await Users.findOne({"_id": child.levels[0].user});
@@ -150,9 +151,9 @@ router.post('/',  async (req, res) => {
         flow.finDate = closeTimes[0];
         flow.light = 100;
         flow.case = 5; //Se crea como abierto
-        /***************************************** 
+        
         saveflow =  createFlow(flow);
-        */
+        
         }
       
         res.send(record);
