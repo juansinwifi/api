@@ -43,6 +43,9 @@ router.get('/:id', async (req, res) => {
             
             const light = await Lights.findOne({"name": 'CASO'});
             if (!light) return res.status(404).send('Semaforo de casos no encontrado'); // Error 404 
+
+            const lightUser = await Lights.findOne({"name": 'USUARIO'});
+            if (!lightUser) return res.status(404).send('Semaforo de usuario no encontrado'); // Error 404 
            
             //Verificar el estado del semaforo del caso
                 const creation =  findRecord[0].date;
@@ -102,8 +105,8 @@ router.get('/:id', async (req, res) => {
 
                     const percentUser = (currentHoursUser/totalHoursUser) * 100;
                     appFlowUser('Porcentaje: ' + percentUser);
-                    if (percentUser <= light.red) userLight = 0;
-                    if (percentUser >= light.green) userLight = 100;
+                    if (percentUser <= lightUser.red) userLight = 0;
+                    if (percentUser >= lightUser.green) userLight = 100;
                     appFlowUser('Semaforo: ' + userLight);
                     //Falta Actualizar los tiempos en el radicado
                 }
