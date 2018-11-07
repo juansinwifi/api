@@ -47,7 +47,7 @@ router.get('/:id', async (req, res) => {
             let currentTime = moment().format('YYYY-MM-DD HH:mm');
             let deadTime = moment(flow[p].finDate);
             let result = moment(currentTime).isBefore(deadTime);
-            const  caseLight = 100;
+            let  caseLight = 100;
             appFlow('Consulta: ' +  currentTime);
             appFlow('Vence: ' + flow[p].finDate);
             if(result) {
