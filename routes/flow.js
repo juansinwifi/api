@@ -315,6 +315,71 @@ router.get('/flow/:id', async (req, res) => {
     } 
 });
 
+//'BUSCAR UN RADICADO CERRADO ESPECIFICO' GET Method
+router.get('/flow/close/:id', async (req, res) => {
+    try{
+        const result = {}
+        const records = await Records.find({"_id": req.params.id});
+        if (!records || records.length == 0) return res.status(404).send('No se encuentran Radicados.'); // Error 404 
+        
+        const flow = await Flow.find({"user": req.params.id, "status": false, $or: [{"case":2}, {"case":4}] });
+        if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
+        
+        let typification = await Typifications.findById(records[0].typification);
+            if (!typification || typification.length == 0) return res.status(404).send('No se encontro una tipificación.'); // Error 404 
+            
+        let child = await ChildTypifications.findById(records[0].child);
+        if (!child || child.length == 0) return res.status(404).send('No se encontro una tipificación especifica.'); // Error 404 
+        
+        let channel = await Channels.findById(records[0].channel);
+        if (!channel || channel.length == 0) return res.status(404).send('No se encontro una canal de comunicaciones.'); // Error 404 
+        
+        let contact = await Contacts.findById(records[0].contact);
+        if (!contact || contact.length == 0) return res.status(404).send('No se encontro un contacto.'); // Error 404 
+        
+        let i = flow.length;
+        let p = i - 1;
+        while ( i > 0){
+            let user = await Users.findById(flow[p].user);
+            if (!user || user.length == 0) return res.status(404).send('No se encontro el usuario.'); // Error 404 
+          
+            flow[p].user = user.name;
+            i = i - 1;
+            p = p - 1;
+        }
+     
+       
+
+        records[0].typification = typification.name;
+        records[0].child = child.name;
+        records[0].channel = channel.name;
+        records[0].contact = contact.name;
+
+        result.records = records;
+        
+        result.flow = flow;
+
+        //Usuario actual en la tipificaión si se quiere reasignar.
+        const currentLevel = flow[0].level
+        const currentUser = child.levels[currentLevel].user;
+        let user = await Users.findById(currentUser);
+        if (!user || user.length == 0) return res.status(404).send('No se encontro el usuario.'); // Error 404 
+        
+        const reassing = {};
+        reassing.userId = user._id;
+        reassing.user   = user.name;
+       
+        result.reassing = reassing;
+
+        res.send(result);
+
+    }
+    catch(ex){
+        console.log(ex);
+        res.status(500).send({ 'Error': 'Algo salio mal :('});
+    } 
+});
+
 //Historial de Radicados
 router.get('/history/:id', async (req , res)  => {
     const flow = await Flow.find({"record": req.params.id});
