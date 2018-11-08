@@ -256,17 +256,15 @@ router.get('/flow/:id', async (req, res) => {
         const result = {}
         const records = await Records.find({"_id": req.params.id});
         if (!records || records.length == 0) return res.status(404).send('No se encuentran Radicados.'); // Error 404 
+         
+        let query = {}
+        if(records[0].status == false) query = {"record": req.params.id, "status": true};
+        if(records[0].status === true) query ={"record": req.params.id, "status": false, "case":4 };
+          
+    
+        const flow = await Flow.find(query);
+        if (!flow || flow.length == 0) return res.status(404).send('Flujo no encontrado'); // Error 404 
         
-        if(records.status == false) {
-            const flow = await Flow.find({"record": req.params.id, "status": true});
-            if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404     
-        }
-       else {
-            const flow = await Flow.find({"user": req.params.id, "status": false, "case":4 });
-            if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
-     
-        }
-       
         let typification = await Typifications.findById(records[0].typification);
             if (!typification || typification.length == 0) return res.status(404).send('No se encontro una tipificación.'); // Error 404 
             
