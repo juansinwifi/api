@@ -26,7 +26,7 @@ router.get('/:id', async (req, res) => {
     try{
         
         const flow = await Flow.find({"user": req.params.id, "status": true});
-        if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
+        if (!flow || flow.length == 0) return res.status(404).send('Inbox no encontrado'); // Error 404 
      
         const response = [];
         i = flow.length;
