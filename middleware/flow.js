@@ -159,7 +159,7 @@ async function nextFlow(req){
         flow.observations = req.body.observations;
         flow.finDate = currentFlow.finDate;
         flow.light = currentFlow.light;
-        flow.case = req.body.case;
+        flow.case = 4;
         flow.reject = req.body.reject;
         flow.timestamp = moment().format('YYYY-MM-DD HH:mm');
     }
