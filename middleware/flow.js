@@ -94,7 +94,8 @@ async function createFlow ( req ) {
         "finDate",
         "light",
         "case",
-        "reject"
+        "reject",
+        "timestamp"
         ]));
 
         flow = await flow.save();
