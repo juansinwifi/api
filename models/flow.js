@@ -33,7 +33,12 @@ const flowSchema = new mongoose.Schema({
     },
     reject:{
         type: String
-    }   
+    },
+    timestamp:{
+        type: Date,
+        required: true
+    }
+
 });
 
 const Flow =  mongoose.model('flow', flowSchema);

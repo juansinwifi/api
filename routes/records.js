@@ -151,7 +151,7 @@ router.post('/',  async (req, res) => {
         flow.finDate = closeTimes[0];
         flow.light = 100;
         flow.case = 5; //Se crea como abierto
-        
+        flow.timestamp = record.date;
         saveflow =  createFlow(flow);
         
         }
