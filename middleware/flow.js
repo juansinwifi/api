@@ -4,6 +4,7 @@ const appChild = require('debug')('app:child');
 const _ = require('lodash');
 const {Flow} = require('../models/flow');
 const {Records} = require('../models/record');
+const {calcFinDate} =require('./records');
 const {ChildTypifications} = require('../models/childtypification');
 const mongoose = require('mongoose');
 const express = require('express');
@@ -52,9 +53,9 @@ async function backFlow ( req ) {
     const newLevel = currentLevel - 1;
     
 
-    //Tiempo Total
-    // closeTimes = await calcFinDate(currentTime, child._id);
-    // lastLevel = closeTimes.levels - 1; //Busco la maxima fecha
+   //Calcular de nuevo los tiempos de niveles por si cambio el flujo
+   closeTimes = await calcFinDate(record.date, child._id);
+    
     
     //Crear el nuevo flujo
        const flow = {};
@@ -63,10 +64,11 @@ async function backFlow ( req ) {
        flow.level = newLevel;
        flow.status = true;
        flow.observations = req.body.observations;
-       flow.finDate = await calcFinDate();
-       flow.light =  await calcLight();
+       flow.finDate = closeTimes[newLevel];
+       flow.light =  1988;
        flow.case = req.body.case;
        flow.reject = req.body.reject;
+       flow.timestamp = moment().format('YYYY-MM-DD HH:mm');
        
      
        let newFlow = await createFlow(flow);
@@ -129,9 +131,11 @@ async function nextFlow(req){
     const currentLevel = currentFlow.level;
     const newLevel = currentLevel + 1;
     
-    //Pregunta si existe un siguiente nivel
-    // Si el flujo no tiene mas niveles de Escalamiento
-   
+ 
+     //Calcular de nuevo los tiempos de niveles por si cambio el flujo
+     closeTimes = await calcFinDate(record.date, child._id);
+
+
     //Crear el nuevo flujo
     const flow = {};
     flow.record = currentFlow.record;
@@ -142,10 +146,11 @@ async function nextFlow(req){
         flow.level = newLevel;
         flow.status = true;
         flow.observations = req.body.observations;
-        flow.finDate = await calcFinDate();
-        flow.light =  await calcLight();
+        flow.finDate = closeTimes[newLevel];
+        flow.light =  1988;
         flow.case = req.body.case;
         flow.reject = req.body.reject;
+        flow.timestamp = moment().format('YYYY-MM-DD HH:mm');
     }
     else {
         flow.user = req.body.user;
@@ -156,6 +161,7 @@ async function nextFlow(req){
         flow.light = currentFlow.light;
         flow.case = req.body.case;
         flow.reject = req.body.reject;
+        flow.timestamp = moment().format('YYYY-MM-DD HH:mm');
     }
 
     let newFlow = await createFlow(flow);
@@ -204,9 +210,10 @@ async function changeFlow (req){
     flow.status = true;
     flow.observations = req.body.observations;
     flow.finDate = currentFlow.finDate;
-    flow.light = currentFlow.light;
+    flow.light =  1988;
     flow.case = req.body.case;
     flow.reject = req.body.reject;
+    flow.timestamp = moment().format('YYYY-MM-DD HH:mm');
 
     let newFlow = await createFlow(flow);
     if (!newFlow) return ({'ERROR':'Algo salio mal al crear el flujo.'}); // Error 404 
@@ -247,6 +254,7 @@ async function closeFlow(req){
     flow.light = currentFlow.light;
     flow.case = req.body.case;
     flow.reject = req.body.reject;
+    flow.timestamp = moment().format('YYYY-MM-DD HH:mm');
 
     let newFlow = await createFlow(flow);
     if (!newFlow) return ({'ERROR':'Algo salio mal al crear el flujo.'}); // Error 404 
@@ -287,16 +295,6 @@ async function assingFlow( req){
     //Return the updated course
     return updateUser;
 
-}
-
-async function calcFinDate(){
-    let currentTime = moment().format();
-    return currentTime;
-}
-
-async function calcLight(){
-    let light = 100;
-    return light;
 }
 
 module.exports.backFlow = backFlow;
