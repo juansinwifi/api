@@ -151,7 +151,7 @@ router.post('/',  async (req, res) => {
         flow.finDate = closeTimes[0];
         flow.light = 100;
         flow.case = 5; //Se crea como abierto
-        flow.timestamp = record.date,format('YYYY-MM-DD HH:mm');
+        flow.timestamp = moment(record.date).format('YYYY-MM-DD HH:mm');
         saveflow =  createFlow(flow);
         if (!saveflow) return res.status(404).send({'ERRRO:': ' El radicado se creo pero no el flujo'}); // Error 404 
         }
