@@ -162,13 +162,13 @@ router.post('/',  async (req, res) => {
         flow.user =  req.body.user;
         flow.level = 0;
         if(requirementType == 'Inmediato') flow.status = false;
-        flow.status = true;
+        if(requirementType != 'Inmediato') flow.status = true;
         flow.observations = record.observations;
         if(requirementType == 'Inmediato') flow.finDate = moment(record.date).format('YYYY-MM-DD HH:mm');
         if(requirementType != 'Inmediato') flow.finDate = closeTimes[0];
         flow.light = 100;
-        if(requirementType == 'Inmediato')  flow.case = 4; //Se cierra inmediatamente
-        flow.case = 5; //Se crea como abierto
+        if(requirementType == 'Inmediato') flow.case = 4; //Se cierra inmediatamente
+        if(requirementType != 'Inmediato') flow.case = 5; //Se crea como abierto
         flow.timestamp = moment(record.date).format('YYYY-MM-DD HH:mm');
         saveflow =  createFlow(flow);
         if (!saveflow) return res.status(404).send({'ERRROR:': ' El radicado se creo pero no el flujo'}); // Error 404 
