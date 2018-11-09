@@ -158,21 +158,28 @@ router.post('/',  async (req, res) => {
        
         //Crear Flujo si se crea el radicado
         if (saveRecord._id) {
+        //Flujo de quien creo el radicado (Record)
         const iniFlow = {};
         iniFlow.record = saveRecord._id;
-        flow.user =  req.body.user;
-        flow.level = 0;
-        flow.status = false;
-        flow.observations = record.observations;
-        flow.finDate = moment(record.date).format('YYYY-MM-DD HH:mm');
-
+        iniFlow.user =  req.body.user;
+        iniFlow.level = 0;
+        iniFlow.status = false;
+        iniFlow.observations = record.observations;
+        iniFlow.finDate = moment(record.date).format('YYYY-MM-DD HH:mm');
+        iniFlow.light = 100;
+        iniFlow.timestamp = moment(record.date).format('YYYY-MM-DD HH:mm');
+        
+        let saveflow =  createFlow(iniFlow);
+        if (!saveflow) return res.status(404).send({'ERRROR:': ' El radicado se creo pero no el flujo'}); // Error 404 
+       
+        //Flujo de quien se le asigan el radicado
         const flow = {};
         flow.record = saveRecord._id;
         flow.user =  currentUser._id;
         flow.level = 0;
         if(requirementType == 'Inmediato') flow.status = false;
         if(requirementType != 'Inmediato') flow.status = true;
-        flow.observations = record.observations;
+        flow.observations = 'Radicado asignado.';
         if(requirementType == 'Inmediato') flow.finDate = moment(record.date).format('YYYY-MM-DD HH:mm');
         if(requirementType != 'Inmediato') flow.finDate = closeTimes[0];
         flow.light = 100;
@@ -181,9 +188,6 @@ router.post('/',  async (req, res) => {
         flow.timestamp = moment(record.date).format('YYYY-MM-DD HH:mm');
 
         saveflow =  createFlow(flow);
-
-        //Se crea un registro para fines historicos
-        
         if (!saveflow) return res.status(404).send({'ERRROR:': ' El radicado se creo pero no el flujo'}); // Error 404 
         }
       
