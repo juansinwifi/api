@@ -60,7 +60,8 @@ async function createRecord ( req ) {
     "caseFinDate",
     "caseLight",
     "area",
-    "levels"
+    "levels",
+    "createdBy"
     ]));
 
     record = await record.save();

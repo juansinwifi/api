@@ -103,6 +103,16 @@ router.post('/',  async (req, res) => {
         let requirementType = requirement.times;
         appRecord('Tipo de PQR: ' + requirementType);
 
+        //Definimos los campos de radicado(Record)
+        record.caseFinTime = 0;
+        record.caseFinDate = moment(record.date).format('YYYY-MM-DD HH:mm');
+        record.caseLight = 100;
+        record.area = child.levels[0].area;
+        record.levels = [];
+        record.caseLight = 100;
+        record.status = true;
+        record.createdBy = req.body.user;
+
         if (requirementType != 'Inmediato'){
              //Tiempo Total 
             const totalHours = (requirement.days * 24) + (requirement.hours);
@@ -137,29 +147,28 @@ router.post('/',  async (req, res) => {
             record.status = false;
         }
        
-        record.caseFinTime = 0;
-        record.caseFinDate = moment(record.date).format('YYYY-MM-DD HH:mm');
-        record.caseLight = 100;
-        record.area = child.levels[0].area;
-        record.levels = [];
-        record.caseLight = 100;
-        record.status = true;
-        
         //Guardar el radicado
-        
         const saveRecord  = await createRecord(record);
         
         
         //Get User
         const currentUser = await Users.findOne({"_id": child.levels[0].user});
-        if (!child) return res.status(404).send('Usuario no encontrado'); // Error 404 
+        if (!currentUser) return res.status(404).send('Usuario no encontrado'); // Error 404 
         
        
         //Crear Flujo si se crea el radicado
         if (saveRecord._id) {
+        const iniFlow = {};
+        iniFlow.record = saveRecord._id;
+        flow.user =  req.body.user;
+        flow.level = 0;
+        flow.status = false;
+        flow.observations = record.observations;
+        flow.finDate = moment(record.date).format('YYYY-MM-DD HH:mm');
+
         const flow = {};
         flow.record = saveRecord._id;
-        flow.user =  req.body.user;
+        flow.user =  currentUser._id;
         flow.level = 0;
         if(requirementType == 'Inmediato') flow.status = false;
         if(requirementType != 'Inmediato') flow.status = true;
@@ -170,7 +179,11 @@ router.post('/',  async (req, res) => {
         if(requirementType == 'Inmediato') flow.case = 4; //Se cierra inmediatamente
         if(requirementType != 'Inmediato') flow.case = 5; //Se crea como abierto
         flow.timestamp = moment(record.date).format('YYYY-MM-DD HH:mm');
+
         saveflow =  createFlow(flow);
+
+        //Se crea un registro para fines historicos
+        
         if (!saveflow) return res.status(404).send({'ERRROR:': ' El radicado se creo pero no el flujo'}); // Error 404 
         }
       

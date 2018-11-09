@@ -72,6 +72,10 @@ const recordSchema = new mongoose.Schema({
     levels: {
         type: Array,
         required: true
+    },
+    createdBy:{
+        type: String,
+        required: true
     }
 
 });
