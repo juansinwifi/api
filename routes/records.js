@@ -10,6 +10,7 @@ const { Users } = require('../models/user');
 const {validateCounter, updateCounter, createRecord, calcFinDate} = require('../middleware/records');
 const {createFlow} = require('../middleware/flow');
 const appDebuger = require('debug')('app:app');
+const appRecord = require('debug')('app:record');
 const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
@@ -98,38 +99,52 @@ router.post('/',  async (req, res) => {
         record.typification = typification._id;
         record.child = child._id;
 
-        //Tiempo Total 
-        const totalHours = (requirement.days * 24) + (requirement.hours);
-        deadTime = currentTime.add(totalHours ,'hours');
-      
-        //Tiempo de los Niveles
-        closeTimes = await calcFinDate(currentTime, child._id);
-        lastLevel = closeTimes.levels - 1; //Busco la maxima fecha
+        //Guardo el Tipo de PQR
+        let requirementType = requirement.times;
+        appRecord('Tipo de PQR: ' + requirementType);
 
-        record.caseFinTime = totalHours;
-        record.caseFinDate = deadTime.format();
-        appDebuger(requirement.trackingDate);
-        if(requirement.trackingDate == true)  record.caseFinDate = moment(req.body.trackingDate).add(totalHours ,'hours');
-        
+        if (requirementType != 'Inmediato'){
+             //Tiempo Total 
+            const totalHours = (requirement.days * 24) + (requirement.hours);
+            deadTime = currentTime.add(totalHours ,'hours');
+
+            //Tiempo de los Niveles
+            closeTimes = await calcFinDate(currentTime, child._id);
+            lastLevel = closeTimes.levels - 1; //Busco la maxima fecha
+
+            record.caseFinTime = totalHours;
+            record.caseFinDate = deadTime.format();
+            appDebuger(requirement.trackingDate);
+            if(requirement.trackingDate == true)  record.caseFinDate = moment(req.body.trackingDate).add(totalHours ,'hours');
+            
+            record.caseLight = 100;
+            record.area = child.levels[0].area;
+    
+            //Levels
+            //Calculo las horas totales que tiene un usuario para finalizar
+            let finalUserTime = null;
+            if (child.levels[0].days > 0 ) finalUserTime = (child.levels[0].days * 24) + child.levels[0].hours;
+            if (child.levels[0].days < 0 ) finalUserTime = child.levels[0].hours;
+            const levels = [
+                {finalUserTime: finalUserTime},
+                {userFinDate: null},
+                {userLight : 100}
+            ];
+            record.levels = closeTimes;
+            // Calcular Semaforos
+            record.caseLight = 100;
+    
+            record.status = false;
+        }
+       
+        record.caseFinTime = 0;
+        record.caseFinDate = moment(record.date).format('YYYY-MM-DD HH:mm');
         record.caseLight = 100;
         record.area = child.levels[0].area;
-
-        //Levels
-        //Calculo las horas totales que tiene un usuario para finalizar
-        let finalUserTime = null;
-        if (child.levels[0].days > 0 ) finalUserTime = (child.levels[0].days * 24) + child.levels[0].hours;
-        if (child.levels[0].days < 0 ) finalUserTime = child.levels[0].hours;
-        const levels = [
-            {finalUserTime: finalUserTime},
-            {userFinDate: null},
-            {userLight : 100}
-        ];
-        record.levels = closeTimes;
-        // Calcular Semaforos
+        record.levels = [];
         record.caseLight = 100;
-
-        record.status = false;
-
+        record.status = true;
+        
         //Guardar el radicado
         
         const saveRecord  = await createRecord(record);
@@ -144,16 +159,19 @@ router.post('/',  async (req, res) => {
         if (saveRecord._id) {
         const flow = {};
         flow.record = saveRecord._id;
-        flow.user =  child.levels[0].user;
+        flow.user =  req.body.user;
         flow.level = 0;
+        if(requirementType == 'Inmediato') flow.status = false;
         flow.status = true;
         flow.observations = record.observations;
-        flow.finDate = closeTimes[0];
+        if(requirementType == 'Inmediato') flow.finDate = moment(record.date).format('YYYY-MM-DD HH:mm');
+        if(requirementType != 'Inmediato') flow.finDate = closeTimes[0];
         flow.light = 100;
+        if(requirementType == 'Inmediato')  flow.case = 4; //Se cierra inmediatamente
         flow.case = 5; //Se crea como abierto
         flow.timestamp = moment(record.date).format('YYYY-MM-DD HH:mm');
         saveflow =  createFlow(flow);
-        if (!saveflow) return res.status(404).send({'ERRRO:': ' El radicado se creo pero no el flujo'}); // Error 404 
+        if (!saveflow) return res.status(404).send({'ERRROR:': ' El radicado se creo pero no el flujo'}); // Error 404 
         }
       
         res.send(record);

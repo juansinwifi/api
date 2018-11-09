@@ -33,6 +33,7 @@ const profilesSchema = new mongoose.Schema({
     },
     areas:{
         type: Boolean,
+        lowercase: true,
         required: true
     },
     users:{

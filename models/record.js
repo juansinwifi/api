@@ -90,7 +90,8 @@ function validateRecords(requiement) {
         file: Joi.string().min(1),
         observations: Joi.string(),
         trackingDate: Joi.date(),
-        status: Joi.boolean()
+        status: Joi.boolean(),
+        user: Joi.string().min(24).required()
     };
 
     return Joi.validate(requiement, schema);
