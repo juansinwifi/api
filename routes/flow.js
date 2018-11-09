@@ -26,7 +26,7 @@ router.get('/:id', async (req, res) => {
     try{
         
         const flow = await Flow.find({"user": req.params.id, "status": true});
-        if (!flow || flow.length == 0) return res.status(404).send('Inbox no encontrado'); // Error 404 
+        if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
      
         const response = [];
         i = flow.length;
@@ -141,7 +141,7 @@ router.get('/close/:id', async (req, res) => {
     try{
         
         const flow = await Flow.find({"user": req.params.id, "status": false, "case":4 });
-        if (!flow || flow.length == 0 ) return res.status(404).send('Inbox no encontrado'); // Error 404 
+        if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
      
         const response = [];
         i = flow.length;
