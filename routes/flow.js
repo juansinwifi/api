@@ -244,6 +244,7 @@ router.get('/flow/:id', async (req, res) => {
         //Usuario actual en la tipificaión si se quiere reasignar.
         const currentLevel = flow[0].level
         const currentUser = child.levels[currentLevel].user;
+        if(currentLevel < 0 ) const currentUser =  records[0].createdBy;
         let user = await Users.findById(currentUser);
         if (!user || user.length == 0) return res.status(404).send('No se encontro el usuario.'); // Error 404 
         
