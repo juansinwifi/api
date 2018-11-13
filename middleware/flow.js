@@ -6,6 +6,7 @@ const {Flow} = require('../models/flow');
 const {Records} = require('../models/record');
 const {calcFinDate} =require('./records');
 const {ChildTypifications} = require('../models/childtypification');
+const {Lights} = require('../models/lights');
 const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
@@ -48,7 +49,7 @@ async function backFlow ( req ) {
     //appChild(child);
     // Current Level
     const currentLevel = currentFlow.level;
-    if (currentLevel == 0) return ({'ERROR':'El flujo se ecuentra en el nivel mas bajo.'});
+    if (currentLevel < 0) {return ({'ERROR':'El flujo se ecuentra en el nivel mas bajo.'});}
     
     const newLevel = currentLevel - 1;
     
@@ -56,20 +57,20 @@ async function backFlow ( req ) {
    //Calcular de nuevo los tiempos de niveles por si cambio el flujo
    closeTimes = await calcFinDate(record.date, child._id);
     
-    
     //Crear el nuevo flujo
        const flow = {};
        flow.record = currentFlow.record;
-       flow.user = child.levels[newLevel].user;
+       if (newLevel >= 0 ) flow.user = child.levels[newLevel].user;
+       if (newLevel < 0 ) flow.user = record.createdBy;
        flow.level = newLevel;
        flow.status = true;
-       flow.observations = req.body.observations;
-       flow.finDate = closeTimes[newLevel];
+       if (newLevel >= 0 ) flow.finDate = closeTimes[newLevel];
+       if (newLevel < 0 ) flow.finDate =  moment(record.caseFinDate).format('YYYY-MM-DD HH:mm');
        flow.light =  1988;
        flow.case = req.body.case;
        flow.reject = req.body.reject;
        flow.timestamp = moment().format('YYYY-MM-DD HH:mm');
-       
+        appFlow(flow.level);
      
        let newFlow = await createFlow(flow);
        if (!newFlow) return ({'ERROR':'Algo salio mal al crear el flujo.'}); // Error 404 
@@ -77,7 +78,7 @@ async function backFlow ( req ) {
     //Update Status flujo anterior
     /*****************************/
       if(newFlow._id) { 
-        const update =  await updateFlow(req.params.id);
+        const update =  await updateFlow(req.params.id, req.body.observations);
          //If not existing, return 404 - Not Found
          if (!update) return ({'ERROR':'Algo salio mal al actualizar el flujo.'}); // Error 404 
       }
@@ -104,13 +105,85 @@ async function createFlow ( req ) {
         return flow;
 }
 
-async function updateFlow (req){
+async function updateFlow (req, txt){
     const update =  await Flow.findOneAndUpdate({'_id':req}, {
-        status: false
+        status: false,
+        observations: txt,
+        timestamp: moment().format('YYYY-MM-DD HH:mm')
         },{
             new: true
         });
         return update;
+}
+
+async function updateCloseFlow (req, txt, light){
+    const update =  await Flow.findOneAndUpdate({'_id':req}, {
+        status: false,
+        case: 4,
+        observations: txt,
+        light: light,
+        timestamp: moment().format('YYYY-MM-DD HH:mm')
+        },{
+            new: true
+        });
+        return update;
+}
+
+async function calcCaseLight (creation, finish){
+
+    const light = await Lights.findOne({"name": 'CASO'});
+    if (!light) return res.status(404).send('Semaforo de casos no encontrado'); // Error 404 
+
+    //Verificar el estado del semaforo del caso
+    const created =  creation;
+    const now = moment()
+    const then = finish;
+    let  newlight = 50; //Por Defecto el semaforo es amarillo
+    const result = moment(now).isBefore(then); //Comparo las fechas.
+    if(result) {
+        const totalTime = await diffDate(created, then);
+        const currentTime = await diffDate(now, then);
+     
+        const totalHours = (totalTime.days * 24) + totalTime.hours + (totalTime.minutes/60);
+        const currentHours = (currentTime.days * 24) + currentTime.hours + (currentTime.minutes/60);
+
+        const percent = (currentHours/totalHours) * 100;
+        if (percent <= light.red) newlight = 0;
+        if (percent >= light.green) newlight = 100;
+
+    }
+    if(!result) newlight = 0;
+
+    return newlight;
+}
+
+async function userCaseLight (creation, finish){
+
+    const light = await Lights.findOne({"name": 'USUARIO'});
+    if (!light) return res.status(404).send('Semaforo de usuario no encontrado'); // Error 404 
+
+    //Verificar el estado del semaforo del caso
+    const created =  creation;
+    const now = moment()
+    const then = finish;
+    let  newlight = 50; //Por Defecto el semaforo es amarillo
+    const result = moment(now).isBefore(then); //Comparo las fechas.
+    if(result) {
+        const totalTime = await diffDate(created, then);
+        const currentTime = await diffDate(now, then);
+     
+        const totalHours = (totalTime.days * 24) + totalTime.hours + (totalTime.minutes/60);
+        const currentHours = (currentTime.days * 24) + currentTime.hours + (currentTime.minutes/60);
+
+        const percent = (currentHours/totalHours) * 100;
+        appFlow(percent);
+        if (percent <= light.red) newlight = 0;
+        if (percent >= light.green) newlight = 100;
+
+    }
+    if(!result) newlight = 0;
+
+    return newlight;
 }
 
 async function nextFlow(req){
@@ -131,59 +204,60 @@ async function nextFlow(req){
     const currentLevel = currentFlow.level;
     const newLevel = currentLevel + 1;
     
- 
+
+    let caseLight = record.caseLight;
      //Calcular de nuevo los tiempos de niveles por si cambio el flujo
      closeTimes = await calcFinDate(record.date, child._id);
 
-
+    
     //Crear el nuevo flujo
     const flow = {};
     flow.record = currentFlow.record;
 
+    let newFlow = {};
     //Si tiene mas niveles
     if(child.levels[newLevel]) {
         flow.user = child.levels[newLevel].user;
         flow.level = newLevel;
         flow.status = true;
-        flow.observations = req.body.observations;
         flow.finDate = closeTimes[newLevel];
         flow.light =  1988;
         flow.case = req.body.case;
         flow.reject = req.body.reject;
         flow.timestamp = moment().format('YYYY-MM-DD HH:mm');
+
+        newFlow = await createFlow(flow);
+        if (!newFlow) return ({'ERROR':'Algo salio mal al crear el flujo.'}); // Error 404 
+
+        /*****************************/
+        //Update Status flujo anterior
+        /*****************************/
+        if(newFlow._id) { 
+            const update =  await updateFlow(req.params.id, req.body.observations);
+            //If not existing, return 404 - Not Found
+            if (!update) return ({'ERROR':'Algo salio mal al actualizar el flujo.'}); // Error 404 
+        }
     }
+    //Si el caso se va a cerrar no se crea uno nuevo se actualiza
     else {
-        flow.user = req.body.user;
-        flow.level = currentLevel;
-        flow.status = false;
-        flow.observations = req.body.observations;
-        flow.finDate = currentFlow.finDate;
-        flow.light = currentFlow.light;
-        flow.case = 4;
-        flow.reject = req.body.reject;
-        flow.timestamp = moment().format('YYYY-MM-DD HH:mm');
+        //Verificar el estado del semaforo del caso
+        caseLight = await calcCaseLight( record.date, record.caseFinDate); //El semaforo se actualiza el caso mas adelante
+        const userLight = await userCaseLight(record.date, currentFlow.finDate);
+       
+        newFlow =  await updateCloseFlow(req.params.id, req.body.observations, userLight);
+        if (!newFlow) return ({'ERROR':'Algo salio mal al actualizar el flujo.'}); // Error 404 
     }
 
-    let newFlow = await createFlow(flow);
-    if (!newFlow) return ({'ERROR':'Algo salio mal al crear el flujo.'}); // Error 404 
-
+    //Si el caso no tiene mas niveles entonce se cierra el radicado
     if(!flow.status){
         const updateRecord =  await Records.findOneAndUpdate({'_id':flow.record}, {
-            status: true
+            status: true,
+            caseLight: caseLight
             },{
                 new: true
             });
         if (!updateRecord) return ({'ERROR':'Algo salio mal al finalizar el radicado.'}); // Error 404 
     } 
-    /*****************************/
-    //Update Status flujo anterior
-    /*****************************/
-    if(newFlow._id) { 
-        const update =  await updateFlow(req.params.id);
-        //If not existing, return 404 - Not Found
-        if (!update) return ({'ERROR':'Algo salio mal al actualizar el flujo.'}); // Error 404 
-    }
-    // flow = await flow.save();
     return newFlow;
 
 }
@@ -208,7 +282,6 @@ async function changeFlow (req){
     flow.user = currentFlow.user;
     flow.level = currentFlow.level;;
     flow.status = true;
-    flow.observations = req.body.observations;
     flow.finDate = currentFlow.finDate;
     flow.light =  1988;
     flow.case = req.body.case;
@@ -221,7 +294,7 @@ async function changeFlow (req){
     //Update Status flujo anterior
     /*****************************/
     if(newFlow._id) { 
-        const update =  await updateFlow(req.params.id);
+        const update =  await updateFlow(req.params.id, req.body.observations);
         //If not existing, return 404 - Not Found
         if (!update) return ({'ERROR':'Algo salio mal al actualizar el flujo.'}); // Error 404 
     }
@@ -242,40 +315,26 @@ async function closeFlow(req){
     //Get Child Typification
     const child = await ChildTypifications.findById(record.child);
     if (!child) return ({'ERROR':'Tipificación Especifica no encontrada'}); // Error 404 
-    //appChild(child);
-    //Crear el nuevo flujo
-    const flow = {};
-    flow.record = currentFlow.record;
-    flow.user = currentFlow.user;
-    flow.level = currentFlow.level;;
-    flow.status = false;
-    flow.observations = req.body.observations;
-    flow.finDate = currentFlow.finDate;
-    flow.light = currentFlow.light;
-    flow.case = req.body.case;
-    flow.reject = req.body.reject;
-    flow.timestamp = moment().format('YYYY-MM-DD HH:mm');
+    
+    //Verificar el estado del semaforo del caso
+    const caseLight = await calcCaseLight( record.date, record.caseFinDate); //El semaforo se actualiza el caso mas adelante
+    const userLight = await userCaseLight(record.date, currentFlow.finDate);
+    
+    //El caso se va a cerra no se crea uno nuevo
+    newFlow =  await updateCloseFlow(req.params.id, req.body.observations, userLight);
+    if (!newFlow) return ({'ERROR':'Algo salio mal al actualizar el flujo.'}); // Error 404 
 
-    let newFlow = await createFlow(flow);
-    if (!newFlow) return ({'ERROR':'Algo salio mal al crear el flujo.'}); // Error 404 
 
-    if(!flow.status){
-        const updateRecord =  await Records.findOneAndUpdate({'_id':flow.record}, {
-            status: true
+    if(!newFlow.status){
+        const updateRecord =  await Records.findOneAndUpdate({'_id':newFlow.record}, {
+            status: true,
+            caseLight: caseLight
             },{
                 new: true
             });
         if (!updateRecord) return ({'ERROR':'Algo salio mal al finalizar el radicado.'}); // Error 404 
     } 
-    /*****************************/
-    //Update Status flujo anterior
-    /*****************************/
-    if(newFlow._id) { 
-        const update =  await updateFlow(req.params.id);
-        //If not existing, return 404 - Not Found
-        if (!update) return ({'ERROR':'Algo salio mal al actualizar el flujo.'}); // Error 404 
-    }
-    // flow = await flow.save();
+    
     return newFlow;
 }
 

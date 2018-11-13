@@ -2,66 +2,72 @@ const mongoose = require('mongoose');
 const Joi = require('joi');
 
 const customersSchema = new mongoose.Schema({
-    identification: {
-        type: Number,
-        required: true,
-        unique: true
+    id: {
+        type: String,
+        required: true
     },
     name:{
         type: String,
-        required: true,
-        uppercase: true
+        uppercase: true,
+        required: true
     },
-    tc:{
+    affinity:{
+        type: String,
+        uppercase: true
+    }, 
+    ref:{
         type: String,
         required: true,
+        unique: true,
         uppercase: true
-    },
-    phone1:{
+    }, 
+    quote:{
         type: String,
-        uppercase: true
-    },
-    phone2:{
-        type: String,
+        required: true,
         uppercase: true
     },
     clinic:{
         type: String,
         uppercase: true
-    },
-    date:{
+    }, 
+    production:{
         type: String,
         uppercase: true
-    },
+    }, 
+    limitDate:{
+        type: String,
+        uppercase: true
+    }, 
+    minPay:{
+        type: String,
+        uppercase: true
+    }, 
+    pastdueAge:{
+        type: String,
+        uppercase: true
+    }, 
     pastdueDate:{
         type: String,
         uppercase: true
-    },
-    pastdueValue:{
-        type: Number
-    },
+    }, 
     gag:{
         type: String,
         uppercase: true
-    },
-    minPayment:{
-        type: Number
-    },
-    fee:{
-        type: Number
-    },
-    quota:{
-        type: Number
-    },
-    totalPayment:{
-        type: Number
-    },
-    affinity:{
+    }, 
+    totalPay:{
+        type: String,
+        uppercase: true
+    }, 
+    phone1:{
+        type: String,
+        uppercase: true
+    }, 
+    phone2:{
         type: String,
         uppercase: true
     },
-    production:{
-        type: Number,
+    email:{
+        type: String,
         uppercase: true
     }
 });
@@ -70,22 +76,22 @@ const customersSchema = new mongoose.Schema({
 function validateCustomer(requiement) {
 
     const schema = {
-        identification: Joi.number().min(3).required(),
-        name: Joi.string().min(3).required(),
-        tc: Joi.string(),
+        id: Joi.string().min(3).required(),
+        name: Joi.string(),
+        affinity: Joi.string(),
+        ref: Joi.string().min(3).required(),
+        quote: Joi.string(),
+        clinic: Joi.string(),
+        production: Joi.string(),
+        limitDate: Joi.string(),
+        minPay: Joi.string(),
+        pastdueAge: Joi.string(),
+        pastdueDate: Joi.string(),
+        gag: Joi.string(),
+        totalPay: Joi.string(),
         phone1: Joi.string(),
         phone2: Joi.string(),
-        clinic: Joi.string(),
-        date: Joi.string(),
-        pastdueDate: Joi.string(),
-        pastdueValue: Joi.number(),
-        gag: Joi.string(),
-        minPayment: Joi.number(),
-        fee: Joi.number(),
-        quota: Joi.number(),
-        totalPayment: Joi.number(),
-        affinity: Joi.string(),
-        production: Joi.number()
+        email: Joi.string()
     };
 
 

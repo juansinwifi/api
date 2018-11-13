@@ -134,19 +134,28 @@ async function calcFinDate(date, child){
                             
                             /*Si la hora del radicado esta dentro del rango de atencion la hora inicial es la de creacion
                             y no la de atencion */
+                            
+
                             if( iniDate > start && iniDate < fin ){
-                                //appDate('Es verdad, dentro del rango');
+                                appDate('Es verdad, dentro del rango');
                                 start = moment(iniDate); 
                                 iniH =  moment(iniDate).hours(); //Hora Inicial
                                 iniM =  moment(iniDate).minutes(); //Minutos Iniciales
-                                iniTime = iniH + (iniM / 60); //Todo en Horas
+                                iniTime = iniH + (iniM / 60); //Todo en Horas 
                             }
 
                             spendDay = finTime - iniTime; //Tiempo que puedo gastar en ese dia
+
+                            //Si el radicado es creado despues de la hora de atención
+                            if( iniDate > fin ){
+                               spendDay = 0; //No gasto tiempo ese dia
+                            }
+
+                            
                             closeTime = moment(start).add(total, 'h');
 
-                            //appDate('Inicia: ' + start.format("ddd YYYY-MM-DD HH:mm"));
-                            //appDate('Nivel ' + i + ' | Total: ' + total + ' | ' + myDay + ':' + spendDay);
+                            appDate('Inicia: ' + start.format("ddd YYYY-MM-DD HH:mm"));
+                            appDate('Nivel ' + i + ' | Total: ' + total + 'h | ' + myDay + ':' + spendDay);
                         
                     }
                 }
@@ -156,7 +165,7 @@ async function calcFinDate(date, child){
                 //Suamamos un dia y reiniciamos el horario inicial 
             
                 iniDate = moment(iniDate).add(1 ,'day').set({'hour': 0, 'minute': 0, 'second': 0, 'millisecond': 0});
-                //appDate('Nuevo Inicio: ' + iniDate.format("ddd YYYY-MM-DD HH:mm"));
+                appDate('Nuevo Inicio: ' + iniDate.format("ddd YYYY-MM-DD HH:mm"));
                 myDay = moment(iniDate).format("ddd").toLocaleLowerCase();
                 currentDay = area.attention[myDay];
                 total = total - spendDay;

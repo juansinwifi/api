@@ -74,7 +74,7 @@ function validateUser(user) {
     const schema = {
         active: Joi.boolean().required(),
         user: Joi.string().min(3).required(),
-        password: Joi.string().min(6).required(),
+        password: Joi.string().min(6),
         identification: Joi.number().required(),
         name: Joi.string().min(3).required(),
         email: Joi.string().email({ minDomainAtoms: 2 }).required(),

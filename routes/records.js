@@ -118,15 +118,17 @@ router.post('/',  async (req, res) => {
             const totalHours = (requirement.days * 24) + (requirement.hours);
             deadTime = currentTime.add(totalHours ,'hours');
 
-            //Tiempo de los Niveles
-            closeTimes = await calcFinDate(currentTime, child._id);
-            lastLevel = closeTimes.levels - 1; //Busco la maxima fecha
+           
 
             record.caseFinTime = totalHours;
-            record.caseFinDate = deadTime.format();
-            appDebuger(requirement.trackingDate);
-            if(requirement.trackingDate == true)  record.caseFinDate = moment(req.body.trackingDate).add(totalHours ,'hours');
+            record.caseFinDate = deadTime.format('YYYY-MM-DD HH:mm');
+            if(requirement.trackingDate == true)  record.caseFinDate = moment(req.body.trackingDate).add(totalHours ,'hours').format('YYYY-MM-DD HH:mm');
             
+             //Tiempo de los Niveles
+             closeTimes = await calcFinDate(record.date, child._id);
+             lastLevel = closeTimes.levels - 1; //Busco la maxima fecha
+
+
             record.caseLight = 100;
             record.area = child.levels[0].area;
     
@@ -162,7 +164,7 @@ router.post('/',  async (req, res) => {
         const iniFlow = {};
         iniFlow.record = saveRecord._id;
         iniFlow.user =  req.body.user;
-        iniFlow.level = 0;
+        iniFlow.level = -1;
         iniFlow.status = false;
         iniFlow.observations = record.observations;
         iniFlow.finDate = moment(record.date).format('YYYY-MM-DD HH:mm');
@@ -179,7 +181,6 @@ router.post('/',  async (req, res) => {
         flow.level = 0;
         if(requirementType == 'Inmediato') flow.status = false;
         if(requirementType != 'Inmediato') flow.status = true;
-        flow.observations = 'Radicado asignado.';
         if(requirementType == 'Inmediato') flow.finDate = moment(record.date).format('YYYY-MM-DD HH:mm');
         if(requirementType != 'Inmediato') flow.finDate = closeTimes[0];
         flow.light = 100;

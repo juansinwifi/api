@@ -45,9 +45,6 @@ router.post('/', auth, async (req, res) => {
     const { error } = validateProfile(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
-    const fail = validateProfileTypifications(req.body.typifications);
-    if (fail.error) return res.status(400).send(JSON.stringify(fail.error._object) + ' ' + fail.error.details[0].message);
-
     const nPermits = countPermissions(req.body);
 
     let profile = new Profiles({

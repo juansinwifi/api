@@ -48,7 +48,7 @@ function validateFlow(requiement) {
 
     const schema = {
         record: Joi.string().min(24).required(),
-        user: Joi.string().min(24).required(),
+        user: Joi.string().min(24),
         observations: Joi.string().required(),
         case: Joi.number().min(1).required(),
         reject: Joi.string().min(24).required()
