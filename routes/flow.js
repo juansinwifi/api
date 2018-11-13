@@ -150,7 +150,7 @@ router.get('/close/:id', async (req, res) => {
         p = i - 1 ;
         while ( i > 0){
             const findRecord = await Records.find({"_id": flow[p].record});
-            if (!findRecord) return res.send([]); // Error 404 
+            if (!findRecord || findRecord.length == 0) return res.send([]); // Error 404 
             
             let typification = await Typifications.findById(findRecord[0].typification);
             if (!typification || typification.length == 0) return res.status(404).send('No se encontro una tipificación.'); // Error 404 
