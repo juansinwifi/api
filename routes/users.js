@@ -57,21 +57,22 @@ router.get('/me', auth, async (req, res) => {
         while (i < user.profiles.length){
            const userProfile = await Profiles.findOne({_id : user.profiles[i]});
 
+           let j = 0;
+           const availables = userProfile.typifications.available;
+           console.log(availables);
+           while (j < availables.length){ 
+                //  me.typifications.push({"id": availables[j]}); 
+                const available = me.typifications.find(c => c.id === parseInt(availables[j]));
+                if (!available) me.typifications.push({"id":availables[j]}); 
+                j++;
+           }
+
            const typifications = userProfile.typifications.enable; //Enable solo aplica para este caso
            if (typifications){  
                me.operations.typifications = true;
                if (userProfile.permissions == "W") me.permissions.typifications = 1
-
-               let j = 0;
-               const availables = userProfile.typifications.available;
-               console.log(availables);
-               while (j < availables.length){ 
-                    //  me.typifications.push({"id": availables[j]}); 
-                    const available = me.typifications.find(c => c.id === parseInt(availables[j]));
-                    if (!available) me.typifications.push({"id":availables[j]}); 
-                    j++;
-               }
             }
+            
 
            const requirements = userProfile.requirements;
            if (requirements){
