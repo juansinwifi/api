@@ -108,7 +108,7 @@ function validateInformation(req) {
         phone1: Joi.string().required(),
         phone2: Joi.string().required(),
         email: Joi.string().required(),
-        user: Joi.string().min(26).required()
+        user: Joi.string().min(24).required()
     };
 
 
