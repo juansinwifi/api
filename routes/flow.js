@@ -28,13 +28,15 @@ router.get('/:id', async (req, res) => {
         
         const flow = await Flow.find({"user": req.params.id, "status": true});
         if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
-        appFlow('#' + flow + '#');
+        
 
         const response = [];
         i = flow.length;
+        appFlow('#' + i + '#');
         p = i - 1 ;
         while ( i > 0){
             const findRecord = await Records.find({"_id": flow[p].record});
+            appFlow('#' + flow[p].record + '#');
             if (!findRecord || findRecord.length == 0) return res.status(404).send('No se encuentran Radicados para este usuario.'); // Error 404 
             
             let typification = await Typifications.findById(findRecord[0].typification);
