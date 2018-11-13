@@ -3,8 +3,11 @@ const {Customer, validate} = require('../models/customer');
 const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
+const appCsv = require('debug')('app:csv');
 const Joi = require('joi'); //Validacion de Inputs en el servicio
 const _ = require('lodash');
+const csv = require('csvtojson');
+const csvFilePath = './uploads/customers/database.csv';
 
 /***********/
 /* CLIENTE */
@@ -27,7 +30,7 @@ router.get('/:id', auth, async (req, res) => {
     try{
         //Look up the Profiles
         //If not existing, return 404 - Not Found
-        const customers = await Customer.findOne({"identification": req.params.id});
+        const customers = await Customer.findOne({"id": req.params.id});
         if (!customers) return res.status(404).send('Cliente no encontrado'); // Error 404 
         res.send(customers);
     }
@@ -39,33 +42,45 @@ router.get('/:id', auth, async (req, res) => {
 
 //'CREAR CLIENTE' POST Method
 router.post('/',  async (req, res) => {
-    //Validate Data
-    //If invalid, return 404 - Bad Request
-    const { error } = validate(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
 
-    let customer = new Customer(_.pick(
-        req.body, [ 
-            'identification',
-            'name',
-            'tc',
-            'phone1',
-            'phone2',
-            'clinic',
-            'date',
-            'pastdueDate',
-            'pastdueValue',
-            'gag',
-            'minPayment',
-            'fee',
-            'quota',
-            'totalPayment',
-            'affinity',
-            'production'
-    ])
-    );
-   
-    customer = await customer.save();
-    res.send(customer);
+    //Creamos un arreglo con los datos subidos
+    const jsonArray = await csv({
+            delimiter: '|',
+            noheader: false,
+            headers: [
+                'id','name', 'affinity', 'ref', 'quote', 'clinic', 'production', 'limitDate', 
+                'minPay', 'pastdueAge', 'pastdueDate', 'gag', 'totalPay', 'phone1', 'phone2', 'email'
+            ]
+        })
+        .fromFile(csvFilePath)
+        .on('error',(err)=>{  
+            appCsv(err);
+            return res.status(404).send({'ERROR': 'No se pudo convertir el CSV.'}); 
+        });
+
+    const dropCustomers =  await Customer.collection.drop();
+    if (!dropCustomers) return res.status(404).send({'ERROR': 'No se pudo borrar la base de datos.'}); // Error 404
+    
+    let i = 0;
+    while(jsonArray[i]){
+
+        let customer = jsonArray[i];
+        //Validamos los datos enviados
+        const { error } = validate(customer);
+        if (error) return res.status(400).send({'ERROR': error.details[0].message});
+        //Borramos la BD anterior
+        
+        //Guardamos los nuevos datos en la BD
+        let saveCustomer = new Customer(_.pick(
+            customer, [ 
+                'id','name', 'affinity', 'ref', 'quote', 'clinic', 'production', 'limitDate', 
+                'minPay', 'pastdueAge', 'pastdueDate', 'gag', 'totalPay', 'phone1', 'phone2', 'email'
+            ])
+        );
+        saveCustomer = await saveCustomer.save();
+        i++;
+    }
+
+    res.send({'OK': jsonArray.length + ' clientes fueron guardados.'});
 });
 module.exports = router;

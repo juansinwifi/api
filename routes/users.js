@@ -237,6 +237,7 @@ router.put('/:id', auth, async (req, res) => {
 
         }
         catch(ex){
+            console.log(ex);
             res.status(500).send('Algo salio mal :( ' + ex);
         }
 
