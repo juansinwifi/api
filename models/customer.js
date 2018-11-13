@@ -105,14 +105,14 @@ const Customer = mongoose.model('Customers', customersSchema);
 function validateInformation(req) {
 
     const schema = {
-        id: Joi.string().min(3).required(),
-        phone1: Joi.string(),
-        phone2: Joi.string(),
-        email: Joi.string()
+        phone1: Joi.string().required(),
+        phone2: Joi.string().required(),
+        email: Joi.string().required(),
+        user: Joi.string().min(26).required()
     };
 
 
-    return Joi.validate(requiement, schema);
+    return Joi.validate(req, schema);
 }
 module.exports.Customer = Customer;
 module.exports.validate = validateCustomer;

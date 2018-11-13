@@ -1,5 +1,6 @@
 const auth = require('../middleware/auth');
 const {Customer, validate, validateInformation} = require('../models/customer');
+const {CustomersUpdates} = require('../models/customersUpdates'):
 const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
@@ -101,7 +102,7 @@ router.post('/',  async (req, res) => {
 
 
 //'MODIFICAR Canal de Comunicaciones' PUT Method
-router.put('/:id', auth, async (req, res) => {
+router.put('/:id',  async (req, res) => {
 
     //Validate Data
     //If invalid, return 404 - Bad Request
@@ -109,7 +110,7 @@ router.put('/:id', auth, async (req, res) => {
     //if (error) return res.status(400).send(error.details[0].message);
     if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
 
-   const customer = await Customer.findAndModify({'id': req.params.id}, {
+   const customer = await Customer.updateMany({'id': req.params.id}, {
         phone1: req.body.phone1,
         phone2: req.body.phone2,
         email: req.body.email
@@ -117,11 +118,20 @@ router.put('/:id', auth, async (req, res) => {
         new: true
     });
 
-    //If not existing, return 404 - Not Found
-    if (!customer) return res.status(404).send('Cliente no encontrado'); // Error 404 
+     //If not existing, return 404 - Not Found
+     if (!customer) return res.status(404).send('Cliente no encontrado'); // Error 404 
 
+    let customerUpdate = new CustomersUpdates({
+        user: req.body.user,
+        phone1: req.body.phone1,
+        phone2: req.body.phone2,
+        email: req.body.email
+    });
+   
+    customerUpdate = await customerUpdate.save();
+   
     //Return the updated course
-    res.send(channel);
+    res.send(customer);
     
 });
 module.exports = router;
