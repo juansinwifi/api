@@ -83,6 +83,8 @@ router.get('/:id', async (req, res) => {
                 if(!result) caseLight = 0;
             
             //Verificar el estado del semaforo del usuario
+                appFlow('##' + flow[p] + '##');
+
                 const creationUser =  findRecord[0].date;
                 const nowUser = moment()
                 const thenUser = flow[p].finDate;
