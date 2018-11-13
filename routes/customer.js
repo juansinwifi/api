@@ -26,12 +26,27 @@ router.get('/', auth, async (req, res) => {
 });
 
 //'BUSCAR UN CLIENTE ESPECIFICO' GET Method
-router.get('/:id', auth, async (req, res) => {
+router.get('/:id', async (req, res) => {
     try{
         //Look up the Profiles
         //If not existing, return 404 - Not Found
-        const customers = await Customer.findOne({"id": req.params.id});
+        const customers = await Customer.find({"id": req.params.id});
         if (!customers) return res.status(404).send('Cliente no encontrado'); // Error 404 
+        res.send(customers);
+    }
+    catch(ex){
+        console.log(ex);
+        res.status(500).send({ 'Error': 'Algo salio mal :('});
+    }
+});
+
+//'BUSCAR UN CREDITO especifico' GET Method
+router.get('/ref/:id', async (req, res) => {
+    try{
+        //Look up the Profiles
+        //If not existing, return 404 - Not Found
+        const customers = await Customer.find({"ref": req.params.id});
+        if (!customers) return res.status(404).send('# de Referencia no encontrado'); // Error 404 
         res.send(customers);
     }
     catch(ex){
