@@ -1,5 +1,5 @@
 const auth = require('../middleware/auth');
-const {Customer, validate} = require('../models/customer');
+const {Customer, validate, validateInformation} = require('../models/customer');
 const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
@@ -97,5 +97,31 @@ router.post('/',  async (req, res) => {
     }
 
     res.send({'OK': jsonArray.length + ' clientes fueron guardados.'});
+});
+
+
+//'MODIFICAR Canal de Comunicaciones' PUT Method
+router.put('/:id', auth, async (req, res) => {
+
+    //Validate Data
+    //If invalid, return 404 - Bad Request
+    const { error } = validateInformation(req.body);
+    //if (error) return res.status(400).send(error.details[0].message);
+    if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
+
+   const customer = await Customer.findAndModify({'id': req.params.id}, {
+        phone1: req.body.phone1,
+        phone2: req.body.phone2,
+        email: req.body.email
+    },{
+        new: true
+    });
+
+    //If not existing, return 404 - Not Found
+    if (!customer) return res.status(404).send('Cliente no encontrado'); // Error 404 
+
+    //Return the updated course
+    res.send(channel);
+    
 });
 module.exports = router;

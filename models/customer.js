@@ -100,5 +100,20 @@ function validateCustomer(requiement) {
 
 const Customer = mongoose.model('Customers', customersSchema);
 
+
+//Funcion de Validación de Campos del Perfil
+function validateInformation(req) {
+
+    const schema = {
+        id: Joi.string().min(3).required(),
+        phone1: Joi.string(),
+        phone2: Joi.string(),
+        email: Joi.string()
+    };
+
+
+    return Joi.validate(requiement, schema);
+}
 module.exports.Customer = Customer;
 module.exports.validate = validateCustomer;
+module.exports.validateInformation = validateInformation;

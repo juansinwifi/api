@@ -25,7 +25,7 @@ router.get('/:id', auth, async (req, res) => {
         
         //If not existing, return 404 - Not Found
         const records = await Records.find({"customer": req.params.id});
-        if (!records) return res.status(404).send('No se encuentran Radicados para este cliente.'); // Error 404 
+        if (!records || records.length == 0) return res.status(404).send('No se encuentran Radicados para este cliente.'); // Error 404 
         
         let i = records.length;
         let p = i - 1;
