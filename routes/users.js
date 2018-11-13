@@ -211,24 +211,40 @@ router.put('/:id', auth, async (req, res) => {
         }
 
         //Generamos el Password con bcryptjs
-        const salt = await bcrypt.genSalt(10);
-        const newPassword = await bcrypt.hash(req.body.password, salt);
+        if(req.body.password) {
+            const salt = await bcrypt.genSalt(10);
+            const newPassword = await bcrypt.hash(req.body.password, salt);
 
-        user = await Users.findOneAndUpdate({_id: req.params.id},{
-            active: req.body.active,
-            user: req.body.user,
-            password: newPassword,
-            identification: req.body.identification,
-            name: req.body.name,
-            email: req.body.email,
-            phone: req.body.phone,
-            profiles: req.body.profiles,
-            area: req.body.area,
-            country: req.body.country
-        },{
-            new: true
-        });
-    
+            user = await Users.findOneAndUpdate({_id: req.params.id},{
+                active: req.body.active,
+                user: req.body.user,
+                password: newPassword,
+                identification: req.body.identification,
+                name: req.body.name,
+                email: req.body.email,
+                phone: req.body.phone,
+                profiles: req.body.profiles,
+                area: req.body.area,
+                country: req.body.country
+            },{
+                new: true
+            });
+        }
+        else{
+            user = await Users.findOneAndUpdate({_id: req.params.id},{
+                active: req.body.active,
+                user: req.body.user,
+                identification: req.body.identification,
+                name: req.body.name,
+                email: req.body.email,
+                phone: req.body.phone,
+                profiles: req.body.profiles,
+                area: req.body.area,
+                country: req.body.country
+            },{
+                new: true
+            });
+        }
         //If not existing, return 404 - Not Found
         if (!user) return res.status(404).send('Usuario no encontrado'); // Error 404  
     
