@@ -62,7 +62,7 @@ router.get('/me', auth, async (req, res) => {
            console.log(availables);
            while (j < availables.length){ 
                 //  me.typifications.push({"id": availables[j]}); 
-                const available = me.typifications.find(c => c.id === parseInt(availables[j]));
+                const available = me.typifications.find(c => c.id == availables[j]);
                 if (!available) me.typifications.push({"id":availables[j]}); 
                 j++;
            }
