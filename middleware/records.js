@@ -47,6 +47,7 @@ async function createRecord ( req ) {
 
     let record = new Records( _.pick(req, [ 
         "customer",
+        "ref",
     "typification",
     "child",
     "channel",
