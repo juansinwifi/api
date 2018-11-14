@@ -24,8 +24,8 @@ router.get('/:id', auth, async (req, res) => {
 
         
         //If not existing, return 404 - Not Found
-        const records = await Records.find({"customer": req.params.id, "status": false});
-        if (!records) return res.status(404).send({'Error':'No se encuentran Radicados para este cliente.'}); // Error 404 
+        const records = await Records.find({"ref": req.params.id, "status": false});
+        if (!records) return res.status(404).send({'Error':'No se encuentran referencias de credito para este cliente.'}); // Error 404 
         
         let i = records.length;
         let p = i - 1;
@@ -65,9 +65,9 @@ router.get('/close/:id', auth, async (req, res) => {
 
         
         //If not existing, return 404 - Not Found
-        const records = await Records.find({"customer": req.params.id, "status": true});
+        const records = await Records.find({"ref": req.params.id, "status": true});
         appRecord(records);
-        if (!records) return res.status(404).send({'Error':'No se encuentran Radicados para este cliente.'}); // Error 404 
+        if (!records) return res.status(404).send({'Error':'No se encuentran referencias de credito para este cliente'}); // Error 404 
         
         let i = records.length;
         let p = i - 1;
