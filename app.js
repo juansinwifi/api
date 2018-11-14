@@ -45,7 +45,7 @@ const ws = require('./routes/workspace');
 const express = require('express');
 const app = express();
 
-mongoose.connect('mongodb://localhost/dentixDB', { useNewUrlParser: true })
+mongoose.connect('mongodb://dentix.b612.cloud/dentixDB', { useNewUrlParser: true })
     .then(() => dbDebuger('Connected to DentixDB...'))
     .catch(err => dbDebuger('Could not connect to DentixDB...', err));
 mongoose.set('useCreateIndex', true);

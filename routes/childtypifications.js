@@ -1,5 +1,6 @@
 const auth = require('../middleware/auth');
 const { ChildTypifications, validate, validateForms, validateLevels } = require('../models/childtypification');
+const { Typifications } = require('../models/typification');
 const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
@@ -13,6 +14,15 @@ const Joi = require('joi'); //Validacion de Inputs en el servicio
 //'BUSCAR TIPIFICACIONES ESPECIFICAS' GET Method
 router.get('/', auth, async(req, res) => {
     const childTypifications = await ChildTypifications.find().sort('name');
+    const typifications = [];
+    let i = 0;
+    while (childTypifications[i]){
+        let typification = await Typifications.findById(childTypifications[i].idParent);
+       
+        childTypifications[i]['description'] =  childTypifications[i]['description'] + ' | ' + typification.name;
+        i++;
+    };
+    
     res.send(childTypifications);
 });
 
@@ -23,6 +33,8 @@ router.get('/:id', auth, async(req, res) => {
         //Si no existe, return 404 - Not Found
         const childTypifications = await ChildTypifications.findById(req.params.id);
         if (!childTypifications) return res.status(404).send('Tipificación Especifica no encontrada'); // Error 404 
+        
+        
         res.send(childTypifications);
     } catch (ex) {
         res.status(500).send({ 'Error': 'Algo salio mal :(' })
