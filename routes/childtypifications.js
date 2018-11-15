@@ -70,6 +70,7 @@ router.post('/', auth, async (req, res) => {
         name: req.body.name,
         description: req.body.description,
         requirement: req.body.requirement,
+        list: req.body.list,
         forms: req.body.forms,
         levels: req.body.levels,
         maxTime: req.body.maxTime
@@ -110,6 +111,7 @@ router.put('/:id', auth, async(req, res) => {
         name: req.body.name,
         description: req.body.description,
         requirement: req.body.requirement,
+        list: req.body.list,
         forms: req.body.forms,
         levels: req.body.levels,
         maxTime: req.body.maxTime

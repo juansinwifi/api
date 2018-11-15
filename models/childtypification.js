@@ -33,6 +33,9 @@ const childtypificationSchema = new mongoose.Schema({
         required: true,
         minlength: 1
     },
+    list: {
+        type: Array
+    },
     maxTime: {
         type: Number,
         required: true,
@@ -54,6 +57,7 @@ function validateChildTypifications(requiement) {
         requirement: Joi.string().min(3).required(),
         forms: Joi.array().items(Joi.object()).min(1).required(),
         levels: Joi.array().items(Joi.object()).min(1).required(),
+        list: Joi.array(),
         maxTime: Joi.number().min(1).required()
     };
 
