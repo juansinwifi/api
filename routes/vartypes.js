@@ -6,7 +6,8 @@ const varTypes = [
     { id: 1, name: 'Texto', type: 'string' },
     { id: 2, name: 'Numero', type: 'number' },
     { id: 3, name: 'Moneda', type: 'number' },
-    { id: 4, name: 'Fecha', type: 'date' }
+    { id: 4, name: 'Fecha', type: 'date' },
+    { id: 5, name: 'Lista', type: 'array' }
 ];
 
 //'BUSCAR TIPOS DE VARIABLES' GET Method
