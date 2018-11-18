@@ -72,6 +72,14 @@ const profilesSchema = new mongoose.Schema({
     rejection:{
         type: Boolean,
         required: true
+    },
+    upload:{
+        type: Boolean,
+        required: true
+    },
+    reports:{
+        type: Boolean,
+        required: true
     }
 });
 
@@ -92,7 +100,9 @@ function validateProfile(requiement) {
         channel: Joi.boolean().required(),
         contact: Joi.boolean().required(),
         lights: Joi.boolean().required(),
-        rejection: Joi.boolean().required()
+        rejection: Joi.boolean().required(),
+        upload: Joi.boolean().required(),
+        reports: Joi.boolean().required()
     };
 
 
@@ -103,12 +113,9 @@ function validateProfile(requiement) {
 function validateProfileTypifications(requiement) {
 
     const schema = {
-        enable: Joi.boolean().required()
+        enable: Joi.boolean().required(),
+        available: Joi.array()
     };
-
-    if (requiement.enable == true) schema.available = Joi.array().items(Joi.string().required()).required()
-    if (requiement.enable == false) schema.available = Joi.array()
-
 
     return Joi.validate(requiement, schema);
 }
@@ -128,6 +135,8 @@ function countPermissions(requiement) {
     if (requiement.contact) countPermissions++;
     if (requiement.lights) countPermissions++;
     if (requiement.rejection) countPermissions++;
+    if (requiement.upload) countPermissions++;
+    if (requiement.reports) countPermissions++;
 
     return countPermissions;
 }

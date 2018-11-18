@@ -15,7 +15,7 @@ const csvFilePath = './uploads/customers/database.csv';
 /***********/
 
 //'BUSCAR CLIENTES' GET Method
-router.get('/', auth, async (req, res) => {
+router.get('/',  async (req, res) => {
     try {
     const customers = await Customer.find().sort('name');
     res.send(customers);

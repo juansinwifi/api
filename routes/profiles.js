@@ -60,7 +60,9 @@ router.post('/', auth, async (req, res) => {
         channel: req.body.channel,
         contact: req.body.contact,
         lights: req.body.lights,
-        rejection: req.body.rejection
+        rejection: req.body.rejection,
+        upload: req.body.upload,
+        reports: req.body.reports
     });
    
     profile = await profile.save();
@@ -78,7 +80,9 @@ router.put('/:id', auth, async (req, res) => {
 
     req.body.total = nPermits;
     const profile = await Profiles.findByIdAndUpdate(req.params.id,_.pick(
-        req.body, ['type', 'permissions', 'total', 'requirements', 'profiles', 'areas', 'users',  'typifications','case','channel', 'contact', 'lights', 'rejection'  ])
+        req.body, ['type', 'permissions', 'total', 'requirements', 
+                'profiles', 'areas', 'users',  'typifications','case',
+                'channel', 'contact', 'lights', 'rejection', 'upload', 'reports'  ])
     ,{
         new: true
     });

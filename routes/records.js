@@ -189,6 +189,7 @@ router.post('/',  async (req, res) => {
             record.status = false;
         }
        
+       
         //Guardar el radicado
         const saveRecord  = await createRecord(record);
         

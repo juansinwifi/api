@@ -11,12 +11,16 @@ const hemlet = require('helmet'); //Protege sobre vulnerabilidades de la cabecer
 const Joi = require('joi'); //Validacion de Inputs en el servicio
 const cors = require('cors'); //Permite Conexiones desde cualquier origen
 const mongoose = require('mongoose'); //Manejador de Node.js con MongoDB
+const fileUpload = require('express-fileupload');
 //Install NPM lodash 
 //Install NPM bcryptjs
 //Install NPM jsonwebtoken
 //Install NPM config
 //Install NPM moment
 //Install NPM csvtojson
+//Intall NPM express-fileupload
+//Instal npm  json2csv
+//Inatal npm install randomstring
 
 if (!config.get('jwtPrivateKey')){
     startupDebugger('FATAL ERROR: jwtPrivateKey  is not defined,');
@@ -39,7 +43,9 @@ const auth = require('./routes/auth');
 const customers = require('./routes/customer');
 const records = require('./routes/records');
 const flow = require('./routes/flow');
-const holidays = require('./routes/holidays')
+const holidays = require('./routes/holidays');
+const uploadDB = require('./routes/uploadDB');
+const reports = require('./routes/reports');
 const ws = require('./routes/workspace');
 
 const express = require('express');
@@ -54,6 +60,7 @@ mongoose.set('useCreateIndex', true);
 app.use(express.json()); //Lee entradas en formato json
 app.use(cors());
 app.use(hemlet());
+app.use(fileUpload()); //Permite subir archivos
 app.use('/api/admin/requirements', requirements); //Requerimientos
 app.use('/api/admin/typifications', typifications); //Tipificaciones
 app.use('/api/admin/childtypifications', childtypifications); //Tipificaciones Especificas
@@ -67,6 +74,8 @@ app.use('/api/admin/lights', lights); //Semaforos
 app.use('/api/admin/rejects', rejects); //Causal de Rechazo
 app.use('/api/admin/vartypes', vartypes); //Tipos de Variables
 app.use('/api/admin/holidays', holidays); //Dias Festivos
+app.use('/api/admin/upload/', uploadDB); //Sube la Base de Datos de Clientes
+app.use('/api/admin/reports/', reports); //Sube la Base de Datos de Clientes
 app.use('/api/auth', auth); //Autenticacion de Usuarios
 app.use('/api/users/', users); //Autenticacion de Usuarios
 app.use('/api/customers', customers); //Información de Clientes

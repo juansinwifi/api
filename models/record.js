@@ -105,6 +105,20 @@ function validateRecords(requiement) {
     return Joi.validate(requiement, schema);
 }
 
+//Funcion de Validación de Campos de Gestuón de Casos
+function validateReport(requiement) {
+
+    const schema = {
+       status: Joi.boolean().required(),
+       user: Joi.string()
+    };
+
+    return Joi.validate(requiement, schema);
+}
+
+
+
 module.exports.Records = Records;
 module.exports.Counter = CountRecords;
 module.exports.validate = validateRecords;
+module.exports.validateReport = validateReport;
