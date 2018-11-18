@@ -23,7 +23,7 @@ const {Users} = require('../models/user');
 
 
 //'BUSCAR Canal de Comunicaciones' GET Method
-router.get('/records', async (req, res) => {
+router.get('/records/opens', async (req, res) => {
     try {
 
     //Validate Data
