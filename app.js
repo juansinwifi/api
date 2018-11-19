@@ -53,7 +53,8 @@ const app = express();
 
 var corsOptions = {
     origin: 'http://dentixapp.b612.cloud',
-    optionsSuccessStatus: 200
+    optionsSuccessStatus: 200,
+    withCredentials: true
 };
 
 mongoose.connect('mongodb://dentix.b612.cloud/dentixDB', { useNewUrlParser: true })
