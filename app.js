@@ -51,13 +51,24 @@ const ws = require('./routes/workspace');
 const express = require('express');
 const app = express();
 
-
-//origin: 'http://localhost:4200',
+var whitelist = ['http://localhost:4200', 'http://dentixapp.b612.cloud']
 var corsOptions = {
-    origin: 'http://dentixapp.b612.cloud',
-    optionsSuccessStatus: 200,
-    credentials: true
-};
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
+  optionsSuccessStatus: 200,
+  credentials: true
+}
+//origin: 'http://localhost:4200',
+// var corsOptions = {
+//     origin: 'http://dentixapp.b612.cloud',
+//     optionsSuccessStatus: 200,
+//     credentials: true
+// };
 
 
 
