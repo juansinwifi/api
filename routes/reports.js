@@ -199,8 +199,8 @@ router.get('/records/opens', async (req, res) => {
         const csv = json2csvParser.parse(response);
         console.log(csv);
         const random = randomstring.generate(8);
-        const fileName = './downloads/Open' + random + '.txt';
-        fs.appendFile(fileName, csv, function (err) {
+        const fileName = './downloads/Open.txt';
+        fs.writeFile(fileName, csv, function (err) {
             if (err) throw err;
             console.log('Saved!');
         });
@@ -209,13 +209,13 @@ router.get('/records/opens', async (req, res) => {
 
         let file = fs.createReadStream(fileName);
         res.download(fileName, 'radicados_abiertos.csv');
-        file.on('end', function() {
-          fs.unlink(fileName, function() {
-            // file deleted
-            console.log('Deleted!');
-          });
-        });
-        file.pipe(res);
+        // file.on('end', function() {
+        //   fs.unlink(fileName, function() {
+        //     // file deleted
+        //     console.log('Deleted!');
+        //   });
+        // });
+        // file.pipe(res);
         }
     catch(ex){
         console.log(ex);
