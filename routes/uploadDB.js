@@ -32,8 +32,8 @@ router.post('/',  async(req, res) => {
       // Use the mv() method to place the file somewhere on your server
       dataBase.mv('./uploads/customers/database.csv', function(err) {
         if (err) return res.status(500).send(err);
-        res.send('Archivo Subido!');
       });
+      res.send({'OK':'Archivo Subido!'});
 });
 
 //Funcion de Validación de Campos de Contactos
