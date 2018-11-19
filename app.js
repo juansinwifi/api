@@ -51,8 +51,10 @@ const ws = require('./routes/workspace');
 const express = require('express');
 const app = express();
 
+
+// origin: 'http://localhost:4200',
 var corsOptions = {
-    origin: 'http://localhost:4200',
+    origin: 'http://dentixapp.b612.cloud',
     optionsSuccessStatus: 200,
     credentials: true
 };

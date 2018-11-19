@@ -11,7 +11,7 @@ var cors = require('cors')
 
 
 //'MODIFICAR TIPIFICACIÓN' PUT Method
-router.post('/', async(req, res) => {
+router.post('/',  async(req, res) => {
    
     //If invalid, return 404 - Bad Request
     appUpload(req.files);
@@ -22,13 +22,12 @@ router.post('/', async(req, res) => {
     
     //Validate Data
     //If invalid, return 404 - Bad Request
-    // const { error } = validate(req.files);
-    // if (error) return res.status(400).send(error.details[0].message);
+    const { error } = validate(req.files);
+    if (error) return res.status(400).send(error.details[0].message);
 
-    appUpload(req.files.database);
-    appUpload(req.files.file.name);
+
     // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
-      let dataBase = req.files;
+      let dataBase = req.files.database;
     
       // Use the mv() method to place the file somewhere on your server
       dataBase.mv('./uploads/customers/database.csv', function(err) {
