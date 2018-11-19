@@ -53,11 +53,11 @@ const app = express();
 
 
 // origin: 'http://localhost:4200',
-var corsOptions = {
-    origin: 'http://dentixapp.b612.cloud',
-    optionsSuccessStatus: 200,
-    credentials: true
-};
+// var corsOptions = {
+//     origin: 'http://dentixapp.b612.cloud',
+//     optionsSuccessStatus: 200,
+//     credentials: true
+// };
 
 mongoose.connect('mongodb://dentix.b612.cloud/dentixDB', { useNewUrlParser: true })
     .then(() => dbDebuger('Connected to DentixDB...'))
@@ -66,7 +66,8 @@ mongoose.set('useCreateIndex', true);
 
 
 app.use(express.json()); //Lee entradas en formato json
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
+app.use(cors());
 app.use(hemlet());
 app.use(fileUpload()); //Permite subir archivos
 app.use('/api/admin/requirements', requirements); //Requerimientos
