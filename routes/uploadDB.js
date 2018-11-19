@@ -4,13 +4,14 @@ const express = require('express');
 const router = express.Router();
 const appUpload = require('debug')('app:upload');
 const Joi = require('joi'); //Validacion de Inputs en el servicio
+var cors = require('cors')
 /*****************************/
 /* Carga de la Base de Datos */
 /****************************/
 
 
 //'MODIFICAR TIPIFICACIÓN' PUT Method
-router.post('/', async(req, res) => {
+router.post('/', cors(), async(req, res) => {
    
     //If invalid, return 404 - Bad Request
     appUpload(req.files);
