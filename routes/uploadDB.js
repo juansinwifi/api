@@ -9,8 +9,7 @@ var cors = require('cors')
 /* Carga de la Base de Datos */
 /****************************/
 var corsOptions = {
-    origin: 'http://localhost:3000, http://dentix.b612.cloud',
-    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+    origin: '*'
   }
 
 //'MODIFICAR TIPIFICACIÓN' PUT Method
