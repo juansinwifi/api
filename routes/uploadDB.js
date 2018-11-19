@@ -27,7 +27,7 @@ router.post('/',  async(req, res) => {
 
 
     // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
-      let dataBase = req.files.database;
+      let dataBase = req.files.file;
     
       // Use the mv() method to place the file somewhere on your server
       dataBase.mv('./uploads/customers/database.csv', function(err) {
@@ -42,7 +42,7 @@ router.post('/',  async(req, res) => {
 function validate(requiement) {
 
     const schema = {
-        database: Joi.object().required()
+        file: Joi.object().required()
     };
 
     return Joi.validate(requiement, schema);
