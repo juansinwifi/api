@@ -197,25 +197,26 @@ router.get('/records/opens', async (req, res) => {
                     ];
         const json2csvParser = new Json2csvParser({ fields });
         const csv = json2csvParser.parse(response);
-        console.log(csv);
+        appReport(csv);
         const random = randomstring.generate(8);
-        const fileName = './downloads/Open.txt';
+        const fileName = './downloads/Open' + random +'.txt';
         fs.writeFile(fileName, csv, function (err) {
             if (err) throw err;
-            console.log('Saved!');
+            appReport('Saved!');
+            
+            //Creamos un Stream para seguir el archivo y luego borrarlo
+            let file = fs.createReadStream(fileName);
+            res.download(fileName, 'radicados_abiertos.csv');
+            //Cuando se termine de bajar lo borramos
+            file.on('end', function() {
+              fs.unlink(fileName, function() {
+                // file deleted
+                appReport('Deleted!');
+              });
+            });
+            file.pipe(res);
         });
-        
-        
-
-        let file = fs.createReadStream(fileName);
-        res.download(fileName, 'radicados_abiertos.csv');
-        // file.on('end', function() {
-        //   fs.unlink(fileName, function() {
-        //     // file deleted
-        //     console.log('Deleted!');
-        //   });
-        // });
-        // file.pipe(res);
+     
         }
     catch(ex){
         console.log(ex);
