@@ -52,7 +52,7 @@ const express = require('express');
 const app = express();
 
 var corsOptions = {
-    origin: 'http://dentix.b612.cloud, http://localhost:4200',
+    origin: 'http://dentixapp.b612.cloud',
     optionsSuccessStatus: 200
 };
 
