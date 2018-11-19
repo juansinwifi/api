@@ -30,7 +30,9 @@ router.get('/me', auth, async (req, res) => {
             "channel": 0,
             "contact": 0,
             "lights": 0,
-            "rejection": 0
+            "rejection": 0,
+            "upload": 0,
+            "reports":0
         };
         const operations = {
             "typifications": false,
@@ -42,7 +44,9 @@ router.get('/me', auth, async (req, res) => {
             "channel": false,
             "contact": false,
             "lights": false,
-            "rejection": false
+            "rejection": false,
+            "upload": false,
+            "reports":false
         };
  
         const myTypifications =[];
@@ -127,6 +131,18 @@ router.get('/me', auth, async (req, res) => {
            if (rejection)  {
                me.operations.rejection = true;
                if (userProfile.permissions == "W") me.permissions.rejection = 1
+            }
+
+            const upload = userProfile.upload;
+            if (upload)  {
+                me.operations.upload = true;
+                if (userProfile.permissions == "W") me.permissions.upload = 1
+             }
+
+            const reports = userProfile.reports;
+           if (reports)  {
+               me.operations.reports = true;
+               if (userProfile.permissions == "W") me.permissions.reports = 1
             }
 
             me.roles.push(userProfile);
