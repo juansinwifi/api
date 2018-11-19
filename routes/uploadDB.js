@@ -8,12 +8,10 @@ var cors = require('cors')
 /*****************************/
 /* Carga de la Base de Datos */
 /****************************/
-var corsOptions = {
-    origin: '*'
-  }
+
 
 //'MODIFICAR TIPIFICACIÓN' PUT Method
-router.post('/', cors(corsOptions), async(req, res) => {
+router.post('/', async(req, res) => {
    
     //If invalid, return 404 - Bad Request
     appUpload(req.files);
