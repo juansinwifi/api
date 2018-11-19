@@ -69,7 +69,8 @@ function validateForms(requiement) {
 
     const schema = {
         description: Joi.string().min(2).required(),
-        type: Joi.number().min(1).required()
+        type: Joi.number().min(1).required(),
+        list: Joi.string()
     };
 
     return Joi.validate(requiement, schema);

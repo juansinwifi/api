@@ -51,7 +51,7 @@ const ws = require('./routes/workspace');
 const express = require('express');
 const app = express();
 
-var whitelist = ['http://localhost:4200', 'http://dentixapp.b612.cloud']
+var whitelist = ['http://localhost:4200', 'http://dentixapp.b612.cloud', 'http://localhost' ]
 var corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
