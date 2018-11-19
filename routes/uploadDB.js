@@ -25,9 +25,10 @@ router.post('/', async(req, res) => {
     const { error } = validate(req.files);
     if (error) return res.status(400).send(error.details[0].message);
 
-
+    appUpload(req.files.database);
+    appUpload(req.files.file.name);
     // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
-      let dataBase = req.files.database;
+      let dataBase = req.files.file.name;
     
       // Use the mv() method to place the file somewhere on your server
       dataBase.mv('./uploads/customers/database.csv', function(err) {
