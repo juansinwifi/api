@@ -8,10 +8,15 @@ var cors = require('cors')
 /*****************************/
 /* Carga de la Base de Datos */
 /****************************/
-
+// origin: 'http://localhost:4200',
+var corsOptions = {
+    origin: 'http://dentixapp.b612.cloud',
+    optionsSuccessStatus: 200,
+    credentials: true
+};
 
 //'MODIFICAR TIPIFICACIÓN' PUT Method
-router.post('/',  async(req, res) => {
+router.post('/', cors(corsOptions), async(req, res) => {
    
     //If invalid, return 404 - Bad Request
     appUpload(req.files);

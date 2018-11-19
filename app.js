@@ -59,6 +59,8 @@ const app = express();
 //     credentials: true
 // };
 
+
+
 mongoose.connect('mongodb://dentix.b612.cloud/dentixDB', { useNewUrlParser: true })
     .then(() => dbDebuger('Connected to DentixDB...'))
     .catch(err => dbDebuger('Could not connect to DentixDB...', err));
