@@ -51,19 +51,19 @@ const ws = require('./routes/workspace');
 const express = require('express');
 const app = express();
 
+var corsOptions = {
+    origin: '*',
+    optionsSuccessStatus: 200
+};
 
 mongoose.connect('mongodb://dentix.b612.cloud/dentixDB', { useNewUrlParser: true })
     .then(() => dbDebuger('Connected to DentixDB...'))
     .catch(err => dbDebuger('Could not connect to DentixDB...', err));
 mongoose.set('useCreateIndex', true);
 
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
+
 app.use(express.json()); //Lee entradas en formato json
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(hemlet());
 app.use(fileUpload()); //Permite subir archivos
 app.use('/api/admin/requirements', requirements); //Requerimientos
