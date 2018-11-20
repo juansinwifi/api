@@ -9,6 +9,7 @@ const Joi = require('joi'); //Validacion de Inputs en el servicio
 const _ = require('lodash');
 const csv = require('csvtojson');
 const csvFilePath = './uploads/customers/database.csv';
+const moment = require('moment');
 
 /***********/
 /* CLIENTE */
@@ -110,6 +111,8 @@ router.put('/:id',  async (req, res) => {
     //if (error) return res.status(400).send(error.details[0].message);
     if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
 
+   const date = moment().format('YYYY-MM-DD HH:mm');
+
    const customer = await Customer.updateMany({'id': req.params.id}, {
         phone1: req.body.phone1,
         phone2: req.body.phone2,
@@ -122,10 +125,12 @@ router.put('/:id',  async (req, res) => {
      if (!customer) return res.status(404).send('Cliente no encontrado'); // Error 404 
 
     let customerUpdate = new CustomersUpdates({
+        customer: req.params.id,
         user: req.body.user,
         phone1: req.body.phone1,
         phone2: req.body.phone2,
-        email: req.body.email
+        email: req.body.email,
+        date: date
     });
    
     customerUpdate = await customerUpdate.save();
