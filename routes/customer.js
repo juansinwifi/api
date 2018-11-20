@@ -113,6 +113,9 @@ router.put('/:id',  async (req, res) => {
 
    const date = moment().format('YYYY-MM-DD HH:mm');
 
+   const currentUser = await Users.findOne({"_id": req.body.user});
+   if (!currentUser) return res.status(404).send('Usuario no encontrado'); // Error 404 
+
    const customer = await Customer.updateMany({'id': req.params.id}, {
         phone1: req.body.phone1,
         phone2: req.body.phone2,
@@ -126,7 +129,7 @@ router.put('/:id',  async (req, res) => {
 
     let customerUpdate = new CustomersUpdates({
         customer: req.params.id,
-        user: req.body.user,
+        user: currentUser.name,
         phone1: req.body.phone1,
         phone2: req.body.phone2,
         email: req.body.email,
