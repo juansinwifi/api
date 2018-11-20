@@ -50,6 +50,10 @@ router.get('/records/opens', async (req, res) => {
             let child = await ChildTypifications.findById(findRecord[0].child);
             if (!child || child.length == 0) return res.status(404).send('No se encontro una tipificación especifica.'); // Error 404 
             
+            const requirement = await Requirements.findById(child.requirement);
+            if (!requirement) return res.status(404).send('Requerimiento no encontrado'); // Error 404 
+           
+
             const light = await Lights.findOne({"name": 'CASO'});
             if (!light) return res.status(404).send('Semaforo de casos no encontrado'); // Error 404 
 
@@ -145,9 +149,11 @@ router.get('/records/opens', async (req, res) => {
                 caseLight: caseLight,
                 typification: typification.name,
                 child: child.name,
+                pqr: requirement.name,
                 date: findRecord[0].date,
                 userFinDate: thenUser,
-                caseFinDate: caseFinDate
+                caseFinDate: caseFinDate,
+                trackingDate: findRecord[0].trackingDate
             };
 
             response.push(record);
@@ -168,6 +174,7 @@ router.get('/records/opens', async (req, res) => {
                             value: 'user'
                         },
                         {
+
                             label: 'SEMAFORO USUARIO',
                             value: 'userLight'
                         },
@@ -184,6 +191,10 @@ router.get('/records/opens', async (req, res) => {
                             value:  'child'
                         }, 
                         {
+                            label: 'TIPO PQR',
+                            value:  'pqr'
+                        },
+                        {
                             label: 'CREACION',
                             value: 'date'
                         },
@@ -194,6 +205,10 @@ router.get('/records/opens', async (req, res) => {
                         {
                             label: 'VENCIMIENTO CASO',
                             value: 'caseFinDate'
+                        },{
+                            label: 'FECHA DE SEGUIMIENTO',
+                            value: 'trackingDate'
+                            
                         }
                     ];
         const json2csvParser = new Json2csvParser({ fields });
