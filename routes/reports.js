@@ -26,7 +26,7 @@ const {Users} = require('../models/user');
 
 
 //'Casos Abiertos
-router.post('/records/opens', async (req, res) => {
+router.post('/records/opens/', async (req, res) => {
     try {
         appReport(req.body);
     //Validate Data
