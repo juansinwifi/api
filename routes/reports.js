@@ -223,8 +223,8 @@ router.post('/records/opens/', async (req, res) => {
         fs.writeFile(fileName, csv, function (err) {
             if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});;
             appReport('Saved!');
-            const res = fileName.replace("/", "#");
-            res.send({ 'file': res});
+            const newName = fileName.replace("/", "#");
+            res.send({ 'file': newName});
         });
      
         }
