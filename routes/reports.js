@@ -26,7 +26,7 @@ const {Users} = require('../models/user');
 
 
 //'Casos Abiertos
-router.get('/records/opens', async (req, res) => {
+router.post('/records/opens', async (req, res) => {
     try {
 
     //Validate Data
@@ -257,14 +257,14 @@ router.get('/records/closes', async (req, res) => {
     const date =  moment(req.body.date).format('YYYY-MM-DD') ;
     appReport(date);
     //const flow = await Flow.find({"user": req.params.id, "status": true});
-    const flow = await Flow.find({"status": false, "case":4 });
-    if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
+    const findRecord = await Records.find({"status":true,  "date":  { $regex: date} });
+    if (!findRecord) return res.send([]); // Error 404 
  
     const response = [];
     let i = flow.length;
     let p = i - 1 ;
     while ( i > 0){
-        const findRecord = await Records.find({"_id": flow[p].record});
+        const findRecord = await Records.find({"status":true,  "date":  { $regex: date} });
         if (!findRecord || findRecord.length == 0) return res.send([]); // Error 404 
         
         let typification = await Typifications.findById(findRecord[0].typification);
