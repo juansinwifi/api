@@ -1,6 +1,7 @@
 const auth = require('../middleware/auth');
 const {Customer, validate, validateInformation} = require('../models/customer');
 const {CustomersUpdates} = require('../models/customersUpdates');
+const {Users} = require('../models/user');
 const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();

@@ -68,6 +68,9 @@ const recordSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    trackingDate:{
+        type: String
+    },
     area: {
         type: String,
         required: true
