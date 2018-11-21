@@ -1,5 +1,6 @@
 const auth = require('../middleware/auth');
-const {Records,validateReport} = require('../models/record');
+const {Records} = require('../models/record');
+const {validateReport} = require('../models/reports');
 const {Flow} = require('../models/flow');
 const {CustomersUpdates} = require('../models/customersUpdates');
 const {Requirements} = require('../models/requirements');
@@ -30,9 +31,11 @@ router.get('/records/opens', async (req, res) => {
 
     //Validate Data
     //If invalid, return 404 - Bad Request
-    // const { error } = validateReport(req.body);
-    // if (error) return res.status(400).send({'ERROR ':  error.details[0].message});
+    const { error } = validateReport(req.body);
+    if (error) return res.status(400).send({'ERROR':  error.details[0].message});
 
+    const date =  moment(req.body.date).format('YYYY-MM-DD') ;
+    appReport(date);
     //const flow = await Flow.find({"user": req.params.id, "status": true});
         const flow = await Flow.find({"status": true});
         if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
@@ -41,9 +44,9 @@ router.get('/records/opens', async (req, res) => {
         i = flow.length;
         p = i - 1 ;
         while ( i > 0){
-            const findRecord = await Records.find({"_id": flow[p].record});
+            const findRecord = await Records.find({"_id": flow[p].record, "date":  { $regex: date} });
             appReport('#' + flow[0] + '#');
-            if (!findRecord || findRecord.length == 0) return res.status(404).send('No se encuentran Radicados para este usuario.'); // Error 404 
+            if (!findRecord || findRecord.length == 0) return res.status(404).send({'ERROR':'No se encuentran Radicados para este usuario.'}); // Error 404 
             
             let typification = await Typifications.findById(findRecord[0].typification);
             if (!typification || typification.length == 0) return res.status(404).send('No se encontro una tipificación.'); // Error 404 
@@ -161,6 +164,138 @@ router.get('/records/opens', async (req, res) => {
             i = i - 1;
             p = p - 1;
         }
+
+        //Convertir respuesta a CSV
+
+        
+        const fields = [
+                        { 
+                            label: 'RADICADO',
+                            value: 'number'
+                        }, 
+                        {
+                            label: 'USUARIO',
+                            value: 'user'
+                        },
+                        {
+
+                            label: 'SEMAFORO USUARIO',
+                            value: 'userLight'
+                        },
+                        {
+                            label: 'SEMAFORO CASO',
+                            value: 'caseLight'
+                        },
+                        {
+                            label: 'TIPIFICACION',
+                            value: 'typification'
+                        },
+                        {
+                            label: 'TIPIFICACION ESPECIFICA',
+                            value:  'child'
+                        }, 
+                        {
+                            label: 'TIPO PQR',
+                            value:  'pqr'
+                        },
+                        {
+                            label: 'CREACION',
+                            value: 'date'
+                        },
+                        {
+                            label: 'VENCIMIENTO USUARIO',
+                            value: 'userFinDate'
+                        },
+                        {
+                            label: 'VENCIMIENTO CASO',
+                            value: 'caseFinDate'
+                        },{
+                            label: 'FECHA DE SEGUIMIENTO',
+                            value: 'trackingDate'
+                            
+                        }
+                    ];
+        const json2csvParser = new Json2csvParser({ fields });
+        const csv = json2csvParser.parse(response);
+        appReport(csv);
+        const random = randomstring.generate(8);
+        const fileName = './downloads/Open' + random +'.txt';
+        fs.writeFile(fileName, csv, function (err) {
+            if (err) throw err;
+            appReport('Saved!');
+            
+            //Creamos un Stream para seguir el archivo y luego borrarlo
+            let file = fs.createReadStream(fileName);
+            res.download(fileName, 'radicados_abiertos.csv');
+            //Cuando se termine de bajar lo borramos
+            file.on('end', function() {
+              fs.unlink(fileName, function() {
+                // file deleted
+                appReport('Deleted!');
+              });
+            });
+            file.pipe(res);
+        });
+     
+        }
+    catch(ex){
+        console.log(ex);
+        res.status(500).send({ 'Error': 'Algo salio mal :('});
+    }
+});
+
+//Casos Cerrados
+//'Casos Abiertos
+router.get('/records/closes', async (req, res) => {
+    try {
+
+    //Validate Data
+    //If invalid, return 404 - Bad Request
+    const { error } = validateReport(req.body);
+    if (error) return res.status(400).send({'ERROR':  error.details[0].message});
+
+    const date =  moment(req.body.date).format('YYYY-MM-DD') ;
+    appReport(date);
+    //const flow = await Flow.find({"user": req.params.id, "status": true});
+    const flow = await Flow.find({"status": false, "case":4 });
+    if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
+ 
+    const response = [];
+    let i = flow.length;
+    let p = i - 1 ;
+    while ( i > 0){
+        const findRecord = await Records.find({"_id": flow[p].record});
+        if (!findRecord || findRecord.length == 0) return res.send([]); // Error 404 
+        
+        let typification = await Typifications.findById(findRecord[0].typification);
+        if (!typification || typification.length == 0) return res.status(404).send('No se encontro una tipificación.'); // Error 404 
+        
+        let child = await ChildTypifications.findById(findRecord[0].child);
+        if (!child || child.length == 0) return res.status(404).send('No se encontro una tipificación especifica.'); // Error 404 
+        
+        const light = await Lights.findOne({"name": 'CASO'});
+        if (!light) return res.status(404).send('Semaforo de casos no encontrado'); // Error 404 
+
+        const lightUser = await Lights.findOne({"name": 'USUARIO'});
+        if (!lightUser) return res.status(404).send('Semaforo de usuario no encontrado'); // Error 404 
+       
+        const record = { 
+            _id: findRecord[0]._id,
+            number: findRecord[0].number,
+            userLight: flow[p].light,
+            caseLight: findRecord[0].caseLight,
+            typification: typification.name,
+            child: child.name,
+            date: findRecord[0].date,
+            caseUserDate: findRecord[0].caseFinDate
+        };
+
+        response.push(record);
+        i = i - 1;
+        p = p - 1;
+    }
+
+ 
 
         //Convertir respuesta a CSV
 

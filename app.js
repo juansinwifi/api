@@ -77,9 +77,8 @@ mongoose.connect('mongodb://dentix.b612.cloud/dentixDB', { useNewUrlParser: true
     .catch(err => dbDebuger('Could not connect to DentixDB...', err));
 mongoose.set('useCreateIndex', true);
 
-
 app.use(express.json()); //Lee entradas en formato json
-app.use(cors(corsOptions));
+app.use(cors());
 // app.use(cors());
 app.use(hemlet());
 app.use(fileUpload()); //Permite subir archivos
