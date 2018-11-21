@@ -59,6 +59,7 @@ async function createRecord ( req ) {
     "date",
     "caseFinTime",
     "caseFinDate",
+    "trackingDate",
     "caseLight",
     "area",
     "levels",
