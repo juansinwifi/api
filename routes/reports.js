@@ -53,7 +53,7 @@ router.get('/records/opens', async (req, res) => {
             
             const requirement = await Requirements.findById(child.requirement);
             if (!requirement) return res.status(404).send('Requerimiento no encontrado'); // Error 404 
-           appReport(child.requirement);
+           
 
             const light = await Lights.findOne({"name": 'CASO'});
             if (!light) return res.status(404).send('Semaforo de casos no encontrado'); // Error 404 
@@ -150,7 +150,7 @@ router.get('/records/opens', async (req, res) => {
                 caseLight: caseLight,
                 typification: typification.name,
                 child: child.name,
-                pqr: requirement.name,
+                pqr: requirement.type,
                 date: findRecord[0].date,
                 userFinDate: thenUser,
                 caseFinDate: caseFinDate,
