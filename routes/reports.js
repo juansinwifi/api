@@ -223,6 +223,7 @@ router.post('/records/opens/', async (req, res) => {
         fs.writeFile(fileName, csv, function (err) {
             if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});;
             appReport('Saved!');
+            const res = str.replace("/", "#");
             res.send({ 'file': fileName});
         });
      
@@ -236,7 +237,7 @@ router.post('/records/opens/', async (req, res) => {
 //'Casos Abiertos
 router.get('/records/opens/:file', async (req, res) => {
     try { 
-        const fileName = req.params.file;
+        const fileName = str.replace("#", "/");
             //Creamos un Stream para seguir el archivo y luego borrarlo
             let file = fs.createReadStream(fileName);
             res.download(fileName, 'radicados_abiertos.csv');
