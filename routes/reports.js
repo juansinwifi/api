@@ -46,7 +46,7 @@ router.post('/records/opens', async (req, res) => {
         while ( i > 0){
             const findRecord = await Records.find({"_id": flow[p].record, "date":  { $regex: date} });
             appReport('#' + flow[0] + '#');
-            if (!findRecord || findRecord.length == 0) return res.status(404).send({'ERROR':'No se encuentran Radicados para este usuario.'}); // Error 404 
+            if (!findRecord || findRecord.length == 0) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
             
             let typification = await Typifications.findById(findRecord[0].typification);
             if (!typification || typification.length == 0) return res.status(404).send('No se encontro una tipificación.'); // Error 404 
@@ -221,9 +221,22 @@ router.post('/records/opens', async (req, res) => {
         const random = randomstring.generate(8);
         const fileName = './downloads/Open' + random +'.txt';
         fs.writeFile(fileName, csv, function (err) {
-            if (err) throw err;
+            if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});;
             appReport('Saved!');
-            
+            res.send({ 'file': fileName});
+        });
+     
+        }
+    catch(ex){
+        console.log(ex);
+        res.status(500).send({ 'Error': 'Algo salio mal :('});
+    }
+});
+
+//'Casos Abiertos
+router.get('/records/opens/:file', async (req, res) => {
+    try { 
+        const fileName = req.params.file;
             //Creamos un Stream para seguir el archivo y luego borrarlo
             let file = fs.createReadStream(fileName);
             res.download(fileName, 'radicados_abiertos.csv');
@@ -235,7 +248,6 @@ router.post('/records/opens', async (req, res) => {
               });
             });
             file.pipe(res);
-        });
      
         }
     catch(ex){
@@ -246,7 +258,7 @@ router.post('/records/opens', async (req, res) => {
 
 //Casos Cerrados
 //'Casos Abiertos
-router.get('/records/closes', async (req, res) => {
+router.post('/records/closes', async (req, res) => {
     try {
 
     //Validate Data
@@ -258,19 +270,17 @@ router.get('/records/closes', async (req, res) => {
     appReport(date);
     //const flow = await Flow.find({"user": req.params.id, "status": true});
     const findRecord = await Records.find({"status":true,  "date":  { $regex: date} });
-    if (!findRecord) return res.send([]); // Error 404 
+    if (!findRecord) return res.send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
  
     const response = [];
-    let i = flow.length;
+    let i = findRecord.length;
     let p = i - 1 ;
     while ( i > 0){
-        const findRecord = await Records.find({"status":true,  "date":  { $regex: date} });
-        if (!findRecord || findRecord.length == 0) return res.send([]); // Error 404 
         
-        let typification = await Typifications.findById(findRecord[0].typification);
+        let typification = await Typifications.findById(findRecord[p].typification);
         if (!typification || typification.length == 0) return res.status(404).send('No se encontro una tipificación.'); // Error 404 
         
-        let child = await ChildTypifications.findById(findRecord[0].child);
+        let child = await ChildTypifications.findById(findRecord[p].child);
         if (!child || child.length == 0) return res.status(404).send('No se encontro una tipificación especifica.'); // Error 404 
         
         const light = await Lights.findOne({"name": 'CASO'});
