@@ -162,8 +162,9 @@ router.post('/',  async (req, res) => {
 
             record.caseFinTime = totalHours;
             record.caseFinDate = deadTime.format('YYYY-MM-DD HH:mm');
-            if(requirement.trackingDate == true)  record.caseFinDate = moment(req.body.trackingDate).add(totalHours ,'hours').format('YYYY-MM-DD HH:mm');
             
+            if(requirement.trackingDate == true)  record.caseFinDate = moment(req.body.trackingDate).add(totalHours ,'hours').format('YYYY-MM-DD HH:mm');
+            record.trackingDate = trackingDate.format('YYYY-MM-DD HH:mm');
              //Tiempo de los Niveles
              closeTimes = await calcFinDate(record.date, child._id);
              lastLevel = closeTimes.levels - 1; //Busco la maxima fecha

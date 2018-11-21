@@ -28,7 +28,7 @@ const {Users} = require('../models/user');
 //'Casos Abiertos
 router.post('/records/opens', async (req, res) => {
     try {
-
+        appReport(req.body);
     //Validate Data
     //If invalid, return 404 - Bad Request
     const { error } = validateReport(req.body);
