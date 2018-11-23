@@ -195,10 +195,10 @@ async function uploadFile(req){
         try
         {
         //If invalid, return 404 - Bad Request
-        appDebuger(req.files);
+        appDebuger(req);
        
         if (!req.files) {
-            return res.status(400).send({'Error':'No hay archivo para subir.'});
+            return ({'Error':'No hay archivo para subir.'});
         }
     
           let file = req.files.file;
@@ -228,7 +228,7 @@ async function uploadFile(req){
     
           //Use the mv() method to place the file somewhere on your server
           file.mv(path, function(err) {
-            if (err) return res.status(500).send(err);
+            if (err) return (err);
             if (!err)  {
     
                 appDebuger({'OK':'Archivo Subido!' + file.name});
@@ -237,7 +237,7 @@ async function uploadFile(req){
     
           catch (ex) {
             console.log(ex);
-            res.status(500).send(ex)
+            return (ex)
         }
 
 }
