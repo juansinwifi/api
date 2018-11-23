@@ -37,6 +37,9 @@ const flowSchema = new mongoose.Schema({
     timestamp:{
         type: String,
         required: true
+    },
+    file:{
+        type: String
     }
 
 });

@@ -250,7 +250,7 @@ router.post('/',  async (req, res) => {
 router.post('/upload',  async(req, res) => {
     try
     {
-    appRecord(req.body.record);
+    appRecord(req.body.enviar);
     //If invalid, return 404 - Bad Request
     appDebuger(req.files);
    
