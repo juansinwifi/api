@@ -193,7 +193,7 @@ router.post('/',  async (req, res) => {
             record.status = false;
         }
        
-       
+       appDebuger('=====' + req.files + '++++++');
         //Guardar el radicado
         const saveRecord  = await createRecord(record);
         
