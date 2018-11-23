@@ -248,6 +248,8 @@ router.post('/',  async (req, res) => {
 
 //'SUBIR ARCHIVO'
 router.post('/upload',  async(req, res) => {
+    try
+    {
     appRecord(req.body.record);
     //If invalid, return 404 - Bad Request
     appDebuger(req.files);
@@ -256,7 +258,7 @@ router.post('/upload',  async(req, res) => {
         return res.status(400).send({'Error':'No hay archivo para subir.'});
     }
 
-      let file = req.files.files;
+      let file = req.files.file;
       let record = req.body.record;
       //Verificar si esta creado el folder raiz
       const root = './uploads/records/';
@@ -285,9 +287,12 @@ router.post('/upload',  async(req, res) => {
       file.mv(path, function(err) {
         if (err) return res.status(500).send(err);
         if (!err)  res.send({'OK':'Archivo Subido!'});
-      });
+      });}
 
-  
+      catch (ex) {
+        console.log(ex);
+        res.status(500).send(ex)
+    }
      
 });
 module.exports = router;
