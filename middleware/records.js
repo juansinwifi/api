@@ -190,8 +190,60 @@ async function calcFinDate(date, child){
    
 }
 
+async function uploadFile(req){
+   
+        try
+        {
+        //If invalid, return 404 - Bad Request
+        appDebuger(req.files);
+       
+        if (!req.files) {
+            return res.status(400).send({'Error':'No hay archivo para subir.'});
+        }
+    
+          let file = req.files.file;
+          let record = req.body.record;
+          //Verificar si esta creado el folder raiz
+          const root = './uploads/records/';
+          if (!fs.existsSync(root)){
+            fs.mkdirSync(root, 0775);
+            appDebuger('Folder: Raiz Creado')
+          }
+          
+          //Verificar si esta creado el folder año
+          const year = root + '/' + moment().format('YYYY');
+          if (!fs.existsSync(year)){
+            fs.mkdirSync(year, 0775);
+            appDebuger('Folder: Año Creado')
+          }
+    
+          //Verificar si esta creado el folder mes
+          const month = year + '/' + moment().format('MM');
+          if (!fs.existsSync(month)){
+            fs.mkdirSync(month, 0775);
+            appDebuger('Folder: Mes Creado')
+          }
+    
+          const path = month + '/' + record + '_' + file.name;
+    
+          //Use the mv() method to place the file somewhere on your server
+          file.mv(path, function(err) {
+            if (err) return res.status(500).send(err);
+            if (!err)  {
+    
+                appDebuger({'OK':'Archivo Subido!' + file.name});
+            }
+          });}
+    
+          catch (ex) {
+            console.log(ex);
+            res.status(500).send(ex)
+        }
+
+}
 
 module.exports.validateCounter = validateCounter;
 module.exports.updateCounter = updateCounter;
 module.exports.createRecord = createRecord;
 module.exports.calcFinDate = calcFinDate;
+module.exports.uploadFile = uploadFile;

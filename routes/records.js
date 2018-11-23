@@ -7,7 +7,7 @@ const { Requirements } = require('../models/requirements');
 const { Channels } = require('../models/channels');
 const { Contacts } = require('../models/contacts');
 const { Users } = require('../models/user');
-const {validateCounter, updateCounter, createRecord, calcFinDate} = require('../middleware/records');
+const {validateCounter, updateCounter, createRecord, calcFinDate, uploadFile} = require('../middleware/records');
 const {createFlow} = require('../middleware/flow');
 const appDebuger = require('debug')('app:app');
 const appRecord = require('debug')('app:record');
@@ -194,6 +194,7 @@ router.post('/',  async (req, res) => {
         }
        
        appDebuger('=====' + req.body.file + '++++++');
+       const uploadFile  = await uploadFile(record);
        req.body.file = '';
         //Guardar el radicado
         const saveRecord  = await createRecord(record);
