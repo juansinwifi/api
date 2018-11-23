@@ -286,7 +286,10 @@ router.post('/upload',  async(req, res) => {
       //Use the mv() method to place the file somewhere on your server
       file.mv(path, function(err) {
         if (err) return res.status(500).send(err);
-        if (!err)  res.send({'OK':'Archivo Subido!'});
+        if (!err)  {
+
+            res.send({'OK':'Archivo Subido!' + file.name});
+        }
       });}
 
       catch (ex) {
