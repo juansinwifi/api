@@ -16,6 +16,7 @@ const express = require('express');
 const router = express.Router();
 const Joi = require('joi'); //Validacion de Inputs en el servicio
 const moment = require('moment'); //Libreria para manejo de fechas
+const fs = require('fs');
 
 
 //'BUSCAR RADICADO' GET Method
@@ -164,7 +165,7 @@ router.post('/',  async (req, res) => {
             record.caseFinDate = deadTime.format('YYYY-MM-DD HH:mm');
             
             if(requirement.trackingDate == true)  {
-            record.caseFinDate = moment(req.body.trackingDate).add(totalHours ,'hours').format('YYYY-MM-DD HH:mm');
+                record.caseFinDate = moment(req.body.trackingDate).add(totalHours ,'hours').format('YYYY-MM-DD HH:mm');
             record.trackingDate = moment(req.body.trackingDate).format('YYYY-MM-DD HH:mm');
             }
              //Tiempo de los Niveles
@@ -245,4 +246,48 @@ router.post('/',  async (req, res) => {
     }
 });
 
+//'SUBIR ARCHIVO'
+router.post('/upload',  async(req, res) => {
+    appRecord(req.body.record);
+    //If invalid, return 404 - Bad Request
+    appDebuger(req.files);
+   
+    if (!req.files) {
+        return res.status(400).send({'Error':'No hay archivo para subir.'});
+    }
+
+      let file = req.files.files;
+      let record = req.body.record;
+      //Verificar si esta creado el folder raiz
+      const root = './uploads/records/';
+      if (!fs.existsSync(root)){
+        fs.mkdirSync(root, 0775);
+        appDebuger('Folder: Raiz Creado')
+      }
+      
+      //Verificar si esta creado el folder año
+      const year = root + '/' + moment().format('YYYY');
+      if (!fs.existsSync(year)){
+        fs.mkdirSync(year, 0775);
+        appDebuger('Folder: Año Creado')
+      }
+
+      //Verificar si esta creado el folder mes
+      const month = year + '/' + moment().format('MM');
+      if (!fs.existsSync(month)){
+        fs.mkdirSync(month, 0775);
+        appDebuger('Folder: Mes Creado')
+      }
+
+      const path = month + '/' + record + '_' + file.name;
+
+      //Use the mv() method to place the file somewhere on your server
+      file.mv(path, function(err) {
+        if (err) return res.status(500).send(err);
+        if (!err)  res.send({'OK':'Archivo Subido!'});
+      });
+
+  
+     
+});
 module.exports = router;

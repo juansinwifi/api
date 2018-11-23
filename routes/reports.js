@@ -36,8 +36,11 @@ router.post('/records/opens/', async (req, res) => {
 
     const date =  moment(req.body.date).format('YYYY-MM-DD').toString()  ;
     appReport(date);
-    //const flow = await Flow.find({"user": req.params.id, "status": true});
-        const flow = await Flow.find({"status": true});
+    
+    // const records = await Records.find({ "date": new RegExp(date) });
+    // if (!records || findRecord.length == 0) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
+    
+         const flow = await Flow.find({"status": true});
         if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
         
         const response = [];
