@@ -102,6 +102,7 @@ router.get('/close/:id', auth, async (req, res) => {
         res.status(500).send({ 'Error': 'Algo salio mal :('});
     }
 });
+
 //'CREAR RADICADO' POST Method
 router.post('/',  async (req, res) => {
     try
@@ -193,9 +194,10 @@ router.post('/',  async (req, res) => {
             record.status = false;
         }
        
-       appDebuger(req.body.file );
-       const myFile  = await uploadFile(req.body.file);
+      
        req.body.file = '';
+    //    appDebuger(req.body.file );
+    //    const myFile  = await uploadFile(req.body.file);
         //Guardar el radicado
         const saveRecord  = await createRecord(record);
         
@@ -252,16 +254,18 @@ router.post('/',  async (req, res) => {
 router.post('/upload',  async(req, res) => {
     try
     {
-    appRecord(req.body.enviar);
+  
     //If invalid, return 404 - Bad Request
     appDebuger(req.files);
    
-    if (!req.files) {
-        return res.status(400).send({'Error':'No hay archivo para subir.'});
+    if (!req.files || req.files.length == {} ) {
+        res.status(500).send({'Error':'No hay archivo para subir.'});
     }
 
+      const record = "8888";
+      const flow = "5bf4f69e43b040630eeb50e3";
+
       let file = req.files.file;
-      let record = req.body.record;
       //Verificar si esta creado el folder raiz
       const root = './uploads/records/';
       if (!fs.existsSync(root)){
@@ -270,29 +274,37 @@ router.post('/upload',  async(req, res) => {
       }
       
       //Verificar si esta creado el folder año
-      const year = root + '/' + moment().format('YYYY');
-      if (!fs.existsSync(year)){
+      const year =  moment().format('YYYY');
+      if (!fs.existsSync(root + year)){
         fs.mkdirSync(year, 0775);
         appDebuger('Folder: Año Creado')
       }
 
       //Verificar si esta creado el folder mes
-      const month = year + '/' + moment().format('MM');
-      if (!fs.existsSync(month)){
+      const month =  '/' + moment().format('MM');
+      if (!fs.existsSync(root + year + month)){
         fs.mkdirSync(month, 0775);
         appDebuger('Folder: Mes Creado')
       }
 
-      const path = month + '/' + record + '_' + file.name;
+      const path = root + year + month + '/' + record + '_' + file.name;
 
       //Use the mv() method to place the file somewhere on your server
-      file.mv(path, function(err) {
-        if (err) return res.status(500).send(err);
+      file.mv(path, async function(err) {
+        if (err) return (err);
         if (!err)  {
 
-            res.send({'OK':'Archivo Subido!' + file.name});
+            appDebuger({'OK':'Archivo Subido! ' + file.name});
+            const savePath = '/' + year + month + '/' + record + '_' + file.name;
+            const updateFlow = await Flow.findOneAndUpdate({"_id": flow}, {
+                file: savePath
+            },{
+                new: true
+            });
+            res.send({'res': 'Archivo Subido'});
         }
-      });}
+      });
+    }
 
       catch (ex) {
         console.log(ex);

@@ -194,15 +194,18 @@ async function uploadFile(req){
    
         try
         {
+      
         //If invalid, return 404 - Bad Request
         appDebuger(req);
        
         if (!req.files) {
             return ({'Error':'No hay archivo para subir.'});
         }
-    
+
+          const record = "8888";
+          const flow = "5bf4f69e43b040630eeb50e3";
+
           let file = req.files.file;
-          let record = req.body.record;
           //Verificar si esta creado el folder raiz
           const root = './uploads/records/';
           if (!fs.existsSync(root)){
@@ -211,7 +214,7 @@ async function uploadFile(req){
           }
           
           //Verificar si esta creado el folder año
-          const year = root + '/' + moment().format('YYYY');
+          const year = root + moment().format('YYYY');
           if (!fs.existsSync(year)){
             fs.mkdirSync(year, 0775);
             appDebuger('Folder: Año Creado')
@@ -227,13 +230,19 @@ async function uploadFile(req){
           const path = month + '/' + record + '_' + file.name;
     
           //Use the mv() method to place the file somewhere on your server
-          file.mv(path, function(err) {
+          file.mv(path, async function(err) {
             if (err) return (err);
             if (!err)  {
     
                 appDebuger({'OK':'Archivo Subido!' + file.name});
+                const updateFlow = await Flow.findOneAndUpdate({"_id": flow}, {
+                    file: path
+                },{
+                    new: true
+                });
             }
-          });}
+          });
+        }
     
           catch (ex) {
             console.log(ex);

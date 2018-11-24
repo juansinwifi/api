@@ -79,7 +79,7 @@ mongoose.set('useCreateIndex', true);
 
 app.use(express.json()); //Lee entradas en formato json
 app.use(cors());
-// app.use(cors());
+app.use(express.static('uploads/records')); //Acceso a una carpeta estatica
 app.use(hemlet());
 app.use(fileUpload()); //Permite subir archivos
 app.use('/api/admin/requirements', requirements); //Requerimientos
