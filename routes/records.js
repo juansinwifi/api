@@ -306,7 +306,7 @@ router.post('/upload', async(req, res) => {
             // },{
             //     new: true
             // });
-            res.send({'res': file.name});
+            res.send({'path': file.name});
         }
       });
     }
