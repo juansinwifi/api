@@ -197,6 +197,7 @@ router.post('/',  async (req, res) => {
        
       
         flowFile = req.body.file;
+        appDebuger('########' + flowFile + '########');
     //    appDebuger(req.body.file );
     //    const myFile  = await uploadFile(req.body.file);
         //Guardar el radicado

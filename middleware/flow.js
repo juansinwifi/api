@@ -98,6 +98,7 @@ async function createFlow ( req ) {
         "light",
         "case",
         "reject",
+        "file",
         "timestamp"
         ]));
 
