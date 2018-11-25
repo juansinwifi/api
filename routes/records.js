@@ -257,7 +257,7 @@ router.post('/upload',  async(req, res) => {
 
   appDebuger(req.body)
     //If invalid, return 404 - Bad Request
-    appDebuger(req.files);
+    appDebuger(req.body.file);
    
     if (!req.files || req.files.length == {} ) {
         res.status(500).send({'Error':'No hay archivo para subir.'});
