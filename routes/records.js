@@ -255,9 +255,66 @@ router.post('/',  async (req, res) => {
 //'SUBIR ARCHIVO'
 router.post('/upload', async(req, res) => {
   
-   appDebuger(req.files);
-   appDebuger(req.body); 
-   res.send("Let's go")
+    try
+    {
+
+    // appDebuger(req.body)
+    // //If invalid, return 404 - Bad Request
+    // appDebuger(req.body.file);
+   
+    if (!req.files) {
+        res.status(500).send({'Error':'No hay archivo para subir.'});
+    }
+
+    //   const record = req.body.record;
+    //   const flow = req.body.flow; 
+
+      let file = req.files;
+      appDebuger(file);
+      //Verificar si esta creado el folder raiz
+      const root = './uploads/records/';
+      if (!fs.existsSync(root)){
+        fs.mkdirSync(root, 0775);
+        appDebuger('Folder: Raiz Creado')
+      }
+      
+      //Verificar si esta creado el folder año
+      const year =  moment().format('YYYY');
+      if (!fs.existsSync(root + year)){
+        fs.mkdirSync(year, 0775);
+        appDebuger('Folder: Año Creado')
+      }
+
+      //Verificar si esta creado el folder mes
+      const month =  '/' + moment().format('MM');
+      if (!fs.existsSync(root + year + month)){
+        fs.mkdirSync(month, 0775);
+        appDebuger('Folder: Mes Creado')
+      }
+
+      const path = root + year + month + '/' + record + '_' + file.name;
+
+      //Use the mv() method to place the file somewhere on your server
+      file.mv(path, async function(err) {
+        if (err) return res.status(500).send(err);
+        if (!err)  {
+
+            appDebuger({'OK':'Archivo Subido! ' + file.name});
+            // const savePath = '/' + year + month + '/' + record + '_' + file.name;
+            // const updateFlow = await Flow.findOneAndUpdate({"_id": flow}, {
+            //     file: savePath
+            // },{
+            //     new: true
+            // });
+            res.send({'res': file.name});
+        }
+      });
+    }
+
+      catch (ex) {
+        console.log(ex);
+        res.status(500).send(ex);
+    }
      
 });
 module.exports = router;
