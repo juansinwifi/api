@@ -254,7 +254,7 @@ router.post('/',  async (req, res) => {
 
 //'SUBIR ARCHIVO'
 router.post('/upload', upload.single('avatar'), async(req, res) => {
-   appDebuger(req.body.file); 
+   console.log(req.body.file); 
    appDebuger(req.body); 
    res.send("Let's go")
      
