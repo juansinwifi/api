@@ -12,7 +12,7 @@ const Joi = require('joi'); //Validacion de Inputs en el servicio
 const cors = require('cors'); //Permite Conexiones desde cualquier origen
 const mongoose = require('mongoose'); //Manejador de Node.js con MongoDB
 const fileUpload = require('express-fileupload');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
 //Install NPM lodash 
 //Install NPM bcryptjs
 //Install NPM jsonwebtoken
