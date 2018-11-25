@@ -266,7 +266,8 @@ router.post('/upload',  async(req, res) => {
       const record = req.body.record;
       const flow = req.body.flow; 
 
-      let file = req.body.file;
+      let file = JSON.parse(req.body.file);
+      appDebuger(file);
       //Verificar si esta creado el folder raiz
       const root = './uploads/records/';
       if (!fs.existsSync(root)){
