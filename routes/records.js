@@ -254,7 +254,8 @@ router.post('/',  async (req, res) => {
 router.post('/upload',  async(req, res) => {
     try
     {
-  
+
+  appDebuger(req.body)
     //If invalid, return 404 - Bad Request
     appDebuger(req.files);
    
@@ -262,8 +263,8 @@ router.post('/upload',  async(req, res) => {
         res.status(500).send({'Error':'No hay archivo para subir.'});
     }
 
-      const record = "8888";
-      const flow = "5bf4f69e43b040630eeb50e3";
+    //   const record = "8888";
+    //   const flow = "5bf4f69e43b040630eeb50e3";
 
       let file = req.files.file;
       //Verificar si esta creado el folder raiz
