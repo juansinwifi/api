@@ -153,7 +153,6 @@ router.post('/',  async (req, res) => {
         record.levels = [];
         record.caseLight = 100;
         record.status = true;
-        record.file = '';
         record.createdBy = req.body.user;
 
         if (requirementType != 'Inmediato'){
@@ -196,7 +195,7 @@ router.post('/',  async (req, res) => {
         }
        
       
-        flowFile = req.body.file;
+        flowFile = record.file;
         appDebuger('######## ' + flowFile + ' ########');
     //    appDebuger(req.body.file );
     //    const myFile  = await uploadFile(req.body.file);
