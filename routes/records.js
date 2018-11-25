@@ -238,6 +238,7 @@ router.post('/',  async (req, res) => {
         if(requirementType == 'Inmediato') flow.case = 4; //Se cierra inmediatamente
         if(requirementType != 'Inmediato') flow.case = 5; //Se crea como abierto
         flow.timestamp = moment(record.date).format('YYYY-MM-DD HH:mm');
+        flow.file = '';
         saveflow =  createFlow(flow);
         if (!saveflow) return res.status(404).send({'ERRROR:': ' El radicado se creo pero no el flujo'}); // Error 404 
         }

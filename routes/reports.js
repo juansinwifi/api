@@ -37,10 +37,12 @@ router.post('/records/opens/', async (req, res) => {
     const date =  moment(req.body.date).format('YYYY-MM-DD').toString()  ;
     appReport(date);
     
-    // const records = await Records.find({ "date": new RegExp(date) });
-    // if (!records || findRecord.length == 0) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
-    
-         const flow = await Flow.find({"status": true});
+    const records = await Records.find({ "date": new RegExp(date) });
+    if (!records || records.length == 0) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
+    iR = records.length;
+    pR = iR - 1 ;
+    while ( iR > 0){ 
+        const flow = await Flow.find({"status": true});
         if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
         
         const response = [];
@@ -167,9 +169,11 @@ router.post('/records/opens/', async (req, res) => {
             i = i - 1;
             p = p - 1;
         }
-
+        iR = iR - 1;
+        pR = pR - 1;
+    }
         //Convertir respuesta a CSV
-
+        
         
         const fields = [
                         { 
