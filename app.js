@@ -12,6 +12,7 @@ const Joi = require('joi'); //Validacion de Inputs en el servicio
 const cors = require('cors'); //Permite Conexiones desde cualquier origen
 const mongoose = require('mongoose'); //Manejador de Node.js con MongoDB
 const fileUpload = require('express-fileupload');
+const bodyParser = require('body-parser')
 //Install NPM lodash 
 //Install NPM bcryptjs
 //Install NPM jsonwebtoken
@@ -80,6 +81,7 @@ mongoose.set('useCreateIndex', true);
 app.use(express.json()); //Lee entradas en formato json
 app.use(cors());
 app.use(express.static('uploads/records')); //Acceso a una carpeta estatica
+app.use(bodyParser.json({limit: '10mb', extended: true})) //Limite de archvios a subir
 app.use(hemlet());
 app.use(fileUpload()); //Permite subir archivos
 app.use('/api/admin/requirements', requirements); //Requerimientos

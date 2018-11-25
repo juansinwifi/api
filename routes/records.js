@@ -255,18 +255,18 @@ router.post('/upload',  async(req, res) => {
     try
     {
 
-  appDebuger(req.body)
-    //If invalid, return 404 - Bad Request
-    appDebuger(req.body.file);
+    // appDebuger(req.body)
+    // //If invalid, return 404 - Bad Request
+    // appDebuger(req.body.file);
    
-    if (!req.files || req.files.length == {} ) {
+    if (!req.body.file || req.body.file == {} ) {
         res.status(500).send({'Error':'No hay archivo para subir.'});
     }
 
-    //   const record = "8888";
-    //   const flow = "5bf4f69e43b040630eeb50e3";
+      const record = req.body.record;
+      const flow = req.body.flow; 
 
-      let file = req.files.file;
+      let file = req.body.file;
       //Verificar si esta creado el folder raiz
       const root = './uploads/records/';
       if (!fs.existsSync(root)){
@@ -309,7 +309,7 @@ router.post('/upload',  async(req, res) => {
 
       catch (ex) {
         console.log(ex);
-        res.status(500).send(ex)
+        res.status(500).send(ex);
     }
      
 });
