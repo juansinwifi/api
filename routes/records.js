@@ -292,7 +292,7 @@ router.post('/upload', async(req, res) => {
       }
 
 
-      const random = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      const random = Math.random().toString(36).substring(5, 10);
       const path = root + year + month + '/' + random + '_' + file.name;
 
       //Use the mv() method to place the file somewhere on your server
