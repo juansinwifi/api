@@ -155,6 +155,7 @@ router.post('/',  async (req, res) => {
         record.levels = [];
         record.caseLight = 100;
         record.status = true;
+        record.file = '';
         record.createdBy = req.body.user;
 
         if (requirementType != 'Inmediato'){
@@ -197,7 +198,7 @@ router.post('/',  async (req, res) => {
         }
        
       
-       req.body.file = '';
+        flowFile = req.body.file;
     //    appDebuger(req.body.file );
     //    const myFile  = await uploadFile(req.body.file);
         //Guardar el radicado
@@ -221,6 +222,7 @@ router.post('/',  async (req, res) => {
         iniFlow.finDate = moment(record.date).format('YYYY-MM-DD HH:mm');
         iniFlow.light = 100;
         iniFlow.timestamp = moment(record.date).format('YYYY-MM-DD HH:mm');
+        iniFlow.file = flowFile;
         
         let saveflow =  createFlow(iniFlow);
         if (!saveflow) return res.status(404).send({'ERRROR:': ' El radicado se creo pero no el flujo'}); // Error 404 
@@ -238,7 +240,6 @@ router.post('/',  async (req, res) => {
         if(requirementType == 'Inmediato') flow.case = 4; //Se cierra inmediatamente
         if(requirementType != 'Inmediato') flow.case = 5; //Se crea como abierto
         flow.timestamp = moment(record.date).format('YYYY-MM-DD HH:mm');
-
         saveflow =  createFlow(flow);
         if (!saveflow) return res.status(404).send({'ERRROR:': ' El radicado se creo pero no el flujo'}); // Error 404 
         }
