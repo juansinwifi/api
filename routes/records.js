@@ -17,8 +17,6 @@ const router = express.Router();
 const Joi = require('joi'); //Validacion de Inputs en el servicio
 const moment = require('moment'); //Libreria para manejo de fechas
 const fs = require('fs');
-const multer  = require('multer');
-const upload = multer({ dest: 'uploads/' });
 
 
 //'BUSCAR RADICADO' GET Method
@@ -293,7 +291,9 @@ router.post('/upload', async(req, res) => {
         appDebuger('Folder: Mes Creado')
       }
 
-      const path = root + year + month + '/' + file.name;
+
+      const random = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      const path = root + year + month + '/' + random + '_' + file.name;
 
       //Use the mv() method to place the file somewhere on your server
       file.mv(path, async function(err) {
@@ -301,13 +301,13 @@ router.post('/upload', async(req, res) => {
         if (!err)  {
 
             appDebuger({'OK':'Archivo Subido! ' + file.name});
-            const savePath = '/' + year + month + '/' + file.name;
+            const savePath = '/' + year + month + '/' + random + '_' + file.name;
             // const updateFlow = await Flow.findOneAndUpdate({"_id": flow}, {
             //     file: savePath
             // },{ year + month + '/' + file.name;
             //     new: true
             // });
-            res.send({'path': savePath});
+            res.send(savePath);
         }
       });
     }
