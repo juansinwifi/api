@@ -292,7 +292,7 @@ router.post('/upload', async(req, res) => {
         appDebuger('Folder: Mes Creado')
       }
 
-      const path = root + year + month + '/' + file.name;
+      const path = root +
 
       //Use the mv() method to place the file somewhere on your server
       file.mv(path, async function(err) {
@@ -300,13 +300,13 @@ router.post('/upload', async(req, res) => {
         if (!err)  {
 
             appDebuger({'OK':'Archivo Subido! ' + file.name});
-            // const savePath = '/' + year + month + '/' + record + '_' + file.name;
+            const savePath = '/' + year + month + '/' + file.name;
             // const updateFlow = await Flow.findOneAndUpdate({"_id": flow}, {
             //     file: savePath
-            // },{
+            // },{ year + month + '/' + file.name;
             //     new: true
             // });
-            res.send({'path': file.name});
+            res.send({'path': savePath});
         }
       });
     }
