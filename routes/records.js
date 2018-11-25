@@ -292,7 +292,7 @@ router.post('/upload', async(req, res) => {
         appDebuger('Folder: Mes Creado')
       }
 
-      const path = root + year + month + '/' + record + '_' + file.name;
+      const path = root + year + month + '/' + file.name;
 
       //Use the mv() method to place the file somewhere on your server
       file.mv(path, async function(err) {
