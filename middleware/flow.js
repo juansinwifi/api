@@ -70,6 +70,7 @@ async function backFlow ( req ) {
        flow.case = req.body.case;
        flow.reject = req.body.reject;
        flow.timestamp = moment().format('YYYY-MM-DD HH:mm');
+       flow.file = req.body.file;
         appFlow(flow.level);
      
        let newFlow = await createFlow(flow);
@@ -117,12 +118,13 @@ async function updateFlow (req, txt){
         return update;
 }
 
-async function updateCloseFlow (req, txt, light){
+async function updateCloseFlow (req, txt, light, file){
     const update =  await Flow.findOneAndUpdate({'_id':req}, {
         status: false,
         case: 4,
         observations: txt,
         light: light,
+        file: file,
         timestamp: moment().format('YYYY-MM-DD HH:mm')
         },{
             new: true
@@ -225,6 +227,7 @@ async function nextFlow(req){
         flow.light =  1988;
         flow.case = req.body.case;
         flow.reject = req.body.reject;
+        flow.file = req.body.file;
         flow.timestamp = moment().format('YYYY-MM-DD HH:mm');
 
         newFlow = await createFlow(flow);
@@ -245,7 +248,7 @@ async function nextFlow(req){
         caseLight = await calcCaseLight( record.date, record.caseFinDate); //El semaforo se actualiza el caso mas adelante
         const userLight = await userCaseLight(record.date, currentFlow.finDate);
        
-        newFlow =  await updateCloseFlow(req.params.id, req.body.observations, userLight);
+        newFlow =  await updateCloseFlow(req.params.id, req.body.observations, userLight, req.body.file);
         if (!newFlow) return ({'ERROR':'Algo salio mal al actualizar el flujo.'}); // Error 404 
     }
 
@@ -287,6 +290,7 @@ async function changeFlow (req){
     flow.light =  1988;
     flow.case = req.body.case;
     flow.reject = req.body.reject;
+    flow.file = req.body.file;
     flow.timestamp = moment().format('YYYY-MM-DD HH:mm');
 
     let newFlow = await createFlow(flow);
