@@ -5,7 +5,8 @@ const Joi = require('joi');
 function validateReport(requiement) {
 
     const schema = {
-       date: Joi.date().required()
+       iniDate: Joi.date().required(),
+       finDate: Joi.date().required()
     };
 
     return Joi.validate(requiement, schema);

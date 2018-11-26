@@ -28,21 +28,141 @@ const {Users} = require('../models/user');
 //'Casos Abiertos
 router.post('/records/opens/', async (req, res) => {
     try {
-    appReport(req.body);
     //Validate Data
     //If invalid, return 404 - Bad Request
     const { error } = validateReport(req.body);
     if (error) return res.status(400).send({'ERROR':  error.details[0].message});
 
-    const date =  moment(req.body.date).format('YYYY-MM-DD').toString()  ;
-    appReport(date);
-    
-    const records = await Records.find({ "date": new RegExp(date) });
+    const response = [];
+    const iniDate =  moment(req.body.date).format('YYYY-MM-DD').toString();
+    const finDate =  moment(req.body.date).format('YYYY-MM-DD').toString();
+    //const records = await Records.find({ "date": new RegExp(date), "status": false });
+    const records = await Records.find({ "date": new RegExp(iniDate), "status": false });
     if (!records || records.length == 0) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
-    appReport(records)
-    
-        
-        
+
+    let i = 0;
+    while(records[i]){
+        const flow = await Flow.find({"record": records[i]._id, "status": true});
+        if(flow){
+            let typification = await Typifications.findById(records[i].typification);
+            if (!typification || typification.length == 0) return res.status(404).send('No se encontro una tipificación.'); // Error 404 
+            
+            let child = await ChildTypifications.findById(records[i].child);
+            if (!child || child.length == 0) return res.status(404).send('No se encontro una tipificación especifica.'); // Error 404 
+            
+            const requirement = await Requirements.findById(child.requirement);
+            if (!requirement) return res.status(404).send('Requerimiento no encontrado'); // Error 404 
+           
+
+            const light = await Lights.findOne({"name": 'CASO'});
+            if (!light) return res.status(404).send('Semaforo de casos no encontrado'); // Error 404 
+
+            const lightUser = await Lights.findOne({"name": 'USUARIO'});
+            if (!lightUser) return res.status(404).send('Semaforo de usuario no encontrado'); // Error 404 
+           
+            //Buscamos el Usuario
+            const user = flow[0].user;
+            appReport(user);
+            const findUser = await Users.findOne({"_id": user});
+            if (!user) return res.status(404).send('Un usuario no fue encontrado'); // Error 404 
+            const userName = findUser.name;
+            const caseFinDate = records[i].caseFinDate;
+            //Verificar el estado del semaforo del caso
+                const creation =  records[i].date;
+                const now = moment()
+                const then = records[i].caseFinDate;
+                let  caseLight = 50; //Por Defecto el semaforo es amarillo
+
+                const result = moment(now).isBefore(then);
+                
+            
+                if(result) {
+                    appReport('Radicado aun con tiempo.');
+                    appReport('/* Creado: ' + creation );
+                    appReport('/* Finaliza: ' + then);
+                    appReport('*/ Hoy: ' + now.format('YYYY-MM-DD HH:mm') );
+                    const totalTime = await diffDate(creation, then);
+                    const currentTime = await diffDate(now, then);
+                    appReport('Diferencia Total'); 
+                    appReport(totalTime);
+                    appReport('Diferencia Actual');
+                    appReport(currentTime);
+                    
+                    const totalHours = (totalTime.days * 24) + totalTime.hours + (totalTime.minutes/60);
+                    const currentHours = (currentTime.days * 24) + currentTime.hours + (currentTime.minutes/60);
+
+                    const percent = (currentHours/totalHours) * 100;
+                    appReport('Porcentaje: ' + percent);
+                    if (percent <= light.red) caseLight = 0;
+                    if (percent >= light.green) caseLight = 100;
+                    appReport('Semaforo: ' + caseLight);
+                    //Falta Actualizar los tiempos en el radicado
+                }
+                if(!result) appReport('Radicado Vencido.')
+                if(!result) caseLight = 0;
+            
+            //Verificar el estado del semaforo del usuario
+                appReport('##' + flow[0] + '##');
+
+                const creationUser =  records[i].date;
+                const nowUser = moment()
+                const thenUser = flow[0].finDate;
+                let  userLight = 50; //Por Defecto el semaforo es amarillo
+
+                const resultUser = moment(nowUser).isBefore(thenUser);
+                if(result) {
+                    appReportUser('Usuario aun con tiempo.');
+                    appReportUser('/* Creado: ' + creationUser );
+                    appReportUser('/* Finaliza: ' + thenUser);
+                    appReportUser('*/ Hoy: ' + nowUser.format('YYYY-MM-DD HH:mm') );
+                    const totalTimeUser = await diffDate(creationUser, thenUser);
+                    const currentTimeUser = await diffDate(nowUser, thenUser);
+                    appReportUser('Diferencia Total'); 
+                    appReportUser(totalTimeUser);
+                    appReportUser('Diferencia Actual');
+                    appReportUser(currentTimeUser);
+                    
+                    const totalHoursUser = (totalTimeUser.days * 24) + totalTimeUser.hours + (totalTimeUser.minutes/60);
+                    const currentHoursUser = (currentTimeUser.days * 24) + currentTimeUser.hours + (currentTimeUser.minutes/60);
+
+                    const percentUser = (currentHoursUser/totalHoursUser) * 100;
+                    appReportUser('Porcentaje: ' + percentUser);
+                    if (percentUser <= lightUser.red) userLight = 0;
+                    if (percentUser >= lightUser.green) userLight = 100;
+                    appReportUser('Semaforo: ' + userLight);
+                    //Falta Actualizar los tiempos en el radicado
+                }
+                if(!resultUser) appReportUser('Radicado Vencido.')
+                if(!resultUser) userLight = 0;
+
+                if(userLight == 0) userLight = 'Rojo';
+                if(userLight == 50) userLight = 'Amarillo';
+                if(userLight == 100) userLight = 'Verde';
+
+                if(caseLight == 0) caseLight = 'Rojo';
+                if(caseLight == 50) caseLight = 'Amarillo';
+                if(caseLight == 100) caseLight = 'Verde';
+
+            const record = { 
+                number: records[i].number,
+                user: userName,
+                userLight: userLight,
+                caseLight: caseLight,
+                typification: typification.name,
+                child: child.name,
+                pqr: requirement.type,
+                date: records[i].date,
+                userFinDate: thenUser,
+                caseFinDate: caseFinDate,
+                trackingDate: records[i].trackingDate
+            };
+
+            response.push(record);
+        }
+       
+        i++;
+    }
+    res.send(response);
         }
     catch(ex){
         console.log(ex);
@@ -107,14 +227,14 @@ router.post('/records/closes', async (req, res) => {
         if (!lightUser) return res.status(404).send('Semaforo de usuario no encontrado'); // Error 404 
        
         const record = { 
-            _id: findRecord[0]._id,
-            number: findRecord[0].number,
-            userLight: flow[p].light,
-            caseLight: findRecord[0].caseLight,
+            _id: records[i]._id,
+            number: records[i].number,
+            userLight: flow[pF].light,
+            caseLight: records[i].caseLight,
             typification: typification.name,
             child: child.name,
-            date: findRecord[0].date,
-            caseUserDate: findRecord[0].caseFinDate
+            date: records[i].date,
+            caseUserDate: records[i].caseFinDate
         };
 
         response.push(record);
