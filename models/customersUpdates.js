@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const Joi = require('joi');
 
 const customersUpdatesSchema = new mongoose.Schema({
+    customer:{
+        type: String,
+        required: true
+    },
     user:{
         type: String,
         required: true
@@ -17,6 +21,10 @@ const customersUpdatesSchema = new mongoose.Schema({
     email:{
         type: String,
         lowercase: true
+    },
+    date:{
+        type: String,
+        required: true
     }
 });
 

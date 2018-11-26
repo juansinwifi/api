@@ -103,7 +103,7 @@ router.post('/',  async (req, res) => {
 });
 
 
-//'MODIFICAR Canal de Comunicaciones' PUT Method
+//Actualizar Clientes
 router.put('/:id',  async (req, res) => {
 
     //Validate Data
