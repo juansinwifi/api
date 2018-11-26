@@ -162,7 +162,66 @@ router.post('/records/opens/', async (req, res) => {
         
             i++;
         }
-    res.send(response);
+        
+        const fields = [
+            { 
+                label: 'RADICADO',
+                value: 'number'
+            }, 
+            {
+                label: 'USUARIO',
+                value: 'user'
+            },
+            {
+
+                label: 'SEMAFORO USUARIO',
+                value: 'userLight'
+            },
+            {
+                label: 'SEMAFORO CASO',
+                value: 'caseLight'
+            },
+            {
+                label: 'TIPIFICACION',
+                value: 'typification'
+            },
+            {
+                label: 'TIPIFICACION ESPECIFICA',
+                value:  'child'
+            }, 
+            {
+                label: 'TIPO PQR',
+                value:  'pqr'
+            },
+            {
+                label: 'CREACION',
+                value: 'date'
+            },
+            {
+                label: 'VENCIMIENTO USUARIO',
+                value: 'userFinDate'
+            },
+            {
+                label: 'VENCIMIENTO CASO',
+                value: 'caseFinDate'
+            },{
+                label: 'FECHA DE SEGUIMIENTO',
+                value: 'trackingDate'
+                
+            }
+        ];
+        const json2csvParser = new Json2csvParser({ fields });
+        const csv = json2csvParser.parse(response);
+        appReport(csv);
+        const random = randomstring.generate(8);
+        const name = 'Open' + random +'.txt'
+        const fileName = './downloads/' + name;
+        fs.writeFile(fileName, csv, function (err) {
+        if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});;
+        appReport('Saved!');
+
+        res.send({ 'file': name});
+        });
         }
     catch(ex){
         console.log(ex);
