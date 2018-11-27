@@ -504,7 +504,7 @@ router.post('/customers/updates', async (req, res) => {
         appReport(csv);
         const random = randomstring.generate(8);
         const name = 'customerUpdates' + random +'.txt';
-        const fileName = './downloads/customerUpdates' + name';
+        const fileName = './downloads/customerUpdates' + name;
      
        
         fs.writeFile(fileName, csv, function (err) {
