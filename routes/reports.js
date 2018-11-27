@@ -510,7 +510,7 @@ router.post('/customers/updates', async (req, res) => {
         fs.writeFile(fileName, csv, function (err) {
             if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
                 appReport('Saved!');
-                res.send({ 'file': fileName});
+                res.send({ 'file': name});
         });
      
         }
