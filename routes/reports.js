@@ -503,7 +503,9 @@ router.post('/customers/updates', async (req, res) => {
         const csv = json2csvParser.parse(response);
         appReport(csv);
         const random = randomstring.generate(8);
-        const fileName = './downloads/customerUpdates' + random +'.txt';
+        const name = 'customerUpdates' + random +'.txt';
+        const fileName = './downloads/customerUpdates' + name';
+     
        
         fs.writeFile(fileName, csv, function (err) {
             if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
