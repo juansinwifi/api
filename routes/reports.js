@@ -523,6 +523,7 @@ router.post('/customers/updates', async (req, res) => {
 //Actualizacion de Datos tomar el archivo y borrarlo
 router.get('/customers/updates/:file', async (req, res) => {
     try { 
+        appReport(req.params.file);
         if (!req.params.file) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
         const fileName =  './downloads/' + req.params.file;
             //Creamos un Stream para seguir el archivo y luego borrarlo
