@@ -430,11 +430,44 @@ router.get('/records/closes/:file', async (req, res) => {
     }
 });
 
-router.get('/customers/updates', async (req, res) => {
-    try {
 
-        const customersUpdates = await CustomersUpdates.find().sort('date');
-        if (!customersUpdates) return res.status(404).send({'ERROR:':'No hay Actualizaciones'}); // Error 404 
+//Actualizacion de Datos
+router.post('/customers/updates', async (req, res) => {
+    try {
+    
+    const response = [];
+    const dates = [];
+    let ini =  moment(req.body.iniDate).format('YYYY-MM-DD');
+    dates.push(ini);
+    const fin = moment(req.body.finDate).format('YYYY-MM-DD');
+    while(ini != fin){
+        ini =  moment(ini).add(1, 'days').format('YYYY-MM-DD');
+        dates.push(ini);
+    }
+
+    let tequila = 0;
+    while(dates[tequila]){
+        const customersUpdates = await CustomersUpdates.find({ "date": new RegExp(dates[tequila]) }).sort('date');
+        let i = 0;
+
+        if(customersUpdates.length) {
+            while(customersUpdates[i]){
+                const customer ={};
+                customer.customer = customersUpdates[i].customer;
+                customer.user = customersUpdates[i].user;
+                customer.phone1 = customersUpdates[i].phone1;
+                customer.phone2 = customersUpdates[i].phone2;
+                customer.email = customersUpdates[i].email;
+                customer.date = customersUpdates[i].date;
+                response.push(customer);
+            i++;
+            }
+           
+        }
+        
+    tequila++;
+    }
+    if(!response.length) return res.status(404).send({'ERROR':'No se encuentran datos para esta fecha.'}); // Error 404 
         
         //Convertir respuesta a CSV
 
@@ -458,17 +491,35 @@ router.get('/customers/updates', async (req, res) => {
                         {
                             label: 'EMAIL',
                             value: 'email'
+                        },
+                        {
+                            labler: 'FECHA',
+                            value: 'date'
                         }
                     ];
         const json2csvParser = new Json2csvParser({ fields });
-        const csv = json2csvParser.parse(customersUpdates);
+        const csv = json2csvParser.parse(response);
         appReport(csv);
         const random = randomstring.generate(8);
         const fileName = './downloads/customerUpdates' + random +'.txt';
+       
         fs.writeFile(fileName, csv, function (err) {
-            if (err) throw err;
-            appReport('Saved!');
-            
+            if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
+                appReport('Saved!');
+                res.send({ 'file': fileName});
+        });
+     
+        }
+    catch(ex){
+        console.log(ex);
+        res.status(500).send({ 'Error': 'Algo salio mal :('});
+    }
+});
+
+//Actualizacion de Datos tomar el archivo y borrarlo
+router.get('/customers/updates/:file', async (req, res) => {
+    try { 
+        const fileName =  './downloads/' + req.params.file;
             //Creamos un Stream para seguir el archivo y luego borrarlo
             let file = fs.createReadStream(fileName);
             res.download(fileName, 'actualizacion_datos.csv');
@@ -480,13 +531,10 @@ router.get('/customers/updates', async (req, res) => {
               });
             });
             file.pipe(res);
-        });
-     
         }
     catch(ex){
         console.log(ex);
         res.status(500).send({ 'Error': 'Algo salio mal :('});
     }
 });
-
 module.exports = router;
