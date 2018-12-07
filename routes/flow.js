@@ -121,6 +121,8 @@ router.get('/:id', async (req, res) => {
             const record = { 
                 _id: findRecord[0]._id,
                 number: findRecord[0].number,
+                customer: findRecord[0].customer,
+                ref: findRecord[0].ref,
                 userLight: userLight,
                 caseLight: caseLight,
                 typification: typification.name,

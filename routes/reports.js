@@ -495,7 +495,7 @@ router.post('/customers/updates', async (req, res) => {
                             value: 'email'
                         },
                         {
-                            labler: 'FECHA',
+                            label: 'FECHA',
                             value: 'date'
                         }
                     ];
