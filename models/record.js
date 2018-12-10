@@ -97,7 +97,7 @@ function validateRecords(requiement) {
         child: Joi.string().min(24).required(),
         channel: Joi.string().min(24).required(),
         contact:Joi.string().min(24).required(),
-        forms: Joi.array().items(Joi.object()).min(1).required(),
+        forms: Joi.array(),
         file: Joi.any(),
         observations: Joi.string(),
         trackingDate: Joi.date(),
