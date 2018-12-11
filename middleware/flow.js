@@ -70,7 +70,7 @@ async function backFlow ( req ) {
        flow.case = req.body.case;
        flow.reject = req.body.reject;
        flow.timestamp = moment().format('YYYY-MM-DD HH:mm');
-       flow.file = req.body.file;
+       flow.file = " ";
         appFlow(flow.level);
      
        let newFlow = await createFlow(flow);
@@ -79,7 +79,7 @@ async function backFlow ( req ) {
     //Update Status flujo anterior
     /*****************************/
       if(newFlow._id) { 
-        const update =  await updateFlow(req.params.id, req.body.observations);
+        const update =  await updateFlow(req.params.id, req.body.observations, req.body.file);
          //If not existing, return 404 - Not Found
          if (!update) return ({'ERROR':'Algo salio mal al actualizar el flujo.'}); // Error 404 
       }
@@ -228,6 +228,7 @@ async function nextFlow(req){
         flow.light =  1988;
         flow.case = req.body.case;
         flow.reject = req.body.reject;
+        flow.file = " ";
         flow.timestamp = moment().format('YYYY-MM-DD HH:mm');
 
         newFlow = await createFlow(flow);
@@ -290,7 +291,7 @@ async function changeFlow (req){
     flow.light =  1988;
     flow.case = req.body.case;
     flow.reject = req.body.reject;
-    flow.file = req.body.file;
+    flow.file = " ";
     flow.timestamp = moment().format('YYYY-MM-DD HH:mm');
 
     let newFlow = await createFlow(flow);
@@ -299,7 +300,7 @@ async function changeFlow (req){
     //Update Status flujo anterior
     /*****************************/
     if(newFlow._id) { 
-        const update =  await updateFlow(req.params.id, req.body.observations);
+        const update =  await updateFlow(req.params.id, req.body.observations, req.body.file);
         //If not existing, return 404 - Not Found
         if (!update) return ({'ERROR':'Algo salio mal al actualizar el flujo.'}); // Error 404 
     }
