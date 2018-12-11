@@ -107,10 +107,11 @@ async function createFlow ( req ) {
         return flow;
 }
 
-async function updateFlow (req, txt){
+async function updateFlow (req, txt, file){
     const update =  await Flow.findOneAndUpdate({'_id':req}, {
         status: false,
         observations: txt,
+        file: file,
         timestamp: moment().format('YYYY-MM-DD HH:mm')
         },{
             new: true
@@ -227,7 +228,6 @@ async function nextFlow(req){
         flow.light =  1988;
         flow.case = req.body.case;
         flow.reject = req.body.reject;
-        flow.file = req.body.file;
         flow.timestamp = moment().format('YYYY-MM-DD HH:mm');
 
         newFlow = await createFlow(flow);
@@ -237,7 +237,7 @@ async function nextFlow(req){
         //Update Status flujo anterior
         /*****************************/
         if(newFlow._id) { 
-            const update =  await updateFlow(req.params.id, req.body.observations);
+            const update =  await updateFlow(req.params.id, req.body.observations, req.body.file);
             //If not existing, return 404 - Not Found
             if (!update) return ({'ERROR':'Algo salio mal al actualizar el flujo.'}); // Error 404 
         }
