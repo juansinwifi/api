@@ -87,7 +87,7 @@ function validateCustomer(requiement) {
         minPay: Joi.string(),
         pastdueAge: Joi.string(),
         pastdueDate: Joi.string(),
-        gag: Joi.string(),
+        gag: Joi.string().allow(''),
         totalPay: Joi.string(),
         phone1: Joi.string(),
         phone2: Joi.string(),
