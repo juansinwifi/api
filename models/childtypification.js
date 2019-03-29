@@ -58,7 +58,7 @@ function validateChildTypifications(requiement) {
         forms: Joi.array(),
         levels: Joi.array().items(Joi.object()).min(1).required(),
         list: Joi.array(),
-        maxTime: Joi.number().min(1).required()
+        maxTime: Joi.number().required()
     };
 
     return Joi.validate(requiement, schema);
