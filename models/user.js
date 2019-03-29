@@ -41,7 +41,7 @@ const userSchema = new mongoose.Schema({
         unique: true
     },
     phone:{
-        type: Number,
+        type: String,
         required: true
     },
     profiles:{
@@ -78,7 +78,7 @@ function validateUser(user) {
         identification: Joi.number().required(),
         name: Joi.string().min(3).required(),
         email: Joi.string().email({ minDomainAtoms: 2 }).required(),
-        phone: Joi.number().min(7).required(),
+        phone: Joi.string().min(7).required(),
         profiles: Joi.array().items(Joi.string()).min(1).required(),
         area: Joi.string().min(1).required(),
         country: Joi.string().min(3).required()
