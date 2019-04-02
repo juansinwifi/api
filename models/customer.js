@@ -77,21 +77,21 @@ function validateCustomer(requiement) {
 
     const schema = {
         id: Joi.string().min(3).required(),
-        name: Joi.string(),
-        affinity: Joi.string(),
+        name: Joi.string().allow(''),
+        affinity: Joi.string().allow(''),
         ref: Joi.string().min(3).required(),
-        quote: Joi.string(),
-        clinic: Joi.string(),
-        production: Joi.string(),
-        limitDate: Joi.string(),
-        minPay: Joi.string(),
-        pastdueAge: Joi.string(),
-        pastdueDate: Joi.string(),
+        quote: Joi.string().allow(''),
+        clinic: Joi.string().allow(''),
+        production: Joi.string().allow(''),
+        limitDate: Joi.string().allow(''),
+        minPay: Joi.string().allow(''),
+        pastdueAge: Joi.string().allow(''),
+        pastdueDate: Joi.string().allow(''),
         gag: Joi.string().allow(''),
-        totalPay: Joi.string(),
-        phone1: Joi.string(),
-        phone2: Joi.string(),
-        email: Joi.string()
+        totalPay: Joi.string().allow(''),
+        phone1: Joi.string().allow(''),
+        phone2: Joi.string().allow(''),
+        email: Joi.string().allow('')
     };
 
 
