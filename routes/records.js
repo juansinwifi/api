@@ -220,7 +220,9 @@ router.post('/',  async (req, res) => {
         iniFlow.finDate = moment(record.date).format('YYYY-MM-DD HH:mm');
         iniFlow.light = 100;
         iniFlow.timestamp = moment(record.date).format('YYYY-MM-DD HH:mm');
-        iniFlow.file = flowFile;
+        
+        if(flowFile == null) iniFlow.file = " ";
+        if(flowFile != null) iniFlow.file = flowFile;
         
         let saveflow =  createFlow(iniFlow);
         if (!saveflow) return res.status(404).send({'ERRROR:': ' El radicado se creo pero no el flujo'}); // Error 404 
