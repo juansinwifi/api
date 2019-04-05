@@ -310,7 +310,17 @@ router.post('/records/closes', async (req, res) => {
                         const lightUser = await Lights.findOne({"name": 'USUARIO'});
                         if (!lightUser) return res.status(404).send('Semaforo de usuario no encontrado'); // Error 404 
                         
+                        const createdBy = await Flow.find({"record": records[i]._id, "level":-1});
+                        const createdUser = await Users.findOne({"_id": createdBy[0].user});
 
+                        const nameReject = await Users.findOne({"_id": flow[0].reject._id});
+
+                        if (flow[0].case == 1)  nameCase = 'Rechazar - Devolver';
+                        if (flow[0].case == 2)  nameCase = 'Finalizar -Avanzar';
+                        if (flow[0].case == 3)  nameCase = 'En Gestión';
+                        if (flow[0].case == 4)  nameCase = 'Cerrar Caso';
+                        if (flow[0].case == 5)  nameCase = 'Abierto';
+                        if (flow[0].case == 6)  nameCase = 'Reasignar Caso';
                         //Buscamos el Usuario
                         const user = flow[0].user;
                         appReport(user);
@@ -320,16 +330,22 @@ router.post('/records/closes', async (req, res) => {
 
                         const record = { 
                             number: records[i].number,
+                            customer:  records[i].customer,
+                            ref: records[i].ref,
+                            createdDate: createdBy[0].timestamp,
+                            createdBy: createdUser.name,
                             user: userName,
                             userLight: flow[0].light,
                             caseLight: records[i].caseLight,
                             typification: typification.name,
                             child: child.name,
                             pqr: requirement.type,
-                            date: records[i].date,
                             userFinDate: flow[0].finDate,
                             caseFinDate: records[i].caseFinDate,
-                            trackingDate: records[i].trackingDate
+                            trackingDate: records[i].trackingDate,
+                            date: records[i].date,
+                            case: nameCase,
+                            reject: nameReject
                         };
                         response.push(record);
                     }
@@ -347,48 +363,76 @@ router.post('/records/closes', async (req, res) => {
             { 
                 label: 'RADICADO',
                 value: 'number'
-            }, 
-            {
-                label: 'USUARIO',
-                value: 'user'
             },
-            {
-    
+            { 
+                label: 'CC',
+                value: 'customer'
+            },
+            { 
+                label: '# DE CREDITO',
+                value: 'REF'
+            },
+            { 
+                label: 'FECHA CREACION',
+                value: 'createdDate'
+            },
+            { 
+                label: 'USUARIO RADICADOR',
+                value: 'createdUser.name'
+            },
+            { 
+                label: 'USUARIO FINALIZADOR',
+                value: 'userName'
+            },
+            { 
                 label: 'SEMAFORO USUARIO',
                 value: 'userLight'
             },
-            {
+            { 
                 label: 'SEMAFORO CASO',
                 value: 'caseLight'
             },
-            {
-                label: 'TIPIFICACION',
-                value: 'typification'
+            { 
+                label: 'TIPIFICACION GENERAL',
+                value: 'typification.name'
             },
-            {
+            { 
                 label: 'TIPIFICACION ESPECIFICA',
-                value:  'child'
-            }, 
-            {
+                value: 'child.name'
+            },
+            { 
                 label: 'TIPO PQR',
-                value:  'pqr'
+                value: 'requirement.type'
             },
-            {
-                label: 'CREACION',
-                value: 'date'
-            },
-            {
+            { 
                 label: 'VENCIMIENTO USUARIO',
-                value: 'userFinDate'
+                value: 'flow[0].finDate'
             },
-            {
+            { 
                 label: 'VENCIMIENTO CASO',
-                value: 'caseFinDate'
-            },{
+                value: 'records[i].caseFinDate'
+            },
+            { 
                 label: 'FECHA DE SEGUIMIENTO',
-                value: 'trackingDate'
-                
-            }
+                value: 'records[i].trackingDate'
+            },
+            { 
+                label: 'ULT FECHA DE INGRESO EN USUARIO DE',
+                value: ''
+            },
+            { 
+                label: 'FECHA DE CIERRE',
+                value: 'records[i].date'
+            },
+            { 
+                label: 'TIPO DE GESTION',
+                value: 'flow[0].case'
+            },
+            { 
+                label: 'CAUSAL DE RECHAZO',
+                value: 'flow[0].reject'
+            },
+
         ];
         const json2csvParser = new Json2csvParser({ fields });
         const csv = json2csvParser.parse(response);
