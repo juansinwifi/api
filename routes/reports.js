@@ -346,7 +346,7 @@ router.post('/records/closes', async (req, res) => {
                             trackingDate: records[i].trackingDate,
                             date: records[i].date,
                             case: nameCase,
-                            reject: nameReject
+                            reject: nameReject.name
                         };
                         response.push(record);
                     }
