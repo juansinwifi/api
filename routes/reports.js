@@ -13,7 +13,8 @@ const moment = require('moment');
 const fs = require('fs');
 var randomstring = require("randomstring");
 const Json2csvParser = require('json2csv').Parser;
-const jsonexport = require('jsonexport');
+//Intento 2 para convertir CSV to Json
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;  
 const appReport = require('debug')('app:reports');
 const appReportUser = require('debug')('app:reportsUser');
 const { Typifications } = require('../models/typification');
@@ -314,92 +315,22 @@ router.post('/records/closes', async (req, res) => {
         
         if(!response.length) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
         
-         //Convertir respuesta a CSV 
-        const fields = [
-            { 
-                label: 'RADICADO',
-                value: 'number'
-            },
-            { 
-                label: 'CEDULA',
-                value: 'customer'
-            },
-            { 
-                label: 'CREDITO',
-                value: 'credit'
-            },
-            { 
-                label: 'FECHA CREACION',
-                value: 'date'
-            },
-            { 
-                label: 'USUARIO RADICADOR',
-                value: 'createdBy'
-            },
-            { 
-                label: 'USUARIO FINALIZADOR',
-                value: ''
-            },
-            { 
-                label: 'SEMAFORO USUARIO',
-                value: ''
-            },
-            { 
-                label: 'SEMAFORO CASO',
-                value: ''
-            },
-            { 
-                label: 'TIPIFICACION GENERAL',
-                value: ''
-            },
-            { 
-                label: 'TIPIFICACION ESPECIFICA',
-                value: ''
-            },
-            { 
-                label: 'TIPO PQR',
-                value: ''
-            },
-            { 
-                label: 'VENCIMIENTO USUARIO',
-                value: ''
-            },
-            { 
-                label: 'VENCIMIENTO CASO',
-                value: ''
-            },
-            { 
-                label: 'FECHA DE SEGUIMIENTO',
-                value: ''
-            },
-            { 
-                label: 'ULT FECHA DE INGRESO EN USUARIO DE',
-                value: ''
-            },
-            { 
-                label: 'FECHA DE CIERRE',
-                value: ''
-            },
-            { 
-                label: 'TIPO DE GESTION',
-                value: ''
-            },
-            { 
-                label: 'CAUSAL DE RECHAZO',
-                value: ''
-            }
-        ];
-        const json2csvParser = new Json2csvParser({ fields });
-        const csv = json2csvParser.parse(response);
-        //appReport(csv);
         const random = randomstring.generate(8);
         const name = 'Close' + random
-        const fileName = './downloads/' + name;
-        fs.writeFile(fileName, csv, function (err) {
-        if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
-            appReport('Saved!');
-            res.send({ 'file': name});
-        });
+        const fileName = './downloads/' + name + '.csv';
+
+        const csvWriter = createCsvWriter({  
+            path: fileName,
+            header: [
+              {id: 'number', title: 'Radicado'}
+            ]
+          })
+        
+          csvWriter  
+          .writeRecords(data)
+          .then(()=> console.log('The CSV file was written successfully'));
+          
+        
     }
     catch(ex){
         console.log(ex);
