@@ -314,8 +314,13 @@ router.post('/records/closes', async (req, res) => {
                         const createdBy = await Flow.find({"record": records[i]._id, "level":-1});
                         const createdUser = await Users.findOne({"_id": createdBy[0].user});
 
-                        const nameReject = await Rejects.findOne({"_id": flow[0].reject});
+                        const reject = await Rejects.findOne({"_id": flow[0].reject});
+                        appReport(reject);
+                        appReport('###');
+                        appReport(reject.name);
 
+                        const nameReject = reject.name
+                       
                         if (flow[0].case == 1)  nameCase = 'Rechazar - Devolver';
                         if (flow[0].case == 2)  nameCase = 'Finalizar -Avanzar';
                         if (flow[0].case == 3)  nameCase = 'En Gestión';
@@ -346,7 +351,7 @@ router.post('/records/closes', async (req, res) => {
                             trackingDate: records[i].trackingDate,
                             date: records[i].date,
                             case: nameCase,
-                            reject: nameReject[0].name
+                            reject: nameReject
                         };
                         response.push(record);
                     }
