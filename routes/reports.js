@@ -318,7 +318,7 @@ router.post('/records/closes', async (req, res) => {
                         //Buscamos el Usuario
                         const lastUser = flow[0].user;;
                         const findUser = await Users.findOne({"_id": lastUser});
-                        if (!user) return res.status(404).send('Un usuario no fue encontrado'); // Error 404 
+                        if (!findUser) return res.status(404).send('Un usuario no fue encontrado'); // Error 404 
                         const userName = findUser.name;
 
                         const record = { 
