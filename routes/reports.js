@@ -430,7 +430,7 @@ router.post('/records/closes', async (req, res) => {
         ];
         const json2csvParser = new Json2csvParser({ fields });
         const csv = json2csvParser.parse(response);
-        appReport(csv);
+        //appReport(csv);
         const random = randomstring.generate(8);
         const name = 'Close' + random +'.txt'
         const fileName = './downloads/' + name;
