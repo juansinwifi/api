@@ -301,7 +301,8 @@ router.post('/records/closes', async (req, res) => {
                             number: records[i].number,
                             customer: records[i].customer,
                             credit: records[i].ref,
-                            date: records[i].date
+                            date: records[i].date,
+                            createdBy: records[i].createdBy
                         };
                         response.push(record);
                     }
@@ -334,7 +335,7 @@ router.post('/records/closes', async (req, res) => {
             },
             { 
                 label: 'USUARIO RADICADOR',
-                value: ''
+                value: 'createdBy'
             },
             { 
                 label: 'USUARIO FINALIZADOR',
