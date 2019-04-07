@@ -298,7 +298,8 @@ router.post('/records/closes', async (req, res) => {
                     if(flow){
                         const record = { 
                             number: records[i].number,
-                            customer: records[i].customer
+                            customer: records[i].customer,
+                            credit: records[i].ref
                         };
                         response.push(record);
                     }
@@ -323,7 +324,7 @@ router.post('/records/closes', async (req, res) => {
             },
             { 
                 label: 'CREDITO',
-                value: ''
+                value: 'credit'
             },
             { 
                 label: 'FECHA CREACION',
