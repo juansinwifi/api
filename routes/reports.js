@@ -340,11 +340,11 @@ router.post('/records/closes', async (req, res) => {
             },
             { 
                 label: 'CEDULA',
-                value: 'customer'
+                value: ''
             },
             { 
                 label: 'CREDITO',
-                value: 'credit'
+                value: ''
             },
             { 
                 label: 'FECHA CREACION',
@@ -352,7 +352,7 @@ router.post('/records/closes', async (req, res) => {
             },
             { 
                 label: 'USUARIO RADICADOR',
-                value: 'created'
+                value: ''
             },
             { 
                 label: 'USUARIO FINALIZADOR',
