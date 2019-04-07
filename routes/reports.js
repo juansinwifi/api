@@ -317,6 +317,7 @@ router.post('/records/closes', async (req, res) => {
                         const record = { 
                             number: records[i].number,
                             customer: records[i].customer,
+                            credit: records[i].ref,
                             created: createdUser.name
                         };
                         response.push(record);
@@ -339,6 +340,10 @@ router.post('/records/closes', async (req, res) => {
             { 
                 label: 'CEDULA',
                 value: 'customer'
+            },
+            { 
+                label: 'CREDITO',
+                value: 'credit'
             },
             { 
                 label: 'USUARIO RADICADOR',
