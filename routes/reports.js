@@ -291,8 +291,6 @@ router.post('/records/closes', async (req, res) => {
         while(dates[tequila]){
             const records = await Records.find({ "date": new RegExp(dates[tequila]), "status": true });
             if (records){  
-
-
                 let i = 0;
                 while(records[i]){
                     const flow = await Flow.find({"record": records[i]._id, "status": false, "case":4});
@@ -394,7 +392,7 @@ router.post('/records/closes', async (req, res) => {
         const csv = json2csvParser.parse(response);
         //appReport(csv);
         const random = randomstring.generate(8);
-        const name = 'Close' + random +'.txt'
+        const name = 'Close' + random
         const fileName = './downloads/' + name;
         fs.writeFile(fileName, csv, function (err) {
         if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
