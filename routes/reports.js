@@ -327,7 +327,7 @@ router.post('/records/closes', async (req, res) => {
           })
         
           csvWriter  
-          .writeRecords(data)
+          .writeRecords(response)
           .then(()=> console.log('The CSV file was written successfully'));
           
         
