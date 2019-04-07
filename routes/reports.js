@@ -373,60 +373,7 @@ router.post('/records/closes', async (req, res) => {
             { 
                 label: 'USUARIO RADICADOR',
                 value: 'created'
-            },
-            { 
-                label: 'USUARIO FINALIZADOR',
-                value: 'user'
-            },
-            { 
-                label: 'SEMAFORO USUARIO',
-                value: 'userLight'
-            },
-            { 
-                label: 'SEMAFORO CASO',
-                value: 'caseLight'
-            },
-            { 
-                label: 'TIPIFICACION GENERAL',
-                value: 'typification'
-            },
-            { 
-                label: 'TIPIFICACION ESPECIFICA',
-                value: 'child'
-            },
-            { 
-                label: 'TIPO PQR',
-                value: 'pqr'
-            },
-            { 
-                label: 'VENCIMIENTO USUARIO',
-                value: 'userFinDate'
-            },
-            { 
-                label: 'VENCIMIENTO CASO',
-                value: 'caseFinDate'
-            },
-            { 
-                label: 'FECHA DE SEGUIMIENTO',
-                value: 'trackingDate'
-            },
-            { 
-                label: 'ULT FECHA DE INGRESO EN USUARIO DE',
-                value: 'lastUse'
-            },
-            { 
-                label: 'FECHA DE CIERRE',
-                value: 'date'
-            },
-            { 
-                label: 'TIPO DE GESTION',
-                value: 'case'
-            },
-            { 
-                label: 'CAUSAL DE RECHAZO',
-                value: 'reject'
             }
-
         ];
         const json2csvParser = new Json2csvParser({ fields });
         const csv = json2csvParser.parse(response);
