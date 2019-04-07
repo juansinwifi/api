@@ -328,8 +328,8 @@ router.post('/records/closes', async (req, res) => {
         
           csvWriter  
           .writeRecords(response)
-          .then(()=> console.log('The CSV file was written successfully'));
-          res.send({ 'file': fileName});
+          .then(()=> res.send({ 'file': fileName})
+          
           
         
     }
