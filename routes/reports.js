@@ -358,6 +358,59 @@ router.post('/records/closes', async (req, res) => {
             { 
                 label: 'USUARIO RADICADOR',
                 value: 'created'
+            },
+            ,
+            { 
+                label: 'USUARIO FINALIZADOR',
+                value: ''
+            },
+            { 
+                label: 'SEMAFORO USUARIO',
+                value: ''
+            },
+            { 
+                label: 'SEMAFORO CASO',
+                value: ''
+            },
+            { 
+                label: 'TIPIFICACION GENERAL',
+                value: ''
+            },
+            { 
+                label: 'TIPIFICACION ESPECIFICA',
+                value: ''
+            },
+            { 
+                label: 'TIPO PQR',
+                value: ''
+            },
+            { 
+                label: 'VENCIMIENTO USUARIO',
+                value: ''
+            },
+            { 
+                label: 'VENCIMIENTO CASO',
+                value: ''
+            },
+            { 
+                label: 'FECHA DE SEGUIMIENTO',
+                value: ''
+            },
+            { 
+                label: 'ULT FECHA DE INGRESO EN USUARIO DE',
+                value: ''
+            },
+            { 
+                label: 'FECHA DE CIERRE',
+                value: ''
+            },
+            { 
+                label: 'TIPO DE GESTION',
+                value: ''
+            },
+            { 
+                label: 'CAUSAL DE RECHAZO',
+                value: ''
             }
         ];
         const json2csvParser = new Json2csvParser({ fields });
