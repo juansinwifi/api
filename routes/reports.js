@@ -318,6 +318,7 @@ router.post('/records/closes', async (req, res) => {
                             number: records[i].number,
                             customer: records[i].customer,
                             credit: records[i].ref,
+                            createdDate: createdBy.timestamp,
                             created: createdUser.name
                         };
                         response.push(record);
@@ -344,6 +345,10 @@ router.post('/records/closes', async (req, res) => {
             { 
                 label: 'CREDITO',
                 value: 'credit'
+            },
+            { 
+                label: 'FECHA CREACION',
+                value: 'createdDate'
             },
             { 
                 label: 'USUARIO RADICADOR',
