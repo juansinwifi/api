@@ -370,7 +370,7 @@ router.post('/records/closes', async (req, res) => {
             },
             { 
                 label: '# DE CREDITO',
-                value: 'REF'
+                value: 'ref'
             },
             { 
                 label: 'FECHA CREACION',
