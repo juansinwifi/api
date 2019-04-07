@@ -312,13 +312,8 @@ router.post('/records/closes', async (req, res) => {
                         if (!lightUser) return res.status(404).send('Semaforo de usuario no encontrado'); // Error 404 
                         
                         const createdBy = await Flow.findOne({"record": records[i]._id, "level":-1});
-                        const createdUser = await Users.findOne({"_id": createdBy.user});
+                        const createdUser = await Users.findById({createdBy.user});
                         //const createdDate = createdBy.timestamp.toString()
-
-                        //Buscamos el Usuario
-                        const findLastUser = await Users.findOne({"_id": flow[0].user});
-                        if (!findLastUser) return res.status(404).send('Un usuario no fue encontrado'); // Error 404 
-                        const lastUser = findLastUser.name;
 
                         const record = { 
                             number: records[i].number,
@@ -359,7 +354,6 @@ router.post('/records/closes', async (req, res) => {
                 label: 'USUARIO RADICADOR',
                 value: 'created'
             },
-            ,
             { 
                 label: 'USUARIO FINALIZADOR',
                 value: ''
