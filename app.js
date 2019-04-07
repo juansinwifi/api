@@ -22,6 +22,7 @@ const bodyParser = require('body-parser');
 //Intall NPM express-fileupload
 //Instal npm  json2csv
 //Inatal npm install randomstring
+//Talvez npm i -s csv-writer
 
 if (!config.get('jwtPrivateKey')){
     startupDebugger('FATAL ERROR: jwtPrivateKey  is not defined,');
