@@ -382,7 +382,7 @@ router.post('/records/closes', async (req, res) => {
             },
             { 
                 label: 'USUARIO FINALIZADOR',
-                value: 'userName'
+                value: 'user'
             },
             { 
                 label: 'SEMAFORO USUARIO',
