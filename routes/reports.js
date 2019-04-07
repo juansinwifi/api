@@ -297,7 +297,8 @@ router.post('/records/closes', async (req, res) => {
                     const flow = await Flow.find({"record": records[i]._id, "status": false, "case":4});
                     if(flow){
                         const record = { 
-                            number: records[i].number
+                            number: records[i].number,
+                            customer: records[i].customer
                         };
                         response.push(record);
                     }
@@ -318,7 +319,7 @@ router.post('/records/closes', async (req, res) => {
             },
             { 
                 label: 'CEDULA',
-                value: ''
+                value: 'customer'
             },
             { 
                 label: 'CREDITO',
