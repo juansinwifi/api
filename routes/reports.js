@@ -296,30 +296,8 @@ router.post('/records/closes', async (req, res) => {
                 while(records[i]){
                     const flow = await Flow.find({"record": records[i]._id, "status": false, "case":4});
                     if(flow){
-                        let typification = await Typifications.findById(records[i].typification);
-                        if (!typification || typification.length == 0) return res.status(404).send('No se encontro una tipificación.'); // Error 404 
-                        
-                        let child = await ChildTypifications.findById(records[i].child);
-                        if (!child || child.length == 0) return res.status(404).send('No se encontro una tipificación especifica.'); // Error 404 
-                        
-                        const requirement = await Requirements.findById(child.requirement);
-                        if (!requirement) return res.status(404).send('Requerimiento no encontrado'); // Error 404 
-
-                        const light = await Lights.findOne({"name": 'CASO'});
-                        if (!light) return res.status(404).send('Semaforo de casos no encontrado'); // Error 404 
-
-                        const lightUser = await Lights.findOne({"name": 'USUARIO'});
-                        if (!lightUser) return res.status(404).send('Semaforo de usuario no encontrado'); // Error 404 
-                        
-                        const createdBy = await Flow.findOne({"record": records[i]._id, "level":-1});
-                        const createdUser = await Users.findById(createdBy.user);
-                        //const createdDate = createdBy.timestamp.toString()
-
                         const record = { 
-                            number: records[i].number,
-                            customer: records[i].customer,
-                            credit: records[i].ref,
-                            created: createdUser.name
+                            number: records[i].number
                         };
                         response.push(record);
                     }
