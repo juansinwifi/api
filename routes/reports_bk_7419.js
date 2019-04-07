@@ -335,8 +335,23 @@ router.post('/records/closes', async (req, res) => {
 
                         const record = { 
                             number: records[i].number,
-                            customer:  records[i].customer
-                            
+                            customer:  records[i].customer,
+                            ref: records[i].ref,
+                            createdDate: createdBy[0].timestamp,
+                            createdBy: createdUser.name,
+                            user: userName,
+                            userLight: flow[0].light,
+                            caseLight: records[i].caseLight,
+                            typification: typification.name,
+                            child: child.name,
+                            pqr: requirement.type,
+                            userFinDate: flow[0].finDate,
+                            caseFinDate: records[i].caseFinDate,
+                            trackingDate:" - ",
+                            date: records[i].date,
+                            case: nameCase,
+                            reject: nameReject,
+                            lastUse: " - "
                         };
                         response.push(record);
                     }
@@ -422,7 +437,7 @@ router.post('/records/closes', async (req, res) => {
             { 
                 label: 'CAUSAL DE RECHAZO',
                 value: 'reject'
-            }
+            },
 
         ];
         const json2csvParser = new Json2csvParser({ fields });
