@@ -339,7 +339,7 @@ router.post('/records/closes', async (req, res) => {
                             customer:  records[i].customer,
                             ref: records[i].ref,
                             createdDate: createdBy.timestamp,
-                            created: createdUser.name
+                            created: createdBy.user
                         };
                         response.push(record);
                     }
