@@ -378,7 +378,7 @@ router.post('/records/closes', async (req, res) => {
             },
             { 
                 label: 'USUARIO RADICADOR',
-                value: 'createdUser.name'
+                value: 'createdBy'
             },
             { 
                 label: 'USUARIO FINALIZADOR',
