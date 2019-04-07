@@ -345,7 +345,7 @@ router.post('/records/closes', async (req, res) => {
 router.get('/records/closes/:file', async (req, res) => {
     try { 
         if (!req.params.file) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
-        const fileName =  './downloads/' + req.params.file;
+        const fileName =  './downloads/' + req.params.file + '.csv';
             //Creamos un Stream para seguir el archivo y luego borrarlo
             let file = fs.createReadStream(fileName);
             res.download(fileName, 'radicados_cerrados.csv');
