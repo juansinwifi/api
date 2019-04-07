@@ -394,27 +394,27 @@ router.post('/records/closes', async (req, res) => {
             },
             { 
                 label: 'TIPIFICACION GENERAL',
-                value: 'typification.name'
+                value: 'typification'
             },
             { 
                 label: 'TIPIFICACION ESPECIFICA',
-                value: 'child.name'
+                value: 'child'
             },
             { 
                 label: 'TIPO PQR',
-                value: 'requirement.type'
+                value: 'requirement'
             },
             { 
                 label: 'VENCIMIENTO USUARIO',
-                value: 'flow[0].finDate'
+                value: 'userFinDate'
             },
             { 
                 label: 'VENCIMIENTO CASO',
-                value: 'records[i].caseFinDate'
+                value: 'caseFinDate'
             },
             { 
                 label: 'FECHA DE SEGUIMIENTO',
-                value: 'records[i].trackingDate'
+                value: 'trackingDate'
             },
             { 
                 label: 'ULT FECHA DE INGRESO EN USUARIO DE',
@@ -422,15 +422,15 @@ router.post('/records/closes', async (req, res) => {
             },
             { 
                 label: 'FECHA DE CIERRE',
-                value: 'records[i].date'
+                value: 'date'
             },
             { 
                 label: 'TIPO DE GESTION',
-                value: 'flow[0].case'
+                value: 'case'
             },
             { 
                 label: 'CAUSAL DE RECHAZO',
-                value: 'flow[0].reject'
+                value: 'reject'
             },
 
         ];
