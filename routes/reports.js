@@ -313,7 +313,7 @@ router.post('/records/closes', async (req, res) => {
                         
                         const createdBy = await Flow.findOne({"record": records[i]._id, "level":-1});
                         const createdUser = await Users.findOne({"_id": createdBy.user});
-                    
+                        if(records[i].number == 1191) appReport(createdBy)
 
                         const reject = await Rejects.findOne({"_id": flow[0].reject});
                         let nameReject = ' - '
