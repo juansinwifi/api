@@ -315,11 +315,18 @@ router.post('/records/closes', async (req, res) => {
                         const createdUser = await Users.findOne({"_id": createdBy.user});
                         //const createdDate = createdBy.timestamp.toString()
 
+                        //Buscamos el Usuario
+                        const lastUser = flow[0].user;;
+                        const findUser = await Users.findOne({"_id": lastUser});
+                        if (!user) return res.status(404).send('Un usuario no fue encontrado'); // Error 404 
+                        const userName = findUser.name;
+
                         const record = { 
                             number: records[i].number,
                             customer: records[i].customer,
                             credit: records[i].ref,
-                            created: createdUser.name
+                            created: createdUser.name,
+                            lastUser: userName
                         };
                         response.push(record);
                     }
@@ -353,6 +360,10 @@ router.post('/records/closes', async (req, res) => {
             { 
                 label: 'USUARIO RADICADOR',
                 value: 'created'
+            },
+            { 
+                label: 'USUARIO FINALIZADOR',
+                value: 'lastUser'
             }
         ];
         const json2csvParser = new Json2csvParser({ fields });
