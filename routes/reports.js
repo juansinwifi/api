@@ -313,12 +313,13 @@ router.post('/records/closes', async (req, res) => {
                         
                         const createdBy = await Flow.findOne({"record": records[i]._id, "level":-1});
                         const createdUser = await Users.findOne({"_id": createdBy.user});
+                        const createdDate = createdBy.timestamp.toString()
 
                         const record = { 
                             number: records[i].number,
                             customer: records[i].customer,
                             credit: records[i].ref,
-                            createdDate: createdBy.timestamp,
+                            createdDate: createdDate,
                             created: createdUser.name
                         };
                         response.push(record);
