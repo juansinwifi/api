@@ -314,13 +314,14 @@ router.post('/records/closes', async (req, res) => {
                         const createdBy = await Flow.findOne({"record": records[i]._id, "level":-1});
                         // const createdUser = await Users.findOne({"_id": createdBy.user});
                         if(records[i].number == 1458) appReport(createdBy)
+                        const createdUser = createdBy.user.toString()
 
                         const record = { 
                             number: records[i].number,
                             customer:  records[i].customer,
                             ref: records[i].ref,
                             createdDate: createdBy.timestamp,
-                            created: 'createdBy.user'
+                            created: createdUser
                         };
                         response.push(record);
                     }
