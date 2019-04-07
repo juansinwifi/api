@@ -312,8 +312,8 @@ router.post('/records/closes', async (req, res) => {
                         if (!lightUser) return res.status(404).send('Semaforo de usuario no encontrado'); // Error 404 
                         
                         const createdBy = await Flow.findOne({"record": records[i]._id, "level":-1});
-                        
-                        const createdDate = createdBy.timestamp.toString()
+                        const createdUser = await Users.findOne({"_id": createdBy.user});
+                        //const createdDate = createdBy.timestamp.toString()
 
                         const record = { 
                             number: records[i].number,
