@@ -315,7 +315,7 @@ router.post('/records/closes', async (req, res) => {
                         const createdUser = await Users.findOne({"_id": createdBy[0].user});
 
                         const reject = await Rejects.findOne({"_id": flow[0].reject});
-                        let nameReject = ' '
+                        let nameReject = ' - '
                         if (reject) nameReject = reject.name
                         
                         
@@ -347,11 +347,11 @@ router.post('/records/closes', async (req, res) => {
                             pqr: requirement.type,
                             userFinDate: flow[0].finDate,
                             caseFinDate: records[i].caseFinDate,
-                            trackingDate:" ",
+                            trackingDate:" - ",
                             date: records[i].date,
                             case: nameCase,
                             reject: nameReject,
-                            lastUse: " "
+                            lastUse: " - "
                         };
                         response.push(record);
                     }
