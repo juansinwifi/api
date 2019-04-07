@@ -318,6 +318,7 @@ router.post('/records/closes', async (req, res) => {
                         let nameReject = ' '
                         if (reject) nameReject = reject.name
                         
+                        
                        
                         if (flow[0].case == 1)  nameCase = 'Rechazar - Devolver';
                         if (flow[0].case == 2)  nameCase = 'Finalizar -Avanzar';
@@ -346,10 +347,11 @@ router.post('/records/closes', async (req, res) => {
                             pqr: requirement.type,
                             userFinDate: flow[0].finDate,
                             caseFinDate: records[i].caseFinDate,
-                            trackingDate: records[i].trackingDate,
+                            trackingDate:" ",
                             date: records[i].date,
                             case: nameCase,
-                            reject: nameReject
+                            reject: nameReject,
+                            lastUse: " "
                         };
                         response.push(record);
                     }
@@ -422,7 +424,7 @@ router.post('/records/closes', async (req, res) => {
             },
             { 
                 label: 'ULT FECHA DE INGRESO EN USUARIO DE',
-                value: ''
+                value: 'lastUse'
             },
             { 
                 label: 'FECHA DE CIERRE',
