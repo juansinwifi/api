@@ -312,16 +312,11 @@ router.post('/records/closes', async (req, res) => {
                         if (!lightUser) return res.status(404).send('Semaforo de usuario no encontrado'); // Error 404 
                         
                         const createdBy = await Flow.findOne({"record": records[i]._id, "level":-1});
-                        // const createdUser = await Users.findOne({"_id": createdBy.user});
-                        if(records[i].number == 1458) appReport(createdBy)
-                        const createdUser = createdBy.user.toString()
+                        
 
                         const record = { 
                             number: records[i].number,
-                            customer:  records[i].customer,
-                            ref: records[i].ref,
-                            createdDate: createdBy._id,
-                            created: createdBy._id
+                            created: createdBy.user
                         };
                         response.push(record);
                     }
@@ -339,18 +334,6 @@ router.post('/records/closes', async (req, res) => {
             { 
                 label: 'RADICADO',
                 value: 'number'
-            },
-            { 
-                label: 'CC',
-                value: 'customer'
-            },
-            { 
-                label: '# DE CREDITO',
-                value: 'ref'
-            },
-            { 
-                label: 'FECHA CREACION',
-                value: 'createdDate'
             },
             { 
                 label: 'USUARIO RADICADOR',
