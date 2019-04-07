@@ -324,8 +324,7 @@ router.post('/records/closes', async (req, res) => {
                             number: records[i].number,
                             customer: records[i].customer,
                             credit: records[i].ref,
-                            created: createdUser.name,
-                            lastUser: lastUser
+                            created: createdUser.name
                         };
                         response.push(record);
                     }
@@ -359,10 +358,6 @@ router.post('/records/closes', async (req, res) => {
             { 
                 label: 'USUARIO RADICADOR',
                 value: 'created'
-            },
-            { 
-                label: 'USUARIO FINALIZADOR',
-                value: 'lastUser'
             }
         ];
         const json2csvParser = new Json2csvParser({ fields });
