@@ -315,9 +315,8 @@ router.post('/records/closes', async (req, res) => {
                         const createdUser = await Users.findOne({"_id": createdBy[0].user});
 
                         const reject = await Rejects.findOne({"_id": flow[0].reject});
-                        
                         let nameReject = ''
-                        if (!reject) nameReject = reject.name
+                        if (reject) nameReject = reject.name
                         
                        
                         if (flow[0].case == 1)  nameCase = 'Rechazar - Devolver';
