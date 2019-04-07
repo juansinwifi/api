@@ -328,7 +328,7 @@ router.post('/records/closes', async (req, res) => {
                         if (flow[0].case == 6)  nameCase = 'Reasignar Caso';
                         //Buscamos el Usuario
                         const user = flow[0].user;
-                        appReport(user);
+                        
                         const findUser = await Users.findOne({"_id": user});
                         if (!user) return res.status(404).send('Un usuario no fue encontrado'); // Error 404 
                         const userName = findUser.name;
@@ -337,8 +337,7 @@ router.post('/records/closes', async (req, res) => {
                             number: records[i].number,
                             customer:  records[i].customer,
                             ref: records[i].ref,
-                            createdDate: createdBy.timestamp,
-                            createdBy: createdUser.name
+                            createdDate: createdBy.timestamp
                         };
                         response.push(record);
                     }
