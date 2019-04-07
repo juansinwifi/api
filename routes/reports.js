@@ -313,6 +313,7 @@ router.post('/records/closes', async (req, res) => {
                         
                         const createdBy = await Flow.findOne({"record": records[i]._id, "level":-1});
                         const createdUser = await Users.findOne({"_id": createdBy.user});
+                    
 
                         const reject = await Rejects.findOne({"_id": flow[0].reject});
                         let nameReject = ' - '
@@ -337,7 +338,8 @@ router.post('/records/closes', async (req, res) => {
                             number: records[i].number,
                             customer:  records[i].customer,
                             ref: records[i].ref,
-                            createdDate: createdBy.timestamp
+                            createdDate: createdBy.timestamp,
+                            created: createdUser.name
                         };
                         response.push(record);
                     }
@@ -370,7 +372,7 @@ router.post('/records/closes', async (req, res) => {
             },
             { 
                 label: 'USUARIO RADICADOR',
-                value: 'createdBy'
+                value: 'created'
             },
             { 
                 label: 'USUARIO FINALIZADOR',
