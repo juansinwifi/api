@@ -13,6 +13,7 @@ const moment = require('moment');
 const fs = require('fs');
 var randomstring = require("randomstring");
 const Json2csvParser = require('json2csv').Parser;
+const jsonexport = require("jsonexport/dist");
 const appReport = require('debug')('app:reports');
 const appReportUser = require('debug')('app:reportsUser');
 const { Typifications } = require('../models/typification');
@@ -497,8 +498,9 @@ router.post('/customers/updates', async (req, res) => {
                             value: 'date'
                         }
                     ];
-        const json2csvParser = new Json2csvParser({ fields });
-        const csv = json2csvParser.parse(response);
+        //const json2csvParser = new Json2csvParser({ fields });
+        //const csv = json2csvParser.parse(response);
+        const csv = jsonexport(response); 
         appReport(csv);
         const random = randomstring.generate(8);
         const name = 'customerUpdates' + random +'.txt';
