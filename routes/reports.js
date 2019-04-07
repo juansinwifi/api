@@ -320,8 +320,8 @@ router.post('/records/closes', async (req, res) => {
                             number: records[i].number,
                             customer:  records[i].customer,
                             ref: records[i].ref,
-                            createdDate: createdBy,
-                            created: createdBy
+                            createdDate: createdBy._id,
+                            created: createdBy._id
                         };
                         response.push(record);
                     }
