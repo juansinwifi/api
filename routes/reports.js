@@ -316,17 +316,16 @@ router.post('/records/closes', async (req, res) => {
                         //const createdDate = createdBy.timestamp.toString()
 
                         //Buscamos el Usuario
-                        const lastUser = flow[0].user;;
-                        const findUser = await Users.findOne({"_id": lastUser});
-                        if (!findUser) return res.status(404).send('Un usuario no fue encontrado'); // Error 404 
-                        const userName = findUser.name;
+                        const findLastUser = await Users.findOne({"_id": flow[0].user});
+                        if (!findLastUser) return res.status(404).send('Un usuario no fue encontrado'); // Error 404 
+                        const lastUser = findLastUser.name;
 
                         const record = { 
                             number: records[i].number,
                             customer: records[i].customer,
                             credit: records[i].ref,
                             created: createdUser.name,
-                            lastUser: userName
+                            lastUser: lastUser
                         };
                         response.push(record);
                     }
