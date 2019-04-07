@@ -291,7 +291,8 @@ router.post('/records/closes', async (req, res) => {
         while(dates[tequila]){
             const records = await Records.find({ "date": new RegExp(dates[tequila]), "status": true });
             if (records){  
-    
+
+
                 let i = 0;
                 while(records[i]){
                     const flow = await Flow.find({"record": records[i]._id, "status": false, "case":4});
@@ -299,7 +300,8 @@ router.post('/records/closes', async (req, res) => {
                         const record = { 
                             number: records[i].number,
                             customer: records[i].customer,
-                            credit: records[i].ref
+                            credit: records[i].ref,
+                            date: records[i].date
                         };
                         response.push(record);
                     }
@@ -328,7 +330,7 @@ router.post('/records/closes', async (req, res) => {
             },
             { 
                 label: 'FECHA CREACION',
-                value: ''
+                value: 'date'
             },
             { 
                 label: 'USUARIO RADICADOR',
