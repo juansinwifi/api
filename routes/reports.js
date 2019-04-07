@@ -335,7 +335,8 @@ router.post('/records/closes', async (req, res) => {
 
                         const record = { 
                             number: records[i].number,
-                            customer:  records[i].customer
+                            customer:  records[i].customer,
+                            ref: records[i].ref
                             
                         };
                         response.push(record);
