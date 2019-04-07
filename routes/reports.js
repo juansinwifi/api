@@ -4,6 +4,7 @@ const {validateReport} = require('../models/reports');
 const {Flow} = require('../models/flow');
 const {CustomersUpdates} = require('../models/customersUpdates');
 const {Requirements} = require('../models/requirements');
+const {Rejects} = require('../models/rejects');
 const {diffDate} = require('../middleware/flow');
 const mongoose = require('mongoose');
 const express = require('express');
