@@ -313,7 +313,7 @@ router.post('/records/closes', async (req, res) => {
                         const createdBy = await Flow.find({"record": records[i]._id, "level":-1});
                         const createdUser = await Users.findOne({"_id": createdBy[0].user});
 
-                        const nameReject = await Users.findOne({"_id": flow[0].reject});
+                        const nameReject = await Rejects.findOne({"_id": flow[0].reject});
 
                         if (flow[0].case == 1)  nameCase = 'Rechazar - Devolver';
                         if (flow[0].case == 2)  nameCase = 'Finalizar -Avanzar';
@@ -402,7 +402,7 @@ router.post('/records/closes', async (req, res) => {
             },
             { 
                 label: 'TIPO PQR',
-                value: 'requirement'
+                value: 'pqr'
             },
             { 
                 label: 'VENCIMIENTO USUARIO',
