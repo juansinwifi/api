@@ -302,13 +302,16 @@ router.post('/records/closes', async (req, res) => {
                         //Usuario Radicador
                         const createdUser = await Users.findById(records[i].createdBy);
                         
-                        appReport(createdUser.name)
+                        //Usuario Finalizador
+                        const lastUser =  await Users.findById(flow[0].user);
+            
                         const record = { 
                             RADICADO: records[i].number,
                             CLIENTE: records[i].customer,
                             CREDITO: records[i].ref,
                             CREADO: records[i].date,
-                            RADICADOR: createdUser.name
+                            RADICADOR: createdUser.name,
+                            FINALIZADOR: lastUser.name
                         };
                         response.push(record);
                     }
