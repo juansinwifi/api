@@ -327,12 +327,13 @@ router.post('/records/closes', async (req, res) => {
               {id: 'credit', title: 'CREDITO'},
               {id: 'date', title: 'FECHA CREACION'},
               {id: 'createdBy', title: 'USUARIO RADICADOR'}
-            ]
-          })
+            ],
+            append: true
+          });
         
           csvWriter.writeRecords(response)
             .then(()=> {
-            console.log('...Done');
+            appReport('...Done');
             res.send({ 'file': name})
           });
            
