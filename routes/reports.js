@@ -315,8 +315,7 @@ router.post('/records/closes', async (req, res) => {
                             CREADO: records[i].date,
                             RADICADOR: createdUser.name,
                             FINALIZADOR: lastUser.name,
-                            SEMAFORO_USUARIO: userLight,
-                            SEMAFORO_CASO: "caseLight"
+                            SEMAFORO_USUARIO: userLight
                         };
                         response.push(record);
                     }
