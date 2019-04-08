@@ -305,6 +305,8 @@ router.post('/records/closes', async (req, res) => {
                         const lastUser =  await Users.findById(flow[0].user);
                         //Semaforo Usuario
                         const userLight = flow[0].light;
+                        //Semaforo Caso
+                        const caseLight = records[i].caseLight
 
                         const record = { 
                             RADICADO: records[i].number,
@@ -313,7 +315,8 @@ router.post('/records/closes', async (req, res) => {
                             CREADO: records[i].date,
                             RADICADOR: createdUser.name,
                             FINALIZADOR: lastUser.name,
-                            SEMAFORO_USUARIO: userLight
+                            SEMAFORO_USUARIO: userLight,
+                            SEMAFOTO_CASO: caseLight
                         };
                         response.push(record);
                     }
