@@ -306,7 +306,7 @@ router.post('/records/closes', async (req, res) => {
                         //Semaforo Usuario
                         const userLight = flow[0].light;
                         //Semaforo Caso
-                        const caseLight = records[i].caseLight
+                        const caseLight = records[i].caseLight;
 
                         const record = { 
                             RADICADO: records[i].number,
@@ -316,7 +316,7 @@ router.post('/records/closes', async (req, res) => {
                             RADICADOR: createdUser.name,
                             FINALIZADOR: lastUser.name,
                             SEMAFORO_USUARIO: userLight,
-                            SEMAFOTO_CASO: caseLight
+                            SEMAFORO_CASO: caseLight
                         };
                         response.push(record);
                     }
