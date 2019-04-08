@@ -14,7 +14,9 @@ const fs = require('fs');
 var randomstring = require("randomstring");
 const Json2csvParser = require('json2csv').Parser;
 //Intento 2 para convertir CSV to Json
-const createCsvWriter = require('csv-writer').createObjectCsvWriter;  
+const createCsvWriter = require('csv-writer').createObjectCsvWriter; 
+//Intento 3 para convertir CSV to Json
+const jsonexport = require('jsonexport');
 const appReport = require('debug')('app:reports');
 const appReportUser = require('debug')('app:reportsUser');
 const { Typifications } = require('../models/typification');
@@ -316,31 +318,21 @@ router.post('/records/closes', async (req, res) => {
         if(!response.length) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
         
         var json = JSON.stringify(response);
-        fs.writeFile('./uploads/records/myjsonfile.json', json, 'utf8');
+        fs.writeFile('./uploads/records/2019/04/myjsonfile.json', json, 'utf8');
 
         const random = randomstring.generate(8);
         const name = 'Close' + random
         const fileName = './downloads/' + name + '.csv';
 
-        const csvWriter = createCsvWriter({  
-            path: fileName,
-            header: [
-              {id: 'number', title: 'RADICADO'},
-              {id: 'customer', title: 'CLIENTE'},
-              {id: 'credit', title: 'CREDITO'},
-              {id: 'date', title: 'FECHA CREACION'},
-              {id: 'createdBy', title: 'USUARIO RADICADOR'}
-            ],
-            append: true
-          });
-        
-          csvWriter.writeRecords(response)
-            .then(()=> {
-            appReport('...Done');
-            res.send({ 'file': name})
-          });
+        jsonexport(response,function(err, csv){
+            if(err) return console.log(err);
            
-          
+            fs.writeFile(fileName, csv, function (err) {
+                if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
+                    appReport('Saved!');
+                    res.send({ 'file': name});
+                });
+        });
         
     }
     catch(ex){
