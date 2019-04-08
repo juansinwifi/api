@@ -301,7 +301,8 @@ router.post('/records/closes', async (req, res) => {
                     if(flow){
                         //Usuario Radicador
                         const createdUser = await Users.findById(records[i].createdBy);
-                        appReport(createdUser)
+                        
+                        appReport(createdUser.name)
                         const record = { 
                             RADICADO: records[i].number,
                             CLIENTE: records[i].customer,
