@@ -322,8 +322,11 @@ router.post('/records/closes', async (req, res) => {
         const csvWriter = createCsvWriter({  
             path: fileName,
             header: [
-              {id: 'number', title: 'Radicado'},
-              {id: 'customer', title: 'Cliente'}
+              {id: 'number', title: 'RADICADO'},
+              {id: 'customer', title: 'CLIENTE'},
+              {id: 'credit', title: 'CREDITO'},
+              {id: 'date', title: 'FECHA CREACION'},
+              {id: 'createdBy', title: 'USUARIO RADICADOR'}
             ]
           })
         
