@@ -301,17 +301,19 @@ router.post('/records/closes', async (req, res) => {
                     if(flow){
                         //Usuario Radicador
                         const createdUser = await Users.findById(records[i].createdBy);
-                        
                         //Usuario Finalizador
                         const lastUser =  await Users.findById(flow[0].user);
-            
+                        //Semaforo Usuario
+                        const userLight = flow[0].light;
+
                         const record = { 
                             RADICADO: records[i].number,
                             CLIENTE: records[i].customer,
                             CREDITO: records[i].ref,
                             CREADO: records[i].date,
                             RADICADOR: createdUser.name,
-                            FINALIZADOR: lastUser.name
+                            FINALIZADOR: lastUser.name,
+                            SEMAFORO_USUARIO: userLight
                         };
                         response.push(record);
                     }
