@@ -16,7 +16,7 @@ const Json2csvParser = require('json2csv').Parser;
 //Intento 2 para convertir CSV to Json
 //const createCsvWriter = require('csv-writer').createObjectCsvWriter; 
 //Intento 3 para convertir CSV to Json
-const jsonexport = require('jsonexport');
+const jsonexport = require('jsonexport'); 
 const appReport = require('debug')('app:reports');
 const appReportUser = require('debug')('app:reportsUser');
 const { Typifications } = require('../models/typification');
@@ -300,11 +300,11 @@ router.post('/records/closes', async (req, res) => {
                     const flow = await Flow.find({"record": records[i]._id, "status": false, "case":4});
                     if(flow){
                         const record = { 
-                            number: records[i].number,
-                            customer: records[i].customer,
-                            credit: records[i].ref,
-                            date: records[i].date,
-                            createdBy: records[i].createdBy
+                            RADICADO: records[i].number,
+                            CLIENTE: records[i].customer,
+                            CREDITO: records[i].ref,
+                            CREADO: records[i].date,
+                            RADICADOR: records[i].createdBy
                         };
                         response.push(record);
                     }
