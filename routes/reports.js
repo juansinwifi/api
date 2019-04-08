@@ -325,7 +325,7 @@ router.post('/records/closes', async (req, res) => {
         const fileName = './downloads/' + name + '.csv';
 
         jsonexport(response,function(err, csv){
-            if(err) return console.log(err);
+            if(err) return appReport(err);
            
             fs.writeFile(fileName, csv, function (err) {
                 if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
