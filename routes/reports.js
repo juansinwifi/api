@@ -14,7 +14,7 @@ const fs = require('fs');
 var randomstring = require("randomstring");
 const Json2csvParser = require('json2csv').Parser;
 //Intento 2 para convertir CSV to Json
-const createCsvWriter = require('csv-writer').createObjectCsvWriter; 
+//const createCsvWriter = require('csv-writer').createObjectCsvWriter; 
 //Intento 3 para convertir CSV to Json
 const jsonexport = require('jsonexport');
 const appReport = require('debug')('app:reports');
