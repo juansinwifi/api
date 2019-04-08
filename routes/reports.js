@@ -299,12 +299,15 @@ router.post('/records/closes', async (req, res) => {
                 while(records[i]){
                     const flow = await Flow.find({"record": records[i]._id, "status": false, "case":4});
                     if(flow){
+                        //Usuario Radicador
+                        const createdUser = await Users.findById(records[i].createdBy);
+                        
                         const record = { 
                             RADICADO: records[i].number,
                             CLIENTE: records[i].customer,
                             CREDITO: records[i].ref,
                             CREADO: records[i].date,
-                            RADICADOR: records[i].createdBy
+                            RADICADOR: createdUser
                         };
                         response.push(record);
                     }
