@@ -316,7 +316,7 @@ router.post('/records/closes', async (req, res) => {
         if(!response.length) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
         
         var json = JSON.stringify(response);
-        fs.writeFile('uploads/records/myjsonfile.json', json, 'utf8');
+        fs.writeFile('./uploads/records/myjsonfile.json', json, 'utf8');
 
         const random = randomstring.generate(8);
         const name = 'Close' + random
