@@ -534,9 +534,9 @@ router.post('/customers/updates', async (req, res) => {
                             value: 'date'
                         }
                     ];
-        //const json2csvParser = new Json2csvParser({ fields });
-        //const csv = json2csvParser.parse(response);
-        const csv = jsonexport(response); 
+        const json2csvParser = new Json2csvParser({ fields });
+        const csv = json2csvParser.parse(response);
+        //const csv = jsonexport(response); 
         appReport(csv);
         const random = randomstring.generate(8);
         const name = 'customerUpdates' + random +'.txt';
@@ -566,12 +566,12 @@ router.get('/customers/updates/:file', async (req, res) => {
             let file = fs.createReadStream(fileName);
             res.download(fileName, 'actualizacion_datos.csv');
             //Cuando se termine de bajar lo borramos
-            // file.on('end', function() {
-            //   fs.unlink(fileName, function() {
-            //     // file deleted
-            //     appReport('Deleted!');
-            //   });
-            // });
+            file.on('end', function() {
+              fs.unlink(fileName, function() {
+                // file deleted
+                appReport('Deleted!');
+              });
+            });
             file.pipe(res);
         }
     catch(ex){
