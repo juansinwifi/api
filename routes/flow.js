@@ -235,10 +235,10 @@ router.get('/flow/:id', async (req, res) => {
         }
      
        
-        records[0].customer = customer.id;
+       let customer = {};
         //Buscar Nombre en Customer
         //records[0].contact = contact.name;
-
+        records[0].customer = customer.id
         records[0].typification = typification.name;
         records[0].child = child.name;
         records[0].channel = channel.name;

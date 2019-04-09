@@ -327,7 +327,8 @@ router.post('/records/closes', async (req, res) => {
                         if (flow[0].case == 6)   nameCase = 'Reasignar Caso';
                         //Causal de Rechazo
                         const reject = await Rejects.findOne({"_id": flow[0].reject});
-                        
+                        let nameReject = '  '
+                        if (reject) nameReject = reject.name
 
                         const record = { 
                             RADICADO: records[i].number,
