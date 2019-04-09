@@ -181,7 +181,7 @@ router.post('/records/opens/', async (req, res) => {
                         number: records[i].number,
                         customer:  records[i].customer,
                         ref: records[i].ref,
-                        createdDate: createdBy[0].timestamp,
+                        createdDate: records[i].date,
                         createdBy: createdUser.name,
                         user: lastUser.name,
                         userLight: userLight,
