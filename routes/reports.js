@@ -566,12 +566,12 @@ router.get('/customers/updates/:file', async (req, res) => {
             let file = fs.createReadStream(fileName);
             res.download(fileName, 'actualizacion_datos.csv');
             //Cuando se termine de bajar lo borramos
-            file.on('end', function() {
-              fs.unlink(fileName, function() {
-                // file deleted
-                appReport('Deleted!');
-              });
-            });
+            // file.on('end', function() {
+            //   fs.unlink(fileName, function() {
+            //     // file deleted
+            //     appReport('Deleted!');
+            //   });
+            // });
             file.pipe(res);
         }
     catch(ex){
