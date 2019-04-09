@@ -284,7 +284,7 @@ router.post('/records/opens/', async (req, res) => {
             value: 'reject'
         }
     ];
-    const json2csvParser = new Json2csvParser({ fields, quote: '' });
+    const json2csvParser = new Json2csvParser({ fields, includeEmptyRows: true });
     const csv = json2csvParser.parse(response);
     //appReport(csv);
     const random = randomstring.generate(8);
