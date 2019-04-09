@@ -318,12 +318,13 @@ router.post('/records/closes', async (req, res) => {
                         // Fecha de Cierre
                         let closeDate = flow[0].timestamp
                         //Tipo de Gestion
-                        if (flow[0].case == 1)  let nameCase = 'Rechazar - Devolver';
-                        if (flow[0].case == 2)  let nameCase = 'Finalizar -Avanzar';
-                        if (flow[0].case == 3)  let nameCase = 'En Gestión';
-                        if (flow[0].case == 4)  let nameCase = 'Cerrar Caso';
-                        if (flow[0].case == 5)  let nameCase = 'Abierto';
-                        if (flow[0].case == 6)  let nameCase = 'Reasignar Caso';
+                        let nameCase = '';
+                        if (flow[0].case == 1)   nameCase = 'Rechazar - Devolver';
+                        if (flow[0].case == 2)   nameCase = 'Finalizar -Avanzar';
+                        if (flow[0].case == 3)   nameCase = 'En Gestión';
+                        if (flow[0].case == 4)   nameCase = 'Cerrar Caso';
+                        if (flow[0].case == 5)   nameCase = 'Abierto';
+                        if (flow[0].case == 6)   nameCase = 'Reasignar Caso';
                         //Causal de Rechazo
                         const reject = await Rejects.findOne({"_id": flow[0].reject});
                         
