@@ -348,7 +348,7 @@ router.post('/records/closes', async (req, res) => {
                             ULTIMO_INGREO_RADICADOR: "-",
                             FECHA_CIERRE: closeDate,
                             TIPO_GESTION: nameCase,
-                            CAUSAL_RECHAZO: reject.name
+                            CAUSAL_RECHAZO: nameReject
 
                         };
                         response.push(record);
