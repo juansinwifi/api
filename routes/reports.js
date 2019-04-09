@@ -196,12 +196,6 @@ router.post('/records/opens/', async (req, res) => {
                         case: nameCase,
                         reject: nameReject,
                         lastUse: lastEdit.timestamp
-
-                            
-                            ULTIMO_INGREO_RADICADOR: lastEdit.timestamp,
-                            FECHA_CIERRE: closeDate,
-                            TIPO_GESTION: nameCase,
-                            CAUSAL_RECHAZO: nameReject
                     };
 
                     response.push(record);
