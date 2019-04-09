@@ -300,13 +300,33 @@ router.post('/records/closes', async (req, res) => {
                     const flow = await Flow.find({"record": records[i]._id, "status": false, "case":4});
                     if(flow){
                         //Usuario Radicador
-                        const createdUser = await Users.findById(records[i].createdBy);
+                        let createdUser = await Users.findById(records[i].createdBy);
                         //Usuario Finalizador
-                        const lastUser =  await Users.findById(flow[0].user);
+                        let lastUser =  await Users.findById(flow[0].user);
                         //Semaforo Usuario
-                        const userLight = flow[0].light;
+                        let userLight = flow[0].light;
                         //Semaforo Caso
-                        const caseLight = records[i].caseLight;
+                        let caseLight = records[i].caseLight;
+                        //Buscar Tipificacion 
+                        let typification = await Typifications.findById(records[i].typification);
+                        //Buscar Tipificacion Especifica
+                        let child = await ChildTypifications.findById(records[i].child);
+                        //Buscar tipo PQR
+                        let requirement = await Requirements.findById(child.requirement);
+                        // Fecha de Vencimiento Usuario
+                        let finUser = flow[0].finDate;
+                        // Fecha de Cierre
+                        let closeDate = flow[0].timestamp
+                        //Tipo de Gestion
+                        if (flow[0].case == 1)  let nameCase = 'Rechazar - Devolver';
+                        if (flow[0].case == 2)  let nameCase = 'Finalizar -Avanzar';
+                        if (flow[0].case == 3)  let nameCase = 'En Gestión';
+                        if (flow[0].case == 4)  let nameCase = 'Cerrar Caso';
+                        if (flow[0].case == 5)  let nameCase = 'Abierto';
+                        if (flow[0].case == 6)  let nameCase = 'Reasignar Caso';
+                        //Causal de Rechazo
+                        const reject = await Rejects.findOne({"_id": flow[0].reject});
+                        
 
                         const record = { 
                             RADICADO: records[i].number,
@@ -315,7 +335,19 @@ router.post('/records/closes', async (req, res) => {
                             CREADO: records[i].date,
                             RADICADOR: createdUser.name,
                             FINALIZADOR: lastUser.name,
-                            SEMAFORO_USUARIO: userLight
+                            SEMAFORO_USUARIO: userLight,
+                            SEMAFORO_CASO: caseLight,
+                            TIPIFICACION: typification.name,
+                            TIPIFICACION_ESPECIFICA: child.name,
+                            PQR: requirement.type,
+                            VENCIMIENTO_USUARIO: finUser,
+                            VENCIMIENTO_CASO: records[i].caseFinDate,
+                            FECHA_SEGUIMIENTO: records[i].trackingDate,
+                            ULTIMO_INGREO_RADICADOR: "-",
+                            FECHA_CIERRE: closeDate,
+                            TIPO_GESTION: nameCase,
+                            CAUSAL_RECHAZO: reject.name
+
                         };
                         response.push(record);
                     }
