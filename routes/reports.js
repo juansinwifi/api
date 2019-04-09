@@ -284,9 +284,9 @@ router.post('/records/opens/', async (req, res) => {
             value: 'reject'
         }
     ];
-    const json2csvParser = new Json2csvParser({ fields });
+    const json2csvParser = new Json2csvParser({ fields, excelStrings:true });
     const csv = json2csvParser.parse(response);
-    appReport(csv);
+    //appReport(csv);
     const random = randomstring.generate(8);
     const name = 'Open' + random +'.txt'
     const fileName = './downloads/' + name;
