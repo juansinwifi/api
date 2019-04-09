@@ -329,6 +329,9 @@ router.post('/records/closes', async (req, res) => {
                         const reject = await Rejects.findOne({"_id": flow[0].reject});
                         let nameReject = '  '
                         if (reject) nameReject = reject.name
+                        //Ultimo ingreso del radicado
+                        const lastEdit = await Flow.findOne({"record": records[i]._id, "level": -1});
+
 
                         const record = { 
                             RADICADO: records[i].number,
@@ -345,7 +348,7 @@ router.post('/records/closes', async (req, res) => {
                             VENCIMIENTO_USUARIO: finUser,
                             VENCIMIENTO_CASO: records[i].caseFinDate,
                             FECHA_SEGUIMIENTO: records[i].trackingDate,
-                            ULTIMO_INGREO_RADICADOR: "-",
+                            ULTIMO_INGREO_RADICADOR: lastEdit.timestamp,
                             FECHA_CIERRE: closeDate,
                             TIPO_GESTION: nameCase,
                             CAUSAL_RECHAZO: nameReject
