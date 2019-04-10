@@ -154,7 +154,7 @@ router.post('/',  async (req, res) => {
         record.caseLight = 100;
         record.status = true;
         record.createdBy = req.body.user;
-        record.customerName = req.body.name;
+        record.customerName = req.body.customerName;
         
 
         if (requirementType != 'Inmediato'){
