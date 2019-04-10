@@ -6,6 +6,7 @@ const { Typifications } = require('../models/typification');
 const { ChildTypifications } = require('../models/childtypification');
 const { Channels } = require('../models/channels');
 const { Contacts } = require('../models/contacts');
+const { Customer } = require('../models/customer');
 const {Lights} = require('../models/lights');
 const {Users} = require('../models/user');
 const {Areas} = require('../models/areas');
@@ -243,6 +244,23 @@ router.get('/flow/:id', async (req, res) => {
         //Buscar Nombre en Customer
         //records[0].contact = contact.name;
         result.customer =  records[0].customer;
+
+        if (records[0].customerName) {
+            result.customer = records[0].customerName;
+        } else{
+            const searchName = await Customer.findOne({id: result.customer});
+            if (){
+                const updateName = await Records.findByIdAndUpdate(records[0]._id, {
+                    customerName: searchName.name
+                },{
+                    new: true
+                });
+            }
+            else{
+                result.customer = "Nombre del cliente no encontrado";
+            }
+        }
+
         records[0].typification = typification.name;
         records[0].child = child.name;
         records[0].channel = channel.name;
