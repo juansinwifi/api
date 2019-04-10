@@ -249,7 +249,7 @@ router.get('/flow/:id', async (req, res) => {
             result.customer = records[0].customerName;
         } else{
             const searchName = await Customer.findOne({id: result.customer});
-            if (){
+            if (searchName){
                 const updateName = await Records.findByIdAndUpdate(records[0]._id, {
                     customerName: searchName.name
                 },{
