@@ -20,6 +20,9 @@ const recordSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    customerName:{
+        type: Number
+    },
     ref:{
         type: Number
     },
@@ -92,6 +95,7 @@ function validateRecords(requiement) {
 
     const schema = {
         customer: Joi.number().min(1).required(),
+        customerName: Joi.string(),
         ref: Joi.number().min(1),
         typification: Joi.string().min(24).required(),
         child: Joi.string().min(24).required(),

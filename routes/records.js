@@ -154,6 +154,8 @@ router.post('/',  async (req, res) => {
         record.caseLight = 100;
         record.status = true;
         record.createdBy = req.body.user;
+        record.customerName = req.body.name;
+        
 
         if (requirementType != 'Inmediato'){
              //Tiempo Total 
