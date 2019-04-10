@@ -90,7 +90,7 @@ router.get('/:id', async (req, res) => {
                 const creationUser =  findRecord[0].date;
                 const nowUser = moment()
                 const thenUser = flow[p].finDate;
-                const caseType = flow[p].case;
+              
                 let  userLight = 50; //Por Defecto el semaforo es amarillo
 
                 const resultUser = moment(nowUser).isBefore(thenUser);
@@ -118,7 +118,9 @@ router.get('/:id', async (req, res) => {
                 }
                 if(!resultUser) appFlowUser('Radicado Vencido.')
                 if(!resultUser) userLight = 0;
-
+            
+                const caseType = flow[p].case;
+                
             const record = { 
                 _id: findRecord[0]._id,
                 number: findRecord[0].number,
