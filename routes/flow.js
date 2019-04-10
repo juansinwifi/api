@@ -90,6 +90,7 @@ router.get('/:id', async (req, res) => {
                 const creationUser =  findRecord[0].date;
                 const nowUser = moment()
                 const thenUser = flow[p].finDate;
+                const caseType = flow[p].case;
                 let  userLight = 50; //Por Defecto el semaforo es amarillo
 
                 const resultUser = moment(nowUser).isBefore(thenUser);
@@ -128,7 +129,8 @@ router.get('/:id', async (req, res) => {
                 typification: typification.name,
                 child: child.name,
                 date: findRecord[0].date,
-                userFinDate: thenUser
+                userFinDate: thenUser,
+                case: caseType
             };
 
             response.push(record);
