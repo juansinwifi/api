@@ -21,7 +21,7 @@ const recordSchema = new mongoose.Schema({
         required: true
     },
     customerName:{
-        type: Number
+        type: String
     },
     ref:{
         type: Number
