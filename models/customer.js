@@ -69,6 +69,14 @@ const customersSchema = new mongoose.Schema({
     email:{
         type: String,
         uppercase: true
+    },
+    mouthV: {
+        type: String,
+        uppercase: true
+    }, 
+    mouthP:{
+        type: String,
+        uppercase: true
     }
 });
 
@@ -91,7 +99,9 @@ function validateCustomer(requiement) {
         totalPay: Joi.string().allow(''),
         phone1: Joi.string().allow(''),
         phone2: Joi.string().allow(''),
-        email: Joi.string().allow('')
+        email: Joi.string().allow(''),
+        mouthV: Joi.string().allow(''),
+        mouthP: Joi.string().allow('')
     };
 
 

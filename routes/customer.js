@@ -67,7 +67,7 @@ router.post('/',  async (req, res) => {
             noheader: false,
             headers: [
                 'id','name', 'affinity', 'ref', 'quote', 'clinic', 'production', 'limitDate', 
-                'minPay', 'pastdueAge', 'pastdueDate', 'gag', 'totalPay', 'phone1', 'phone2', 'email'
+                'minPay', 'pastdueAge', 'pastdueDate', 'gag', 'totalPay', 'phone1', 'phone2', 'email', 'mouthV', 'mouthP'
             ]
         })
         .fromFile(csvFilePath)
@@ -92,7 +92,7 @@ router.post('/',  async (req, res) => {
         let saveCustomer = new Customer(_.pick(
             customer, [ 
                 'id','name', 'affinity', 'ref', 'quote', 'clinic', 'production', 'limitDate', 
-                'minPay', 'pastdueAge', 'pastdueDate', 'gag', 'totalPay', 'phone1', 'phone2', 'email'
+                'minPay', 'pastdueAge', 'pastdueDate', 'gag', 'totalPay', 'phone1', 'phone2', 'email', 'mouthV', 'mouthP'
             ])
         );
         saveCustomer = await saveCustomer.save();
