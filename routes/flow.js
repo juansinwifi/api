@@ -246,7 +246,7 @@ router.get('/flow/:id', async (req, res) => {
         result.customer =  records[0].customer;
 
         if (records[0].customerName) {
-            result.customer = records[0].customerName;
+            result.customerName = records[0].customerName;
         } else{
             const searchName = await Customer.findOne({id: result.customer});
             if (searchName){
@@ -255,9 +255,10 @@ router.get('/flow/:id', async (req, res) => {
                 },{
                     new: true
                 });
+                result.customerName = searchName.name;
             }
             else{
-                result.customer = "Nombre del cliente no encontrado";
+                result.customerName = "Nombre del cliente no encontrado";
             }
         }
 
