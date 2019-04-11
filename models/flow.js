@@ -55,7 +55,7 @@ function validateFlow(requiement) {
         observations: Joi.string().required(),
         case: Joi.number().min(1).required(),
         reject: Joi.string().min(24).required(),
-        file: Joi.string()
+        file: Joi.string().allow('')
     };
 
     return Joi.validate(requiement, schema);

@@ -1,56 +1,55 @@
-
-const csv = require('csvtojson');
+const auth = require('../middleware/auth');
+const {backFlow, nextFlow, changeFlow, closeFlow, assingFlow, diffDate} = require('../middleware/flow');
+const {Records} = require('../models/record');
+const {Flow, validateFlow} = require('../models/flow');
+const { Typifications } = require('../models/typification');
+const { ChildTypifications } = require('../models/childtypification');
+const { Channels } = require('../models/channels');
+const { Contacts } = require('../models/contacts');
+const { Customer } = require('../models/customer');
+const {Lights} = require('../models/lights');
+const {Users} = require('../models/user');
+const {Areas} = require('../models/areas');
+const appFlow = require('debug')('app:flow');
+const appFlowUser = require('debug')('app:flowUser');
+const appHistory = require('debug')('app:History');
 const mongoose = require('mongoose');
-const {Customer, validate} = require('../models/customer');
-const appCsv = require('debug')('app:csv');
-const _ = require('lodash');
 const express = require('express');
 const router = express.Router();
+const Joi = require('joi'); //Validacion de Inputs en el servicio
+const moment = require('moment');
 
-const csvFilePath = './uploads/customers/database.csv';
+/***********/
+/* AREA DE PRUEBAS */
+/***********/
 
-//'CREAR CLIENTE' POST Method
-router.post('/',  async (req, res) => {
 
-    //Creamos un arreglo con los datos subidos
-    const jsonArray = await csv({
-            delimiter: '|',
-            noheader: false,
-            headers: [
-                'id','name', 'affinity', 'ref', 'quote', 'clinic', 'production', 'limitDate', 
-                'minPay', 'pastdueAge', 'pastdueDate', 'gag', 'totalPay', 'phone1', 'phone2', 'email'
-            ]
-        })
-        .fromFile(csvFilePath)
-        .on('error',(err)=>{  
-            appCsv(err);
-            return res.status(404).send({'ERROR': 'No se pudo convertir el CSV.'}); 
-        });
 
-    const dropCustomers =  await Customer.collection.drop();
-    if (!dropCustomers) return res.status(404).send({'ERROR': 'No se pudo borrar la base de datos.'}); // Error 404
+//Actualizar Clientes
+router.put('/',  async (req, res) => {
+
+    const flow = await Flow.find({file: null});
     
     let i = 0;
-    while(jsonArray[i]){
-
-        let customer = jsonArray[i];
-        //Validamos los datos enviados
-        const { error } = validate(customer);
-        if (error) return res.status(400).send({'ERROR': error.details[0].message});
-        //Borramos la BD anterior
-        
-        //Guardamos los nuevos datos en la BD
-        let saveCustomer = new Customer(_.pick(
-            customer, [ 
-                'id','name', 'affinity', 'ref', 'quote', 'clinic', 'production', 'limitDate', 
-                'minPay', 'pastdueAge', 'pastdueDate', 'gag', 'totalPay', 'phone1', 'phone2', 'email'
-            ])
-        );
-        saveCustomer = await saveCustomer.save();
+    while(flow[i]){
+        const fix = await Flow.findByIdAndUpdate(flow[i]._id, {
+                file: " "
+            },{
+                new: true
+            });
         i++;
     }
+    
 
-    res.send({'OK': jsonArray.length + ' clientes fueron guardados.'});
+    // const fix = await Flow.findByIdAndUpdate(req.params.id, {
+    //     date: req.body.date
+    // },{
+    //     new: true
+    // });
+
+    res.send('Mama Miaa!!');
+    
 });
+
 
 module.exports = router;

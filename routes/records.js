@@ -195,9 +195,10 @@ router.post('/',  async (req, res) => {
     
             record.status = false;
         }
-       
-      
+
         flowFile = record.file;
+        if(record.file == null)  flowFile = ' ';
+        
         appDebuger('######## ' + flowFile + ' ########');
     //    appDebuger(req.body.file );
     //    const myFile  = await uploadFile(req.body.file);

@@ -88,7 +88,7 @@ async function backFlow ( req ) {
 }
 
 async function createFlow ( req ) {
-
+        if (req.file == null) req.file = " ";
         let flow = new Flow( _.pick(req, [ 
         "record",
         "user",
@@ -108,6 +108,7 @@ async function createFlow ( req ) {
 }
 
 async function updateFlow (req, txt, file){
+    if (file == null) file = " ";
     const update =  await Flow.findOneAndUpdate({'_id':req}, {
         status: false,
         observations: txt,
@@ -120,6 +121,7 @@ async function updateFlow (req, txt, file){
 }
 
 async function updateCloseFlow (req, txt, light, file){
+    if (file == null) file = " ";
     const update =  await Flow.findOneAndUpdate({'_id':req}, {
         status: false,
         case: 4,
