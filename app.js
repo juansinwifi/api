@@ -49,6 +49,7 @@ const holidays = require('./routes/holidays');
 const uploadDB = require('./routes/uploadDB');
 const reports = require('./routes/reports');
 const ws = require('./routes/workspace');
+const migration = require('./routes/migration');
 
 const express = require('express');
 const app = express();
@@ -107,6 +108,7 @@ app.use('/api/customers', customers); //Información de Clientes
 app.use('/api/records', records); //Información de Radicados
 app.use('/inbox/', flow); //Información de Flujos de trabajo
 app.use('/ws/', ws); //Area de trabajo Dev
+app.use('/api/migration', migration); //Migracion de datos
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => startupDebugger(`Listening on port ${port}...`));
