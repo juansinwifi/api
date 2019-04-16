@@ -489,7 +489,7 @@ router.get('/report/:file', async (req, res) => {
         const fileName =  './downloads/' + req.params.file + '.csv';
             //Creamos un Stream para seguir el archivo y luego borrarlo
             let file = fs.createReadStream(fileName);
-            res.download(fileName, 'radicados_cerrados.csv');
+            res.download(fileName, 'radicados_abiertos.csv');
             //Cuando se termine de bajar lo borramos
             file.on('end', function() {
               fs.unlink(fileName, function() {
