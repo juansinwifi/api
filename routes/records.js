@@ -62,46 +62,44 @@ router.get('/:id', auth, async (req, res) => {
 });
 
 //'BUSCAR RADICADO por cedula' GET Method
-// router.get('/customer/:id', auth, async (req, res) => {
-//     try{
-
+router.get('/customer/:id', auth, async (req, res) => {
+    try{
+        //If not existing, return 404 - Not Found
+        const records = await Records.find({"customer": req.params.id, "status": false});
+        if (!records) return res.status(404).send({'Error':'No se encuentran radicados para este cliente.'}); // Error 404 
         
-//         //If not existing, return 404 - Not Found
-//         const records = await Records.find({"customer": req.params.id, "status": false});
-//         if (!records) return res.status(404).send({'Error':'No se encuentran radicados para este cliente.'}); // Error 404 
-        
-//         let i = records.length;
-//         let p = i - 1;
-//         let currentRecord;
-//         while(i > 0){ 
-//             let typification = await Typifications.findById(records[p].typification);
-//             if (!typification || typification.length == 0) return res.status(404).send('No se encontro una tipificación.'); // Error 404 
+        let i = records.length;
+        let p = i - 1;
+        let currentRecord;
+        while(i > 0){ 
+            let typification = await Typifications.findById(records[p].typification);
+            if (!typification || typification.length == 0) return res.status(404).send('No se encontro una tipificación.'); // Error 404 
             
-//             let child = await ChildTypifications.findById(records[p].child);
-//             if (!child || child.length == 0) return res.status(404).send('No se encontro una tipificación especifica.'); // Error 404 
+            let child = await ChildTypifications.findById(records[p].child);
+            if (!child || child.length == 0) return res.status(404).send('No se encontro una tipificación especifica.'); // Error 404 
             
-//             let channel = await Channels.findById(records[p].channel);
-//             if (!channel || channel.length == 0) return res.status(404).send('No se encontro una canal de comunicaciones.'); // Error 404 
+            let channel = await Channels.findById(records[p].channel);
+            if (!channel || channel.length == 0) return res.status(404).send('No se encontro una canal de comunicaciones.'); // Error 404 
             
-//             let contact = await Contacts.findById(records[p].contact);
-//             if (!contact || contact.length == 0) return res.status(404).send('No se encontro un contacto.'); // Error 404 
+            let contact = await Contacts.findById(records[p].contact);
+            if (!contact || contact.length == 0) return res.status(404).send('No se encontro un contacto.'); // Error 404 
             
 
-//             records[p].typification = typification.name;
-//             records[p].child = child.name;
-//             records[p].channel = channel.name;
-//             records[p].contact = contact.name;
+            records[p].typification = typification.name;
+            records[p].child = child.name;
+            records[p].channel = channel.name;
+            records[p].contact = contact.name;
 
-//             i = i - 1;
-//             p = p - 1; 
-//         }
-//         res.send(records);
-//     }
-//     catch(ex){
-//         console.log(ex);
-//         res.status(500).send({ 'Error': 'Algo salio mal :('});
-//     }
-// });
+            i = i - 1;
+            p = p - 1; 
+        }
+        res.send(records);
+    }
+    catch(ex){
+        console.log(ex);
+        res.status(500).send({ 'Error': 'Algo salio mal :('});
+    }
+});
 
 // router.get('/customer/close/:id', auth, async (req, res) => {
 //     try{
