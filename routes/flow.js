@@ -26,6 +26,8 @@ const Json2csvParser = require('json2csv').Parser;
 //const createCsvWriter = require('csv-writer').createObjectCsvWriter; 
 //Intento 3 para convertir CSV to Json
 const jsonexport = require('jsonexport'); 
+const appReport = require('debug')('app:reports');
+const appReportUser = require('debug')('app:reportsUser');
 
 /***********/
 /* Flow    */
