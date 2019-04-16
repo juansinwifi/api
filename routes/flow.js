@@ -507,71 +507,71 @@ router.get('/report/:file', async (req, res) => {
 });
 
 //Generar Casos cerrados
-router.post('/report/close/:id', async (req, res) => {
-    try {
+// router.post('/report/close/:id', async (req, res) => {
+//     try {
         
-        const flow = await Flow.find({"user": req.params.id, "status": false, "case":4 });
-        if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
+//         const flow = await Flow.find({"user": req.params.id, "status": false, "case":4 });
+//         if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
      
-        const response = [];
-        let i = flow.length;
-        let p = i - 1 ;
-        while ( i > 0){
-            const findRecord = await Records.find({"_id": flow[p].record});
-            if (!findRecord || findRecord.length == 0) return res.send([]); // Error 404 
+//         const response = [];
+//         let i = flow.length;
+//         let p = i - 1 ;
+//         while ( i > 0){
+//             const findRecord = await Records.find({"_id": flow[p].record});
+//             if (!findRecord || findRecord.length == 0) return res.send([]); // Error 404 
             
-            let typification = await Typifications.findById(findRecord[0].typification);
-            if (!typification || typification.length == 0) return res.status(404).send('No se encontro una tipificación.'); // Error 404 
+//             let typification = await Typifications.findById(findRecord[0].typification);
+//             if (!typification || typification.length == 0) return res.status(404).send('No se encontro una tipificación.'); // Error 404 
             
-            let child = await ChildTypifications.findById(findRecord[0].child);
-            if (!child || child.length == 0) return res.status(404).send('No se encontro una tipificación especifica.'); // Error 404 
+//             let child = await ChildTypifications.findById(findRecord[0].child);
+//             if (!child || child.length == 0) return res.status(404).send('No se encontro una tipificación especifica.'); // Error 404 
             
-            const light = await Lights.findOne({"name": 'CASO'});
-            if (!light) return res.status(404).send('Semaforo de casos no encontrado'); // Error 404 
+//             const light = await Lights.findOne({"name": 'CASO'});
+//             if (!light) return res.status(404).send('Semaforo de casos no encontrado'); // Error 404 
 
-            const lightUser = await Lights.findOne({"name": 'USUARIO'});
-            if (!lightUser) return res.status(404).send('Semaforo de usuario no encontrado'); // Error 404 
+//             const lightUser = await Lights.findOne({"name": 'USUARIO'});
+//             if (!lightUser) return res.status(404).send('Semaforo de usuario no encontrado'); // Error 404 
            
-            const record = { 
-                RADICADO: findRecord[0].number,
-                CLIENTE: findRecord[0].customer,
-                CREDITO: findRecord[0].ref,
-                SEMAFORO_USUARIO: flow[p].light,
-                SEMAFORO_CASO: findRecord[0].caseLight,
-                TIPIFICACION: typification.name,
-                TIPIFICACION_ESPECIFICA: child.name,
-                VENCIMINETO: findRecord[0].date,
-                GESTION: findRecord[0].caseFinDate
-            };
+//             const record = { 
+//                 RADICADO: findRecord[0].number,
+//                 CLIENTE: findRecord[0].customer,
+//                 CREDITO: findRecord[0].ref,
+//                 SEMAFORO_USUARIO: flow[p].light,
+//                 SEMAFORO_CASO: findRecord[0].caseLight,
+//                 TIPIFICACION: typification.name,
+//                 TIPIFICACION_ESPECIFICA: child.name,
+//                 VENCIMINETO: findRecord[0].date,
+//                 GESTION: findRecord[0].caseFinDate
+//             };
 
-            response.push(record);
-            i = i - 1;
-            p = p - 1;
+//             response.push(record);
+//             i = i - 1;
+//             p = p - 1;
         
-        }
+//         }
         
-        if(!response.length) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
+//         if(!response.length) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
         
     
-        const random = randomstring.generate(8);
-        const name = 'Close' + random
-        const fileName = './downloads/' + name + '.csv';
+//         const random = randomstring.generate(8);
+//         const name = 'Close' + random
+//         const fileName = './downloads/' + name + '.csv';
 
-        jsonexport(response,function(err, csv){
-            if(err) return appReport(err);
+//         jsonexport(response,function(err, csv){
+//             if(err) return appReport(err);
            
-            fs.writeFile(fileName, csv, function (err) {
-                if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
-                    appReport('Saved!');
-                    res.send({ 'file': name});
-                });
-        });
+//             fs.writeFile(fileName, csv, function (err) {
+//                 if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
+//                     appReport('Saved!');
+//                     res.send({ 'file': name});
+//                 });
+//         });
         
-    }
-    catch(ex){
-        console.log(ex);
-        res.status(500).send({ 'Error': 'Algo salio mal :('});
-    }
-});
+//     }
+//     catch(ex){
+//         console.log(ex);
+//         res.status(500).send({ 'Error': 'Algo salio mal :('});
+//     }
+// });
 
 module.exports = router;
