@@ -345,7 +345,7 @@ router.post('/flow/:id', async(req, res) =>{
 //****************//
 
 //Generar Casos Cerrados
-router.post('/report', async (req, res) => {
+router.post('/report/:id', async (req, res) => {
     try {
         
         const flow = await Flow.find({"user": req.params.id, "status": true});
