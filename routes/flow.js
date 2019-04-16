@@ -19,6 +19,14 @@ const router = express.Router();
 const Joi = require('joi'); //Validacion de Inputs en el servicio
 const moment = require('moment');
 
+const fs = require('fs');
+var randomstring = require("randomstring");
+const Json2csvParser = require('json2csv').Parser;
+//Intento 2 para convertir CSV to Json
+//const createCsvWriter = require('csv-writer').createObjectCsvWriter; 
+//Intento 3 para convertir CSV to Json
+const jsonexport = require('jsonexport'); 
+
 /***********/
 /* Flow    */
 /**********/
