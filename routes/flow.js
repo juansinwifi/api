@@ -340,4 +340,160 @@ router.post('/flow/:id', async(req, res) =>{
     }
 });
 
+//*****************//
+//*** Reportes ***//
+//****************//
+
+//Generar Casos Cerrados
+router.post('/report', async (req, res) => {
+    try {
+        
+        const flow = await Flow.find({"user": req.params.id, "status": true});
+        if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
+        
+
+        const response = [];
+        i = flow.length;
+        p = i - 1 ;
+        while ( i > 0){
+            const findRecord = await Records.find({"_id": flow[p].record});
+           
+            if (!findRecord || findRecord.length == 0) return res.send([]); // Error 404
+            
+            let typification = await Typifications.findById(findRecord[0].typification);
+            if (!typification || typification.length == 0) return res.status(404).send('No se encontro una tipificación.'); // Error 404 
+            
+            let child = await ChildTypifications.findById(findRecord[0].child);
+            if (!child || child.length == 0) return res.status(404).send('No se encontro una tipificación especifica.'); // Error 404 
+            
+            const light = await Lights.findOne({"name": 'CASO'});
+            if (!light) return res.status(404).send('Semaforo de casos no encontrado'); // Error 404 
+
+            const lightUser = await Lights.findOne({"name": 'USUARIO'});
+            if (!lightUser) return res.status(404).send('Semaforo de usuario no encontrado'); // Error 404 
+           
+            //Verificar el estado del semaforo del caso
+                const creation =  findRecord[0].date;
+                const now = moment()
+                const then = findRecord[0].caseFinDate;
+                let  caseLight = 50; //Por Defecto el semaforo es amarillo
+
+                const result = moment(now).isBefore(then);
+                
+            
+                if(result) {
+                   
+                    const totalTime = await diffDate(creation, then);
+                    const currentTime = await diffDate(now, then);
+                   
+                    
+                    const totalHours = (totalTime.days * 24) + totalTime.hours + (totalTime.minutes/60);
+                    const currentHours = (currentTime.days * 24) + currentTime.hours + (currentTime.minutes/60);
+
+                    const percent = (currentHours/totalHours) * 100;
+                   
+                    if (percent <= light.red) caseLight = 0;
+                    if (percent >= light.green) caseLight = 100;
+                    
+                    //Falta Actualizar los tiempos en el radicado
+                }
+                
+                if(!result) caseLight = 0;
+            
+            //Verificar el estado del semaforo del usuario
+                
+                const creationUser =  findRecord[0].date;
+                const nowUser = moment()
+                const thenUser = flow[p].finDate;
+              
+                let  userLight = 50; //Por Defecto el semaforo es amarillo
+
+                const resultUser = moment(nowUser).isBefore(thenUser);
+                if(result) {
+                   
+                    const totalTimeUser = await diffDate(creationUser, thenUser);
+                    const currentTimeUser = await diffDate(nowUser, thenUser);
+                   
+                    
+                    const totalHoursUser = (totalTimeUser.days * 24) + totalTimeUser.hours + (totalTimeUser.minutes/60);
+                    const currentHoursUser = (currentTimeUser.days * 24) + currentTimeUser.hours + (currentTimeUser.minutes/60);
+
+                    const percentUser = (currentHoursUser/totalHoursUser) * 100;
+                   
+                    if (percentUser <= lightUser.red) userLight = 0;
+                    if (percentUser >= lightUser.green) userLight = 100;
+                   
+                    //Falta Actualizar los tiempos en el radicado
+                }
+               
+                if(!resultUser) userLight = 0;
+            
+                const caseType = flow[p].case;
+                
+            const record = { 
+                RADICADO: findRecord[0].number,
+                CLIENTE: findRecord[0].customer,
+                CREDITO: findRecord[0].ref,
+                SEMAFORO_CASO: caseLight,
+                SEMAFORO_USUARIO: userLight,
+                TIPIFICACION: typification.name,
+                TIPIFICACION_ESPECIFICA: child.name,
+                FECHA: findRecord[0].date,
+                VENCIMINETO: thenUser,
+                CASO: caseType
+            };
+
+            response.push(record);
+            i = i - 1;
+            p = p - 1;
+        }
+        
+        if(!response.length) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
+        
+    
+        const random = randomstring.generate(8);
+        const name = 'Close' + random
+        const fileName = './downloads/' + name + '.csv';
+
+        jsonexport(response,function(err, csv){
+            if(err) return appReport(err);
+           
+            fs.writeFile(fileName, csv, function (err) {
+                if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
+                    appReport('Saved!');
+                    res.send({ 'file': name});
+                });
+        });
+        
+    }
+    catch(ex){
+        console.log(ex);
+        res.status(500).send({ 'Error': 'Algo salio mal :('});
+    }
+});
+
+//'Casos Abiertos tomar el archivo y borrarlo
+router.get('/report/:file', async (req, res) => {
+    try { 
+        if (!req.params.file) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
+        const fileName =  './downloads/' + req.params.file + '.csv';
+            //Creamos un Stream para seguir el archivo y luego borrarlo
+            let file = fs.createReadStream(fileName);
+            res.download(fileName, 'radicados_cerrados.csv');
+            //Cuando se termine de bajar lo borramos
+            file.on('end', function() {
+              fs.unlink(fileName, function() {
+                // file deleted
+                appReport('Deleted!');
+              });
+            });
+            file.pipe(res);
+     
+        }
+    catch(ex){
+        console.log(ex);
+        res.status(500).send({ 'Error': 'Algo salio mal :('});
+    }
+});
+
 module.exports = router;
