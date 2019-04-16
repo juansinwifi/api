@@ -574,4 +574,28 @@ router.post('/report/close/:id', async (req, res) => {
     }
 });
 
+
+//'Casos Cerrados tomar el archivo y borrarlo
+router.get('/report/close/:file', async (req, res) => {
+    try { 
+        if (!req.params.file) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
+        const fileName =  './downloads/' + req.params.file + '.csv';
+            //Creamos un Stream para seguir el archivo y luego borrarlo
+            let file = fs.createReadStream(fileName);
+            res.download(fileName, 'radicados_cerrados.csv');
+            //Cuando se termine de bajar lo borramos
+            file.on('end', function() {
+              fs.unlink(fileName, function() {
+                // file deleted
+                appReport('Deleted!');
+              });
+            });
+            file.pipe(res);
+     
+        }
+    catch(ex){
+        console.log(ex);
+        res.status(500).send({ 'Error': 'Algo salio mal :('});
+    }
+});
 module.exports = router;
