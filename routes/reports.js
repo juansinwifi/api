@@ -430,7 +430,7 @@ router.post('/records/closes', async (req, res) => {
 
         const random = randomstring.generate(8);
         const name = 'Close' + random
-        const fileName = './downloads/' + name + '.xlsx';
+        const fileName = './downloads/' + name + '.csv';
         // var xlsx = json2xlsx(json);
         // fs.writeFileSync(fileName, xlsx, 'binary');
         // res.send({ 'file': name})
