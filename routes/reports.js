@@ -17,6 +17,7 @@ const Json2csvParser = require('json2csv').Parser;
 //const createCsvWriter = require('csv-writer').createObjectCsvWriter; 
 //Intento 3 para convertir CSV to Json
 const jsonexport = require('jsonexport'); 
+const json2xlsx = require('node-json-xlsx');
 const appReport = require('debug')('app:reports');
 const appReportUser = require('debug')('app:reportsUser');
 const { Typifications } = require('../models/typification');
@@ -424,22 +425,24 @@ router.post('/records/closes', async (req, res) => {
         
         if(!response.length) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
         
-        //var json = JSON.stringify(response);
+        var json = JSON.stringify(response);
         //fs.writeFile('./uploads/records/2019/04/myjsonfile.json', json, 'utf8');
 
         const random = randomstring.generate(8);
         const name = 'Close' + random
-        const fileName = './downloads/' + name + '.csv';
-
-        jsonexport(response,function(err, csv){
-            if(err) return appReport(err);
+        const fileName = './downloads/' + name + '.xlsx';
+        var xlsx = json2xlsx(json);
+        fs.writeFileSync(fileName, xlsx, 'binary');
+        res.send({ 'file': name})
+        // jsonexport(response,function(err, csv){
+        //     if(err) return appReport(err);
            
-            fs.writeFile(fileName, csv, function (err) {
-                if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
-                    appReport('Saved!');
-                    res.send({ 'file': name});
-                });
-        });
+        //     fs.writeFile(fileName, csv, function (err) {
+        //         if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
+        //             appReport('Saved!');
+        //             res.send({ 'file': name});
+        //         });
+        // });
         
     }
     catch(ex){
