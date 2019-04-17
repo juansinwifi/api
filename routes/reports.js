@@ -195,7 +195,8 @@ router.post('/records/opens/', async (req, res) => {
                         date: records[i].date,
                         case: nameCase,
                         reject: nameReject,
-                        lastUse: lastEdit.timestamp
+                        lastUse: lastEdit.timestamp,
+                        forms:  records[i].forms
                     };
 
                     response.push(record);
@@ -282,6 +283,10 @@ router.post('/records/opens/', async (req, res) => {
         { 
             label: 'CAUSAL DE RECHAZO',
             value: 'reject'
+        },
+        { 
+            label: 'FORMULARIOS',
+            value: 'forms'
         }
     ];
     const json2csvParser = new Json2csvParser({ fields});
