@@ -163,7 +163,7 @@ router.get('/:id', async (req, res) => {
 router.get('/close/:id', async (req, res) => {
     try{
         
-        const flow = await Flow.find({"user": req.params.id, "status": false, "case":4 });
+        const flow = await Flow.find({"user": req.params.id, "status": false, "case":4 }).limit(50);
         if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
      
         const response = [];
@@ -510,7 +510,7 @@ router.get('/report/:file', async (req, res) => {
 router.post('/report/close/:id', async (req, res) => {
     try {
         
-        const flow = await Flow.find({"user": req.params.id, "status": false, "case":4 });
+        const flow = await Flow.find({"user": req.params.id, "status": false, "case":4 }).limit(100);
         if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
      
         const response = [];

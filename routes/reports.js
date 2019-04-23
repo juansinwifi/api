@@ -290,17 +290,28 @@ router.post('/records/opens/', async (req, res) => {
             value: 'forms'
         }
     ];
-    const json2csvParser = new Json2csvParser({ fields});
-    const csv = json2csvParser.parse(response);
-    //appReport(csv);
+
     const random = randomstring.generate(8);
-    const name = 'Open' + random +'.txt'
+    const name = 'Open' + random +'.json'
     const fileName = './downloads/' + name;
-    fs.writeFile(fileName, csv, function (err) {
-    if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
-        appReport('Saved!');
-        res.send({ 'file': name});
-    });
+    const myJson = JSON.parse(response);
+    fs.writeFile(fileName, myJson, (err) => {
+        if (err) console.log(err);
+        console.log("Successfully Written to File.");
+        res.send({ 'file': name})
+      });
+
+    // const json2csvParser = new Json2csvParser({ fields});
+    // const csv = json2csvParser.parse(response);
+    // //appReport(csv);
+    // const random = randomstring.generate(8);
+    // const name = 'Open' + random +'.txt'
+    // const fileName = './downloads/' + name;
+    // fs.writeFile(fileName, csv, function (err) {
+    // if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
+    //     appReport('Saved!');
+    //     res.send({ 'file': name});
+    // });
 }
     catch(ex){
         console.log(ex);
