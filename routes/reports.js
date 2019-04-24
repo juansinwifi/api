@@ -436,24 +436,34 @@ router.post('/records/closes', async (req, res) => {
         
         if(!response.length) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
         
+        const random = randomstring.generate(8);
+        const name = 'Close' + random +'.json'
+        const fileName = './downloads/' + name;
+        // const myJson = JSON.parse(response);
+        fs.writeFile(fileName, response, (err) => {
+        if (err) console.log(err);
+        console.log("Successfully Written to File.");
+        res.send({ 'file': name})
+        });
+
         // var json = JSON.stringify(response);
         //fs.writeFile('./uploads/records/2019/04/myjsonfile.json', json, 'utf8');
 
-        const random = randomstring.generate(8);
-        const name = 'Close' + random
-        const fileName = './downloads/' + name + '.csv';
-        // var xlsx = json2xlsx(json);
-        // fs.writeFileSync(fileName, xlsx, 'binary');
-        // res.send({ 'file': name})
-        jsonexport(response,function(err, csv){
-            if(err) return appReport(err);
+        // const random = randomstring.generate(8);
+        // const name = 'Close' + random
+        // const fileName = './downloads/' + name + '.csv';
+        // // var xlsx = json2xlsx(json);
+        // // fs.writeFileSync(fileName, xlsx, 'binary');
+        // // res.send({ 'file': name})
+        // jsonexport(response,function(err, csv){
+        //     if(err) return appReport(err);
            
-            fs.writeFile(fileName, csv, function (err) {
-                if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
-                    appReport('Saved!');
-                    res.send({ 'file': name});
-                });
-        });
+        //     fs.writeFile(fileName, csv, function (err) {
+        //         if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
+        //             appReport('Saved!');
+        //             res.send({ 'file': name});
+        //         });
+        // });
         
     }
     catch(ex){
