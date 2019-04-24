@@ -437,11 +437,12 @@ router.post('/records/closes', async (req, res) => {
         const random = randomstring.generate(8);
         const name = 'Close' + random +'.csv'
         const fileName = './downloads/' + name;
-        const myJson = JSON.stringify(response);
+        const reader = JSON.stringify(response);
 
-        const inJson = JSON.parse(myJson);
+        const inJson = JSON.parse(reader);
 
         const csv = jsonexport(inJson); 
+
 
         fs.writeFile(fileName, csv, 'utf8', (err) => {
         if (err) console.log(err);
