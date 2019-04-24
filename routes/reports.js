@@ -439,7 +439,7 @@ router.post('/records/closes', async (req, res) => {
         const name = 'Close' + random +'.json'
         const fileName = './downloads/' + name;
         // const reader = response;
-        const reader = JSON.stringify(response);
+        const myJson = JSON.stringify(response);
 
         // const inJson = JSON.parse(reader);
 
@@ -449,7 +449,7 @@ router.post('/records/closes', async (req, res) => {
         //     headers: 'key'
         // });
 
-        fs.writeFile(fileName, csvData, 'utf8', (err) => {
+        fs.writeFile(fileName, myJson, 'utf8', (err) => {
         if (err) console.log(err);
         console.log("Successfully Written to File.");
         res.send({ 'file': name})
