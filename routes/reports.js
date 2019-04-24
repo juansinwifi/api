@@ -439,8 +439,8 @@ router.post('/records/closes', async (req, res) => {
         const random = randomstring.generate(8);
         const name = 'Close' + random +'.json'
         const fileName = './downloads/' + name;
-        // const myJson = JSON.parse(response);
-        fs.writeFile(fileName, response, (err) => {
+        const myJson = JSON.stringify(response);
+        fs.writeFile(fileName, myJson, 'utf8', (err) => {
         if (err) console.log(err);
         console.log("Successfully Written to File.");
         res.send({ 'file': name})
