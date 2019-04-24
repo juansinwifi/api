@@ -13,6 +13,7 @@ const moment = require('moment');
 const fs = require('fs');
 var randomstring = require("randomstring");
 const Json2csvParser = require('json2csv').Parser;
+const csvjson = require('csvjson');
 //Intento 2 para convertir CSV to Json
 //const createCsvWriter = require('csv-writer').createObjectCsvWriter; 
 //Intento 3 para convertir CSV to Json
@@ -441,10 +442,13 @@ router.post('/records/closes', async (req, res) => {
 
         // const inJson = JSON.parse(reader);
 
-        const csv = jsonexport(reader); 
+        //const csv = jsonexport(reader); 
 
+        const csvData = csvjson.toCSV(reader, {
+            headers: 'key'
+        });
 
-        fs.writeFile(fileName, csv, 'utf8', (err) => {
+        fs.writeFile(fileName, csvData, 'utf8', (err) => {
         if (err) console.log(err);
         console.log("Successfully Written to File.");
         res.send({ 'file': name})
