@@ -439,9 +439,9 @@ router.post('/records/closes', async (req, res) => {
         const fileName = './downloads/' + name;
         const reader = JSON.stringify(response);
 
-        const inJson = JSON.parse(reader);
+        // const inJson = JSON.parse(reader);
 
-        const csv = jsonexport(inJson); 
+        const csv = jsonexport(reader); 
 
 
         fs.writeFile(fileName, csv, 'utf8', (err) => {
