@@ -443,7 +443,7 @@ router.post('/records/closes', async (req, res) => {
 
         const csv = jsonexport(inJson); 
 
-        fs.writeFile(fileName, inJson, 'utf8', (err) => {
+        fs.writeFile(fileName, csv, 'utf8', (err) => {
         if (err) console.log(err);
         console.log("Successfully Written to File.");
         res.send({ 'file': name})
