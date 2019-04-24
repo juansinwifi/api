@@ -439,13 +439,13 @@ router.post('/records/closes', async (req, res) => {
         const name = 'Close' + random +'.csv'
         const fileName = './downloads/' + name;
         const reader = response;
-        //const reader = JSON.stringify(response);
+        const reader = JSON.stringify(response);
 
-        // const inJson = JSON.parse(reader);
+        const inJson = JSON.parse(reader);
 
         //const csv = jsonexport(reader); 
 
-        const csvData = csvjson.toCSV(reader, {
+        const csvData = csvjson.toCSV(inJson, {
             headers: 'key'
         });
 
