@@ -435,7 +435,7 @@ router.post('/records/closes', async (req, res) => {
         if(!response.length) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
         
         const random = randomstring.generate(8);
-        const name = 'Close' + random 
+        const name = 'Close' + random +'.csv'
         const fileName = './downloads/' + name;
         const myJson = JSON.stringify(response);
 
