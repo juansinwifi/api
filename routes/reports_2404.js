@@ -11,7 +11,6 @@ const express = require('express');
 const router = express.Router();
 const moment = require('moment');
 const fs = require('fs');
-const fsExtra = require('fs-extra');
 var randomstring = require("randomstring");
 const Json2csvParser = require('json2csv').Parser;
 const csvjson = require('csvjson');
@@ -364,7 +363,7 @@ router.post('/records/closes', async (req, res) => {
         }
         let tequila = 0;
         while(dates[tequila]){
-            const records = await Records.find({ "date": new RegExp(dates[tequila]), "status": true, "number": 8366 });
+            const records = await Records.find({ "date": new RegExp(dates[tequila]), "status": true });
             if (records){  
                 let i = 0;
                 while(records[i]){
@@ -450,7 +449,7 @@ router.post('/records/closes', async (req, res) => {
         //     headers: 'key'
         // });
 
-        fsExtra.outputJson(fileName, myJson, 'utf8', (err) => {
+        fs.writeFile(fileName, myJson, 'utf8', (err) => {
         if (err) console.log(err);
         console.log("Successfully Written to File.");
         res.send({ 'file': name})
@@ -483,20 +482,32 @@ router.post('/records/closes', async (req, res) => {
 //'Casos Abiertos tomar el archivo y borrarlo
 router.get('/records/closes/:file', async (req, res) => {
     try { 
-        
         if (!req.params.file) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
-        const fileName =  './downloads/' + req.params.file;
+            const source =  './downloads/' + req.params.file;
+            
+            res.send( 'Mamam mia!!')
+          
+            // const source =  './downloads/' + req.params.file;
+            // const fileName = './downloads/out.csv';
             //Creamos un Stream para seguir el archivo y luego borrarlo
-            let file = fs.createReadStream(fileName);
-            res.download(fileName, 'radicados_cerrados.csv');
-            //Cuando se termine de bajar lo borramos
-            file.on('end', function() {
-              fs.unlink(fileName, function() {
-                // file deleted
-                appReport('Deleted!');
-              });
-            });
-            file.pipe(res);
+            //let file = fs.createReadStream(fileName);
+
+            // var reader = fs.createReadStream(source);
+            // var myData = JSON.parse(reader);
+            // console.log(reader)
+            // var writer = fs.createWriteStream(fileName);
+            
+            // reader.pipe(jsonexport()).pipe(writer);
+
+            // res.download(fileName, 'radicados_cerrados.csv');
+            // //Cuando se termine de bajar lo borramos
+            // writer.on('end', function() {
+            //   fs.unlink(fileName, function() {
+            //     // file deleted
+            //     appReport('Deleted!');
+            //   });
+            // });
+            // writer.pipe(res);
      
         }
     catch(ex){
