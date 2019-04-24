@@ -364,7 +364,7 @@ router.post('/records/closes', async (req, res) => {
         }
         let tequila = 0;
         while(dates[tequila]){
-            const records = await Records.find({ "date": new RegExp(dates[tequila]), "status": true, "number": 8366 });
+            const records = await Records.find({ "date": new RegExp(dates[tequila]), "status": true });
             if (records){  
                 let i = 0;
                 while(records[i]){
