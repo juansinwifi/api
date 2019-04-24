@@ -439,10 +439,24 @@ router.post('/records/closes', async (req, res) => {
         const fileName = './downloads/' + name;
         const myJson = JSON.stringify(response);
 
-        // const json2csvParser = new Json2csvParser({ fields});
-        // const csv = json2csvParser.parse(myJson);
+         //Convertir respuesta a CSV 
+     const fields = [ 'RADICADO', 'CC', '# DE CREDITO','FECHA CREACION', 'USUARIO RADICADOR',
+            'USUARIO FINALIZADOR', 'SEMAFORO USUARIO', 'SEMAFORO CASO', 'TIPIFICACION GENERAL',
+            'TIPIFICACION ESPECIFICA',
+            'TIPO PQR',
+            'VENCIMIENTO USUARIO',
+            'VENCIMIENTO CASO',
+            'FECHA DE SEGUIMIENTO',
+            'ULT FECHA DE INGRESO EN USUARIO DE',
+            'FECHA DE CIERRE',
+            'TIPO DE GESTION',
+            'CAUSAL DE RECHAZO'
+            ];
+        
+        const json2csvParser = new Json2csvParser({ fields});
+        const csv = json2csvParser.parse(myJson);
 
-        const csv = jsonexport(myJson); 
+        // const csv = jsonexport(myJson); 
 
         fs.writeFile(fileName, csv, 'utf8', (err) => {
         if (err) console.log(err);
