@@ -435,14 +435,15 @@ router.post('/records/closes', async (req, res) => {
         if(!response.length) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
         
         const random = randomstring.generate(8);
-        const name = 'Close' + random +'.json'
+        const name = 'Close' + random +'.csv'
         const fileName = './downloads/' + name;
         const myJson = JSON.stringify(response);
 
+        const inJson = JSON.parse(myJson);
 
-        // const csv = jsonexport(myJson); 
+        const csv = jsonexport(inJson); 
 
-        fs.writeFile(fileName, myJson, 'utf8', (err) => {
+        fs.writeFile(fileName, inJson, 'utf8', (err) => {
         if (err) console.log(err);
         console.log("Successfully Written to File.");
         res.send({ 'file': name})
