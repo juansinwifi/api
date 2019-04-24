@@ -565,7 +565,7 @@ router.post('/customers/updates', async (req, res) => {
                             value: 'date'
                         }
                     ];
-        const json2csvParser = new Json2csvParser({ fields });
+        const json2csvParser = new Json2csvParser();
         const csv = json2csvParser.parse(response);
         //const csv = jsonexport(response); 
         appReport(csv);
