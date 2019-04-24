@@ -435,30 +435,14 @@ router.post('/records/closes', async (req, res) => {
         if(!response.length) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
         
         const random = randomstring.generate(8);
-        const name = 'Close' + random +'.csv'
+        const name = 'Close' + random +'.json'
         const fileName = './downloads/' + name;
         const myJson = JSON.stringify(response);
 
-         //Convertir respuesta a CSV 
-     const fields = [ 'RADICADO', 'CC', '# DE CREDITO','FECHA CREACION', 'USUARIO RADICADOR',
-            'USUARIO FINALIZADOR', 'SEMAFORO USUARIO', 'SEMAFORO CASO', 'TIPIFICACION GENERAL',
-            'TIPIFICACION ESPECIFICA',
-            'TIPO PQR',
-            'VENCIMIENTO USUARIO',
-            'VENCIMIENTO CASO',
-            'FECHA DE SEGUIMIENTO',
-            'ULT FECHA DE INGRESO EN USUARIO DE',
-            'FECHA DE CIERRE',
-            'TIPO DE GESTION',
-            'CAUSAL DE RECHAZO'
-            ];
-        
-        const json2csvParser = new Json2csvParser({ fields});
-        const csv = json2csvParser.parse(myJson);
 
         // const csv = jsonexport(myJson); 
 
-        fs.writeFile(fileName, csv, 'utf8', (err) => {
+        fs.writeFile(fileName, myJson, 'utf8', (err) => {
         if (err) console.log(err);
         console.log("Successfully Written to File.");
         res.send({ 'file': name})
