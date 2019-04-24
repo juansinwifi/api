@@ -450,7 +450,7 @@ router.post('/records/closes', async (req, res) => {
         //     headers: 'key'
         // });
 
-        fsExtra.outputJson(fileName, myJson, 'utf8', (err) => {
+        fsExtra.outputJson(fileName, myJson, (err) => {
         if (err) console.log(err);
         console.log("Successfully Written to File.");
         res.send({ 'file': name})
