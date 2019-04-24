@@ -29,8 +29,6 @@ const {Users} = require('../models/user');
 /* REPORTES */
 /************/
 
-
-
 //Generar Reporte Casos Abiertos
 router.post('/records/opens/', async (req, res) => {
     try {
@@ -441,8 +439,10 @@ router.post('/records/closes', async (req, res) => {
         const fileName = './downloads/' + name;
         const myJson = JSON.stringify(response);
 
-        const json2csvParser = new Json2csvParser({ fields});
-        const csv = json2csvParser.parse(myJson);
+        // const json2csvParser = new Json2csvParser({ fields});
+        // const csv = json2csvParser.parse(myJson);
+
+        const csv = jsonexport(myJson); 
 
         fs.writeFile(fileName, csv, 'utf8', (err) => {
         if (err) console.log(err);
@@ -565,9 +565,9 @@ router.post('/customers/updates', async (req, res) => {
                             value: 'date'
                         }
                     ];
-        const json2csvParser = new Json2csvParser();
-        const csv = json2csvParser.parse(response);
-        //const csv = jsonexport(response); 
+        // const json2csvParser = new Json2csvParser({ fields });
+        // const csv = json2csvParser.parse(response);
+        const csv = jsonexport(response); 
         appReport(csv);
         const random = randomstring.generate(8);
         const name = 'customerUpdates' + random +'.txt';
