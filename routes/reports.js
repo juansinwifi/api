@@ -430,6 +430,7 @@ router.post('/records/closes', async (req, res) => {
                         };
                         
                         response.push(JSON.stringify(record));
+                        console.log(JSON.stringify(record));
                     }
                 
                     i++;
