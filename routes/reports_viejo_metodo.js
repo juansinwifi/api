@@ -22,7 +22,6 @@ const jsonexport = require('jsonexport');
 const json2xlsx = require('node-json-xlsx');
 const appReport = require('debug')('app:reports');
 const appReportUser = require('debug')('app:reportsUser');
-const appFile = require('debug')('app:file');
 const { Typifications } = require('../models/typification');
 const { ChildTypifications } = require('../models/childtypification');
 const {Lights} = require('../models/lights');
@@ -347,8 +346,6 @@ router.get('/records/opens/:file', async (req, res) => {
 //Generar Casos Cerrados
 router.post('/records/closes', async (req, res) => {
     try {
-       
-
         //Validate Data
         //If invalid, return 404 - Bad Request
         const { error } = validateReport(req.body);
@@ -428,8 +425,7 @@ router.post('/records/closes', async (req, res) => {
                             CAUSAL_RECHAZO: nameReject
 
                         };
-                        
-                        response.push(JSON.stringify(record));
+                        response.push(record);
                     }
                 
                     i++;
@@ -443,13 +439,40 @@ router.post('/records/closes', async (req, res) => {
         const random = randomstring.generate(8);
         const name = 'Close' + random +'.json'
         const fileName = './downloads/' + name;
-        
+        // const reader = response;
+        const myJson = JSON.stringify(response);
 
-        fs.writeFile(fileName, response, function (err) {
-                    if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
-                        appReport('Saved!');
-                        res.send({ 'file': name});
-                    });
+        // const inJson = JSON.parse(reader);
+
+        //const csv = jsonexport(reader); 
+
+        // const csvData = csvjson.toCSV(inJson, {
+        //     headers: 'key'
+        // });
+
+        fsExtra.outputJson(fileName, myJson, (err) => {
+        if (err) console.log(err);
+        console.log("Successfully Written to File.");
+        res.send({ 'file': name})
+        });
+
+
+        // const random = randomstring.generate(8);
+        // const name = 'Close' + random
+        // const fileName = './downloads/' + name + '.csv';
+        // // var xlsx = json2xlsx(json);
+        // // fs.writeFileSync(fileName, xlsx, 'binary');
+        // // res.send({ 'file': name})
+        // jsonexport(response,function(err, csv){
+        //     if(err) return appReport(err);
+           
+        //     fs.writeFile(fileName, csv, function (err) {
+        //         if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
+        //             appReport('Saved!');
+        //             res.send({ 'file': name});
+        //         });
+        // });
+        
     }
     catch(ex){
         console.log(ex);
