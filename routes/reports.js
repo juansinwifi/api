@@ -11,6 +11,8 @@ const express = require('express');
 const router = express.Router();
 const moment = require('moment');
 const fs = require('fs');
+const {Readable} = require('stream')
+
 const fsExtra = require('fs-extra');
 var randomstring = require("randomstring");
 const Json2csvParser = require('json2csv').Parser;
@@ -359,6 +361,7 @@ router.post('/records/closes', async (req, res) => {
         const name = 'Close' + random +'.json'
         const fileName = './downloads/' + name;
         
+        
         const response = [];
     
         //Generar fechas
@@ -407,7 +410,7 @@ router.post('/records/closes', async (req, res) => {
                         if (flow[0].case == 6)   nameCase = 'Reasignar Caso';
                         //Causal de Rechazo
                         const reject = await Rejects.findOne({"_id": flow[0].reject});
-                        let nameReject = '  '
+                        let nameReject = '  ';
                         if (reject) nameReject = reject.name
                         //Ultimo ingreso del radicado
                         const lastEdit = await Flow.findOne({"record": records[i]._id, "level": -1});
@@ -447,32 +450,24 @@ router.post('/records/closes', async (req, res) => {
         
         if(!response.length) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
         
-
-        // fs.createWriteStream(fileName, response, function (err) {
-        //             if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
-        //                 appReport('Saved!');
-        //                 res.send({ 'file': name});
-        //             });
-        var wstream = fs.createWriteStream(fileName, { flags : 'w' });
-        var j = 0;
         
-        function write() {
-            if (j < response.length)  {
-                wstream.write((response[j]), function(err){
-                    if (err) {
-                        console.log(err);
-                    } else {
-                        j++;
-                        write();
-                    }
-                });
-            } else {
-                wstream.end();
-                console.log("done");
-            }
-        };
-        write();
-       
+        const stream = new Readable({
+            objectMode: true,
+            read() {
+              const item = response.pop()
+              if (!item) {
+                return this.push(null)
+              }
+              this.push(item)
+            },
+          })
+        
+        // Create a writable stream
+        let writeableStream = fs.createWriteStream(fileName);
+        // Pipe the read and write operations
+        // read input.txt and write data to output.txt
+        stream.pipe(writeableStream);
+        console.log('End of the Process');
          res.send({ 'file': name});
         
         
