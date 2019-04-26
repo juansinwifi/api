@@ -348,12 +348,17 @@ router.get('/records/opens/:file', async (req, res) => {
 router.post('/records/closes', async (req, res) => {
     try {
        
+       
 
         //Validate Data
         //If invalid, return 404 - Bad Request
         const { error } = validateReport(req.body);
         if (error) return res.status(400).send({'ERROR':  error.details[0].message});
-    
+        
+        const random = randomstring.generate(8);
+        const name = 'Close' + random +'.json'
+        const fileName = './downloads/' + name;
+        
         const response = [];
     
         //Generar fechas
@@ -366,8 +371,9 @@ router.post('/records/closes', async (req, res) => {
             dates.push(ini);
         }
         let tequila = 0;
+        
         while(dates[tequila]){
-            const records = await Records.find({ "date": new RegExp(dates[tequila]), "status": true });
+            const records = await Records.find({ "date": new RegExp(dates[tequila]), "status": true }).limit(2);
             if (records){  
                 let i = 0;
                 while(records[i]){
@@ -430,7 +436,7 @@ router.post('/records/closes', async (req, res) => {
                         };
                         
                         response.push(JSON.stringify(record));
-                        console.log(JSON.stringify(record));
+                       
                     }
                 
                     i++;
@@ -441,16 +447,36 @@ router.post('/records/closes', async (req, res) => {
         
         if(!response.length) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
         
-        const random = randomstring.generate(8);
-        const name = 'Close' + random +'.json'
-        const fileName = './downloads/' + name;
-        
 
-        fs.writeFile(fileName, response, function (err) {
-                    if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
-                        appReport('Saved!');
-                        res.send({ 'file': name});
-                    });
+        // fs.createWriteStream(fileName, response, function (err) {
+        //             if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
+        //                 appReport('Saved!');
+        //                 res.send({ 'file': name});
+        //             });
+        var wstream = fs.createWriteStream(fileName, { flags : 'w' });
+        var j = 0;
+        
+        function write() {
+            if (j < response.length)  {
+                wstream.write((response[j]), function(err){
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        j++;
+                        write();
+                    }
+                });
+            } else {
+                wstream.end();
+                console.log("done");
+            }
+        };
+        write();
+       
+         res.send({ 'file': name});
+        
+        
+        
     }
     catch(ex){
         console.log(ex);
