@@ -1,6 +1,6 @@
 const auth = require('../middleware/auth');
 const {Records} = require('../models/record');
-const {Reports, validateReport} = require('../models/reports');
+const {Opens, Reports, validateReport} = require('../models/reports');
 const {Flow} = require('../models/flow');
 const {CustomersUpdates} = require('../models/customersUpdates');
 const {Requirements} = require('../models/requirements');
@@ -55,7 +55,7 @@ router.post('/records/opens/', async (req, res) => {
     }
     let tequila = 0;
     while(dates[tequila]){
-        const records = await Records.find({ "date": new RegExp(dates[tequila]), "status": false });
+        const records = await Records.find({ "date": new RegExp(dates[tequila]), "status": false }).limit(10);
         if (records){  
 
             let i = 0;
@@ -181,29 +181,31 @@ router.post('/records/opens/', async (req, res) => {
                         if (flow[0].case == 5)   nameCase = 'Abierto';
                         if (flow[0].case == 6)   nameCase = 'Reasignar Caso';
 
-                    const record = { 
-                        number: records[i].number,
-                        customer:  records[i].customer,
-                        ref: records[i].ref,
-                        createdDate: records[i].date,
-                        createdBy: createdUser.name,
-                        user: lastUser.name,
-                        userLight: userLight,
-                        caseLight: caseLight,
-                        typification: typification.name,
-                        child: child.name,
-                        pqr: requirement.type,
-                        userFinDate: flow[0].finDate,
-                        caseFinDate: records[i].caseFinDate,
-                        trackingDate: records[i].trackingDate,
-                        date: records[i].date,
-                        case: nameCase,
-                        reject: nameReject,
-                        lastUse: lastEdit.timestamp,
-                        forms:  records[i].forms
-                    };
+                        let myForms = JSON.stringify(records[i].forms);
+                      
+                        let opens = new Opens({ 
+                            RADICADO: records[i].number,
+                            CLIENTE:  records[i].customer,
+                            CREDITO: records[i].ref,
+                            CREADO: records[i].date,
+                            RADICADOR: createdUser.name,
+                            FINALIZADOR: lastUser.name,
+                            SEMAFORO_USUARIO: userLight,
+                            SEMAFORO_CASO: caseLight,
+                            TIPIFICACION: typification.name,
+                            TIPIFICACION_ESPECIFICA: child.name,
+                            PQR: requirement.type,
+                            VENCIMIENTO_USUARIO: flow[0].finDate,
+                            VENCIMIENTO_CASO: records[i].caseFinDate,
+                            FECHA_SEGUIMIENTO: records[i].trackingDate,
+                            ULTIMO_INGREO_RADICADOR: lastEdit.timestamp,
+                            TIPO_GESTION: nameCase,
+                            CAUSAL_RECHAZO: nameReject,
+                            OBSERVACIONES: flow[0].observations,
+                            FORMULARIOS:  myForms
+                        });
 
-                    response.push(record);
+                    opens = await opens.save();
                 }
             
                 i++;
@@ -212,109 +214,20 @@ router.post('/records/opens/', async (req, res) => {
     tequila++;
     }
     
-    if(!response.length) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
+    if(!Records.length) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
     
-     //Convertir respuesta a CSV 
-     const fields = [
-        { 
-            label: 'RADICADO',
-            value: 'number'
-        },
-        { 
-            label: 'CC',
-            value: 'customer'
-        },
-        { 
-            label: '# DE CREDITO',
-            value: 'ref'
-        },
-        { 
-            label: 'FECHA CREACION',
-            value: 'createdDate'
-        },
-        { 
-            label: 'USUARIO RADICADOR',
-            value: 'createdBy'
-        },
-        { 
-            label: 'USUARIO FINALIZADOR',
-            value: 'user'
-        },
-        { 
-            label: 'SEMAFORO USUARIO',
-            value: 'userLight'
-        },
-        { 
-            label: 'SEMAFORO CASO',
-            value: 'caseLight'
-        },
-        { 
-            label: 'TIPIFICACION GENERAL',
-            value: 'typification'
-        },
-        { 
-            label: 'TIPIFICACION ESPECIFICA',
-            value: 'child'
-        },
-        { 
-            label: 'TIPO PQR',
-            value: 'pqr'
-        },
-        { 
-            label: 'VENCIMIENTO USUARIO',
-            value: 'userFinDate'
-        },
-        { 
-            label: 'VENCIMIENTO CASO',
-            value: 'caseFinDate'
-        },
-        { 
-            label: 'FECHA DE SEGUIMIENTO',
-            value: 'trackingDate'
-        },
-        { 
-            label: 'ULT FECHA DE INGRESO EN USUARIO DE',
-            value: 'lastUse'
-        },
-        { 
-            label: 'FECHA DE CIERRE',
-            value: 'date'
-        },
-        { 
-            label: 'TIPO DE GESTION',
-            value: 'case'
-        },
-        { 
-            label: 'CAUSAL DE RECHAZO',
-            value: 'reject'
-        },
-        { 
-            label: 'FORMULARIOS',
-            value: 'forms'
-        }
-    ];
+    
 
     const random = randomstring.generate(8);
     const name = 'Open' + random +'.json'
     const fileName = './downloads/' + name;
-    const myJson = JSON.parse(response);
+    const myJson = "";
     fs.writeFile(fileName, myJson, (err) => {
         if (err) console.log(err);
         console.log("Successfully Written to File.");
         res.send({ 'file': name})
       });
 
-    // const json2csvParser = new Json2csvParser({ fields});
-    // const csv = json2csvParser.parse(response);
-    // //appReport(csv);
-    // const random = randomstring.generate(8);
-    // const name = 'Open' + random +'.txt'
-    // const fileName = './downloads/' + name;
-    // fs.writeFile(fileName, csv, function (err) {
-    // if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
-    //     appReport('Saved!');
-    //     res.send({ 'file': name});
-    // });
 }
     catch(ex){
         console.log(ex);
