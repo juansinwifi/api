@@ -399,7 +399,10 @@ router.post('/records/closes', async (req, res) => {
                         // Fecha de Vencimiento Usuario
                         let finUser = flow[0].finDate;
                         // Fecha de Cierre
-                        let closeDate = flow[0].timestamp
+                        let closeDate = flow[0].timestamp;
+                        //observations
+                        let observations = flow[0].observations;
+
                         //Tipo de Gestion
                         let nameCase = '';
                         if (flow[0].case == 1)   nameCase = 'Rechazar - Devolver';
@@ -433,7 +436,8 @@ router.post('/records/closes', async (req, res) => {
                             ULTIMO_INGREO_RADICADOR: lastEdit.timestamp,
                             FECHA_CIERRE: closeDate,
                             TIPO_GESTION: nameCase,
-                            CAUSAL_RECHAZO: nameReject
+                            CAUSAL_RECHAZO: nameReject,
+                            OBSERVACIONES: observations
                         });
                         reports = await reports.save();
 

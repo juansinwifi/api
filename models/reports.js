@@ -19,7 +19,8 @@ const reportsSchema = new mongoose.Schema({
         ULTIMO_INGREO_RADICADOR: { type: String},
         FECHA_CIERRE: { type: String},
         TIPO_GESTION: { type: String},
-        CAUSAL_RECHAZO: { type: String}
+        CAUSAL_RECHAZO: { type: String},
+        OBSERVACIONES: { type: String}
 
 });
 
