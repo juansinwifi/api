@@ -1,6 +1,6 @@
 const auth = require('../middleware/auth');
 const {Records} = require('../models/record');
-const {validateReport} = require('../models/reports');
+const {Reports, validateReport} = require('../models/reports');
 const {Flow} = require('../models/flow');
 const {CustomersUpdates} = require('../models/customersUpdates');
 const {Requirements} = require('../models/requirements');
@@ -415,8 +415,7 @@ router.post('/records/closes', async (req, res) => {
                         //Ultimo ingreso del radicado
                         const lastEdit = await Flow.findOne({"record": records[i]._id, "level": -1});
 
-
-                        const record = { 
+                        let reports = new Reports({
                             RADICADO: records[i].number,
                             CLIENTE: records[i].customer,
                             CREDITO: records[i].ref,
@@ -435,10 +434,32 @@ router.post('/records/closes', async (req, res) => {
                             FECHA_CIERRE: closeDate,
                             TIPO_GESTION: nameCase,
                             CAUSAL_RECHAZO: nameReject
+                        });
+                        reports = await reports.save();
 
-                        };
+                        // const record = { 
+                        //     RADICADO: records[i].number,
+                        //     CLIENTE: records[i].customer,
+                        //     CREDITO: records[i].ref,
+                        //     CREADO: records[i].date,
+                        //     RADICADOR: createdUser.name,
+                        //     FINALIZADOR: lastUser.name,
+                        //     SEMAFORO_USUARIO: userLight,
+                        //     SEMAFORO_CASO: caseLight,
+                        //     TIPIFICACION: typification.name,
+                        //     TIPIFICACION_ESPECIFICA: child.name,
+                        //     PQR: requirement.type,
+                        //     VENCIMIENTO_USUARIO: finUser,
+                        //     VENCIMIENTO_CASO: records[i].caseFinDate,
+                        //     FECHA_SEGUIMIENTO: records[i].trackingDate,
+                        //     ULTIMO_INGREO_RADICADOR: lastEdit.timestamp,
+                        //     FECHA_CIERRE: closeDate,
+                        //     TIPO_GESTION: nameCase,
+                        //     CAUSAL_RECHAZO: nameReject
+
+                        // };
                         
-                        response.push(JSON.stringify(record));
+                        //response.push(JSON.stringify(record));
                        
                     }
                 
@@ -448,27 +469,10 @@ router.post('/records/closes', async (req, res) => {
         tequila++;
         }
         
-        if(!response.length) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
+        if(!records.length) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
         
         
-        const stream = new Readable({
-            objectMode: true,
-            read() {
-              const item = response.pop()
-              if (!item) {
-                return this.push(null)
-              }
-              this.push(item)
-            },
-          })
-        
-        // Create a writable stream
-        let writeableStream = fs.createWriteStream(fileName);
-        // Pipe the read and write operations
-        // read input.txt and write data to output.txt
-        stream.pipe(writeableStream);
-        console.log('End of the Process');
-         res.send({ 'file': name});
+         res.send({ 'file': fileName});
         
         
         
