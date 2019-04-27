@@ -163,7 +163,7 @@ router.get('/:id', async (req, res) => {
 router.get('/close/:id', async (req, res) => {
     try{
         
-        const flow = await Flow.find({"user": req.params.id, "status": false, "case":4 }).limit(50);
+        const flow = await Flow.find({"user": req.params.id, "status": false, "case":4 }).sort({timestamp: -1}).limit(30);
         if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
      
         const response = [];
