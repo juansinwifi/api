@@ -195,7 +195,7 @@ router.get('/close/:id', async (req, res) => {
                 typification: typification.name,
                 child: child.name,
                 date: findRecord[0].date,
-                caseUserDate: findRecord[0].caseFinDate
+                caseUserDate: flow[p].timestamp
             };
 
             response.push(record);
