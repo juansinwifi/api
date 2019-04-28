@@ -304,7 +304,7 @@ router.post('/records/opens/', async (req, res) => {
     ];
 
         const json2csvParser = new Json2csvParser({fields});
-        const csv = json2csvParser.parse(closeReport);
+        const csv = json2csvParser.parse(openReport);
         //appReport(csv);
         const random = randomstring.generate(8);
         const name = 'Open' + random +'.csv'
