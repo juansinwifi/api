@@ -214,8 +214,8 @@ router.post('/records/opens/', async (req, res) => {
     
     appReport("Termino el ciclo");
 
-        const closeReport = await Reports.find();
-        if (!closeReport) return res.status(404).send('Reporte no encontrado'); // Error 404 
+        const openReport = await Opens.find();
+        if (!openReport) return res.status(404).send('Reporte no encontrado'); // Error 404 
         
          //Convertir respuesta a CSV 
         const fields = [
