@@ -11,20 +11,15 @@ const express = require('express');
 const router = express.Router();
 const moment = require('moment');
 const fs = require('fs');
-const {Readable} = require('stream')
 
-const fsExtra = require('fs-extra');
 var randomstring = require("randomstring");
 const Json2csvParser = require('json2csv').Parser;
-const csvjson = require('csvjson');
 //Intento 2 para convertir CSV to Json
 //const createCsvWriter = require('csv-writer').createObjectCsvWriter; 
 //Intento 3 para convertir CSV to Json
 const jsonexport = require('jsonexport'); 
-const json2xlsx = require('node-json-xlsx');
 const appReport = require('debug')('app:reports');
 const appReportUser = require('debug')('app:reportsUser');
-const appFile = require('debug')('app:file');
 const { Typifications } = require('../models/typification');
 const { ChildTypifications } = require('../models/childtypification');
 const {Lights} = require('../models/lights');
@@ -42,8 +37,9 @@ router.post('/records/opens/', async (req, res) => {
     const { error } = validateReport(req.body);
     if (error) return res.status(400).send({'ERROR':  error.details[0].message});
 
-    const response = [];
-
+    const dropOpens =  await Opens.collection.drop();
+    if (!dropOpens) return res.status(404).send({'ERROR': 'No se pudo borrar la base de datos.'}); // Error 404
+    
     //Generar fechas
     const dates = [];
     let ini =  moment(req.body.iniDate).format('YYYY-MM-DD');
@@ -56,6 +52,8 @@ router.post('/records/opens/', async (req, res) => {
     let tequila = 0;
     while(dates[tequila]){
         const records = await Records.find({ "date": new RegExp(dates[tequila]), "status": false });
+        if(!Records.length) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
+    
         if (records){  
 
             let i = 0;
@@ -95,32 +93,32 @@ router.post('/records/opens/', async (req, res) => {
                         
                     
                         if(result) {
-                            appReport('Radicado aun con tiempo.');
-                            appReport('/* Creado: ' + creation );
-                            appReport('/* Finaliza: ' + then);
-                            appReport('*/ Hoy: ' + now.format('YYYY-MM-DD HH:mm') );
+                            // appReport('Radicado aun con tiempo.');
+                            // appReport('/* Creado: ' + creation );
+                            // appReport('/* Finaliza: ' + then);
+                            // appReport('*/ Hoy: ' + now.format('YYYY-MM-DD HH:mm') );
                             const totalTime = await diffDate(creation, then);
                             const currentTime = await diffDate(now, then);
-                            appReport('Diferencia Total'); 
-                            appReport(totalTime);
-                            appReport('Diferencia Actual');
-                            appReport(currentTime);
+                            // appReport('Diferencia Total'); 
+                            // appReport(totalTime);
+                            // appReport('Diferencia Actual');
+                            // appReport(currentTime);
                             
                             const totalHours = (totalTime.days * 24) + totalTime.hours + (totalTime.minutes/60);
                             const currentHours = (currentTime.days * 24) + currentTime.hours + (currentTime.minutes/60);
 
                             const percent = (currentHours/totalHours) * 100;
-                            appReport('Porcentaje: ' + percent);
+                            // appReport('Porcentaje: ' + percent);
                             if (percent <= light.red) caseLight = 0;
                             if (percent >= light.green) caseLight = 100;
-                            appReport('Semaforo: ' + caseLight);
+                            // appReport('Semaforo: ' + caseLight);
                             //Falta Actualizar los tiempos en el radicado
                         }
-                        if(!result) appReport('Radicado Vencido.')
+                        // if(!result) appReport('Radicado Vencido.')
                         if(!result) caseLight = 0;
                     
                     //Verificar el estado del semaforo del usuario
-                        appReport('##' + flow[0] + '##');
+                        // appReport('##' + flow[0] + '##');
 
                         const creationUser =  records[i].date;
                         const nowUser = moment()
@@ -129,28 +127,28 @@ router.post('/records/opens/', async (req, res) => {
 
                         const resultUser = moment(nowUser).isBefore(thenUser);
                         if(result) {
-                            appReportUser('Usuario aun con tiempo.');
-                            appReportUser('/* Creado: ' + creationUser );
-                            appReportUser('/* Finaliza: ' + thenUser);
-                            appReportUser('*/ Hoy: ' + nowUser.format('YYYY-MM-DD HH:mm') );
+                            // appReportUser('Usuario aun con tiempo.');
+                            // appReportUser('/* Creado: ' + creationUser );
+                            // appReportUser('/* Finaliza: ' + thenUser);
+                            // appReportUser('*/ Hoy: ' + nowUser.format('YYYY-MM-DD HH:mm') );
                             const totalTimeUser = await diffDate(creationUser, thenUser);
                             const currentTimeUser = await diffDate(nowUser, thenUser);
-                            appReportUser('Diferencia Total'); 
-                            appReportUser(totalTimeUser);
-                            appReportUser('Diferencia Actual');
-                            appReportUser(currentTimeUser);
+                            // appReportUser('Diferencia Total'); 
+                            // appReportUser(totalTimeUser);
+                            // appReportUser('Diferencia Actual');
+                            // appReportUser(currentTimeUser);
                             
                             const totalHoursUser = (totalTimeUser.days * 24) + totalTimeUser.hours + (totalTimeUser.minutes/60);
                             const currentHoursUser = (currentTimeUser.days * 24) + currentTimeUser.hours + (currentTimeUser.minutes/60);
 
                             const percentUser = (currentHoursUser/totalHoursUser) * 100;
-                            appReportUser('Porcentaje: ' + percentUser);
+                            // appReportUser('Porcentaje: ' + percentUser);
                             if (percentUser <= lightUser.red) userLight = 0;
                             if (percentUser >= lightUser.green) userLight = 100;
-                            appReportUser('Semaforo: ' + userLight);
+                            // appReportUser('Semaforo: ' + userLight);
                             //Falta Actualizar los tiempos en el radicado
                         }
-                        if(!resultUser) appReportUser('Radicado Vencido.')
+                        // if(!resultUser) appReportUser('Radicado Vencido.')
                         if(!resultUser) userLight = 0;
 
                         if(userLight == 0) userLight = 'Rojo';
@@ -214,19 +212,112 @@ router.post('/records/opens/', async (req, res) => {
     tequila++;
     }
     
-    if(!Records.length) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
+    appReport("Termino el ciclo");
+
+        const closeReport = await Reports.find();
+        if (!closeReport) return res.status(404).send('Reporte no encontrado'); // Error 404 
+        
+         //Convertir respuesta a CSV 
+        const fields = [
+            {
+                label: 'RADICADO',
+                value: 'RADICADO'
+            },
+            {
+                label: 'CLIENTE',
+                value: 'CLIENTE'
+            },
+            {
+                label: 'CREDITO', 
+                value: 'CREDITO'
+            },
+            {
+                label: 'CREADO',
+                value: 'CREADO',
+            },
+            {
+                label: 'RADICADOR',
+                value: 'RADICADOR'
+            },
+            {
+                label: 'FINALIZADOR',
+                value: 'FINALIZADOR'
+            },
+            {
+                label: 'SEMAFORO_USUARIO',
+                value: 'SEMAFORO_USUARIO'
+            },
+            {	
+                label: 'SEMAFORO_CASO',
+                value: 'SEMAFORO_CASO'
+                
+            },
+            {
+                label: 'TIPIFICACION',
+                value: 'TIPIFICACION'
+            },
+            {
+                label: 'TIPIFICACION_ESPECIFICA',
+                value: 'TIPIFICACION_ESPECIFICA'
+                
+            },
+            {
+                label: 'PQR',
+                value: 'PQR'
+            },
+            {
+                label: 'VENCIMIENTO_USUARIO',
+                value: 'VENCIMIENTO_USUARIO'
+            },
+            {
+                label: 'VENCIMIENTO_CASO',
+                value: 'VENCIMIENTO_CASO'
+            },
+            {
+                label: 'FECHA_SEGUIMIENTO',
+                value: 'FECHA_SEGUIMIENTO'
+            },
+            {
+                label: 'ULTIMO_INGREO_RADICADOR',
+                value: 'ULTIMO_INGREO_RADICADOR',
+            },
+            {
+                label: 'FECHA_CIERRE',
+                value: 'FECHA_CIERRE',
+            },
+            {
+                label: 'TIPO_GESTION',
+                value: 'TIPO_GESTION',
+            },
+            {
+                label: 'CAUSAL_RECHAZO',
+                value: 'CAUSAL_RECHAZO'
+            },
+            {
+                label: 'OBSERVACIONES',
+                value: 'OBSERVACIONES'
+            },
+            {
+                label: 'FORMULARIOS',
+                value: 'FORMULARIOS'
+            }
+    ];
+
+        const json2csvParser = new Json2csvParser({fields});
+        const csv = json2csvParser.parse(closeReport);
+        //appReport(csv);
+        const random = randomstring.generate(8);
+        const name = 'Open' + random +'.csv'
+        const fileName = './downloads/' + name;
+        fs.writeFile(fileName, csv, function (err) {
+        if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
+            appReport('Saved!');
+            res.send({ 'file': name});
+        });
     
     
 
-    const random = randomstring.generate(8);
-    const name = 'Open' + random +'.json'
-    const fileName = './downloads/' + name;
-    const myJson = "";
-    fs.writeFile(fileName, myJson, (err) => {
-        if (err) console.log(err);
-        console.log("Successfully Written to File.");
-        res.send({ 'file': name})
-      });
+    
 
 }
     catch(ex){
@@ -262,21 +353,14 @@ router.get('/records/opens/:file', async (req, res) => {
 //Generar Casos Cerrados
 router.post('/records/closes', async (req, res) => {
     try {
-       
-       
-
+        const dropCustomers =  await Reports.collection.drop();
+        if (!dropCustomers) return res.status(404).send({'ERROR': 'No se pudo borrar la base de datos.'}); // Error 404
+        
         //Validate Data
         //If invalid, return 404 - Bad Request
         const { error } = validateReport(req.body);
         if (error) return res.status(400).send({'ERROR':  error.details[0].message});
         
-        const random = randomstring.generate(8);
-        const name = 'Close' + random +'.json'
-        const fileName = './downloads/' + name;
-        
-        
-        const response = [];
-    
         //Generar fechas
         const dates = [];
         let ini =  moment(req.body.iniDate).format('YYYY-MM-DD');
@@ -290,6 +374,8 @@ router.post('/records/closes', async (req, res) => {
         
         while(dates[tequila]){
             const records = await Records.find({ "date": new RegExp(dates[tequila]), "status": true });
+            if(!records.length) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
+        
             if (records){  
                 let i = 0;
                 while(records[i]){
@@ -352,32 +438,7 @@ router.post('/records/closes', async (req, res) => {
                             CAUSAL_RECHAZO: nameReject,
                             OBSERVACIONES: observations
                         });
-                        reports = await reports.save();
-
-                        // const record = { 
-                        //     RADICADO: records[i].number,
-                        //     CLIENTE: records[i].customer,
-                        //     CREDITO: records[i].ref,
-                        //     CREADO: records[i].date,
-                        //     RADICADOR: createdUser.name,
-                        //     FINALIZADOR: lastUser.name,
-                        //     SEMAFORO_USUARIO: userLight,
-                        //     SEMAFORO_CASO: caseLight,
-                        //     TIPIFICACION: typification.name,
-                        //     TIPIFICACION_ESPECIFICA: child.name,
-                        //     PQR: requirement.type,
-                        //     VENCIMIENTO_USUARIO: finUser,
-                        //     VENCIMIENTO_CASO: records[i].caseFinDate,
-                        //     FECHA_SEGUIMIENTO: records[i].trackingDate,
-                        //     ULTIMO_INGREO_RADICADOR: lastEdit.timestamp,
-                        //     FECHA_CIERRE: closeDate,
-                        //     TIPO_GESTION: nameCase,
-                        //     CAUSAL_RECHAZO: nameReject
-
-                        // };
-                        
-                        //response.push(JSON.stringify(record));
-                       
+                        reports = await reports.save();  
                     }
                 
                     i++;
@@ -385,14 +446,104 @@ router.post('/records/closes', async (req, res) => {
             }
         tequila++;
         }
+        appReport("Termino el ciclo");
+
+        const closeReport = await Reports.find();
+        if (!closeReport) return res.status(404).send('Reporte no encontrado'); // Error 404 
         
-        if(!records.length) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
-        
-        
-         res.send({ 'file': fileName});
-        
-        
-        
+         //Convertir respuesta a CSV 
+        const fields = [
+            {
+                label: 'RADICADO',
+                value: 'RADICADO'
+            },
+            {
+                label: 'CLIENTE',
+                value: 'CLIENTE'
+            },
+            {
+                label: 'CREDITO', 
+                value: 'CREDITO'
+            },
+            {
+                label: 'CREADO',
+                value: 'CREADO',
+            },
+            {
+                label: 'RADICADOR',
+                value: 'RADICADOR'
+            },
+            {
+                label: 'FINALIZADOR',
+                value: 'FINALIZADOR'
+            },
+            {
+                label: 'SEMAFORO_USUARIO',
+                value: 'SEMAFORO_USUARIO'
+            },
+            {	
+                label: 'SEMAFORO_CASO',
+                value: 'SEMAFORO_CASO'
+                
+            },
+            {
+                label: 'TIPIFICACION',
+                value: 'TIPIFICACION'
+            },
+            {
+                label: 'TIPIFICACION_ESPECIFICA',
+                value: 'TIPIFICACION_ESPECIFICA'
+                
+            },
+            {
+                label: 'PQR',
+                value: 'PQR'
+            },
+            {
+                label: 'VENCIMIENTO_USUARIO',
+                value: 'VENCIMIENTO_USUARIO'
+            },
+            {
+                label: 'VENCIMIENTO_CASO',
+                value: 'VENCIMIENTO_CASO'
+            },
+            {
+                label: 'FECHA_SEGUIMIENTO',
+                value: 'FECHA_SEGUIMIENTO'
+            },
+            {
+                label: 'ULTIMO_INGREO_RADICADOR',
+                value: 'ULTIMO_INGREO_RADICADOR',
+            },
+            {
+                label: 'FECHA_CIERRE',
+                value: 'FECHA_CIERRE',
+            },
+            {
+                label: 'TIPO_GESTION',
+                value: 'TIPO_GESTION',
+            },
+            {
+                label: 'CAUSAL_RECHAZO',
+                value: 'CAUSAL_RECHAZO'
+            },
+            {
+                label: 'OBSERVACIONES',
+                value: 'OBSERVACIONES'
+            }
+    ];
+
+        const json2csvParser = new Json2csvParser({fields});
+        const csv = json2csvParser.parse(closeReport);
+        //appReport(csv);
+        const random = randomstring.generate(8);
+        const name = 'Closesx' + random +'.csv'
+        const fileName = './downloads/' + name;
+        fs.writeFile(fileName, csv, function (err) {
+        if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
+            appReport('Saved!');
+            res.send({ 'file': name});
+        });
     }
     catch(ex){
         console.log(ex);
@@ -537,4 +688,114 @@ router.get('/customers/updates/:file', async (req, res) => {
         res.status(500).send({ 'Error': 'Algo salio mal :('});
     }
 });
+
+//Test Generar Reporte en csv
+router.get('/test', async (req, res) => {
+    try { 
+        const closeReport = await Reports.find();
+        if (!closeReport) return res.status(404).send('Reporte no encontrado'); // Error 404 
+        
+         //Convertir respuesta a CSV 
+        const fields = [
+            {
+                label: 'RADICADO',
+                value: 'RADICADO'
+            },
+            {
+                label: 'CLIENTE',
+                value: 'CLIENTE'
+            },
+            {
+                label: 'CREDITO', 
+                value: 'CREDITO'
+            },
+            {
+                label: 'CREADO',
+                value: 'CREADO',
+            },
+            {
+                label: 'RADICADOR',
+                value: 'RADICADOR'
+            },
+            {
+                label: 'FINALIZADOR',
+                value: 'FINALIZADOR'
+            },
+            {
+                label: 'SEMAFORO_USUARIO',
+                value: 'SEMAFORO_USUARIO'
+            },
+            {	
+                label: 'SEMAFORO_CASO',
+                value: 'SEMAFORO_CASO'
+                
+            },
+            {
+                label: 'TIPIFICACION',
+                value: 'TIPIFICACION'
+            },
+            {
+                label: 'TIPIFICACION_ESPECIFICA',
+                value: 'TIPIFICACION_ESPECIFICA'
+                
+            },
+            {
+                label: 'PQR',
+                value: 'PQR'
+            },
+            {
+                label: 'VENCIMIENTO_USUARIO',
+                value: 'VENCIMIENTO_USUARIO'
+            },
+            {
+                label: 'VENCIMIENTO_CASO',
+                value: 'VENCIMIENTO_CASO'
+            },
+            {
+                label: 'FECHA_SEGUIMIENTO',
+                value: 'FECHA_SEGUIMIENTO'
+            },
+            {
+                label: 'ULTIMO_INGREO_RADICADOR',
+                value: 'ULTIMO_INGREO_RADICADOR',
+            },
+            {
+                label: 'FECHA_CIERRE',
+                value: 'FECHA_CIERRE',
+            },
+            {
+                label: 'TIPO_GESTION',
+                value: 'TIPO_GESTION',
+            },
+            {
+                label: 'CAUSAL_RECHAZO',
+                value: 'CAUSAL_RECHAZO'
+            },
+            {
+                label: 'OBSERVACIONES',
+                value: 'OBSERVACIONES'
+            }
+    ];
+
+        const json2csvParser = new Json2csvParser({fields});
+        const csv = json2csvParser.parse(closeReport);
+        //appReport(csv);
+        const random = randomstring.generate(8);
+        const name = 'Open' + random +'.csv'
+        const fileName = './downloads/' + name;
+        fs.writeFile(fileName, csv, function (err) {
+        if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
+            appReport('Saved!');
+            res.send({ 'file': name});
+        });
+
+
+        // res.send("Mama Miaaa!!!");
+        }
+    catch(ex){
+        console.log(ex);
+        res.status(500).send({ 'Error': 'Algo salio mal :('});
+    }
+});
+
 module.exports = router;
