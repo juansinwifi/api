@@ -52,7 +52,7 @@ router.post('/records/opens/', async (req, res) => {
     let tequila = 0;
     while(dates[tequila]){
         const records = await Records.find({ "date": new RegExp(dates[tequila]), "status": false });
-        if(!Records.length) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
+        if(!records) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
     
         if (records){  
 
@@ -374,7 +374,7 @@ router.post('/records/closes', async (req, res) => {
         
         while(dates[tequila]){
             const records = await Records.find({ "date": new RegExp(dates[tequila]), "status": true });
-            if(!records.length) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
+            if(!records) return res.status(404).send({'ERROR':'No se encuentran Radicados para esta fecha.'}); // Error 404 
         
             if (records){  
                 let i = 0;
