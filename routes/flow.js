@@ -65,8 +65,6 @@ router.get('/:id', async (req, res) => {
              const creation =  findRecord[0].date;
              const now = moment()
              const then = findRecord[0].caseFinDate;
-             
-
              const result = moment(now).isBefore(then);
 
             let  caseLight = 0;
@@ -104,7 +102,14 @@ router.get('/:id', async (req, res) => {
                     // appFlow('Semaforo: ' + caseLight);
                     //Falta Actualizar los tiempos en el radicado
                 }
-                if(!result) appFlow('Radicado Vencido.')
+                if(!result) {
+                    appFlow('Radicado Vencido.');
+                    const update =  await Flow.findOneAndUpdate({'_id':flow[p]._id}, {
+                        light: 0
+                        },{
+                            new: true
+                        });
+                }
                 if(!result) caseLight = 0;
             }
             
