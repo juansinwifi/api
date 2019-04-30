@@ -353,8 +353,9 @@ router.get('/records/opens/:file', async (req, res) => {
 //Generar Casos Cerrados
 router.post('/records/closes', async (req, res) => {
     try {
-        const dropCustomers =  await Reports.collection.drop();
-        if (!dropCustomers) return res.status(404).send({'ERROR': 'No se pudo borrar la base de datos.'}); // Error 404
+        
+            const dropCustomers =  await Reports.collection.drop();
+            if (!dropCustomers) return res.status(404).send({'ERROR': 'No se pudo borrar la base de datos.'}); // Error 404
         
         //Validate Data
         //If invalid, return 404 - Bad Request
@@ -406,6 +407,8 @@ router.post('/records/closes', async (req, res) => {
                         let nameCase = '';
                         if (flow[0].case == 1)   nameCase = 'Rechazar - Devolver';
                         if (flow[0].case == 2)   nameCase = 'Finalizar -Avanzar';
+
+                        
                         if (flow[0].case == 3)   nameCase = 'En Gestión';
                         if (flow[0].case == 4)   nameCase = 'Cerrar Caso';
                         if (flow[0].case == 5)   nameCase = 'Abierto';

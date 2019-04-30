@@ -61,39 +61,53 @@ router.get('/:id', async (req, res) => {
             const lightUser = await Lights.findOne({"name": 'USUARIO'});
             if (!lightUser) return res.status(404).send('Semaforo de usuario no encontrado'); // Error 404 
            
-            //Verificar el estado del semaforo del caso
-                const creation =  findRecord[0].date;
-                const now = moment()
-                const then = findRecord[0].caseFinDate;
-                let  caseLight = 50; //Por Defecto el semaforo es amarillo
+             //Verificar el estado del semaforo del caso
+             const creation =  findRecord[0].date;
+             const now = moment()
+             const then = findRecord[0].caseFinDate;
+             
 
-                const result = moment(now).isBefore(then);
+             const result = moment(now).isBefore(then);
+
+            let  caseLight = 0;
+            if(flow[p].light > 0){
+                caseLight = 50; //Por Defecto el semaforo es amarillo
                 
             
                 if(result) {
-                    appFlow('Radicado aun con tiempo.');
-                    appFlow('/* Creado: ' + creation );
-                    appFlow('/* Finaliza: ' + then);
-                    appFlow('*/ Hoy: ' + now.format('YYYY-MM-DD HH:mm') );
+                    // appFlow('Radicado aun con tiempo.');
+                    // appFlow('/* Creado: ' + creation );
+                    // appFlow('/* Finaliza: ' + then);
+                    // appFlow('*/ Hoy: ' + now.format('YYYY-MM-DD HH:mm') );
                     const totalTime = await diffDate(creation, then);
                     const currentTime = await diffDate(now, then);
-                    appFlow('Diferencia Total'); 
-                    appFlow(totalTime);
-                    appFlow('Diferencia Actual');
-                    appFlow(currentTime);
+                    // appFlow('Diferencia Total'); 
+                    // appFlow(totalTime);
+                    // appFlow('Diferencia Actual');
+                    // appFlow(currentTime);
                     
                     const totalHours = (totalTime.days * 24) + totalTime.hours + (totalTime.minutes/60);
                     const currentHours = (currentTime.days * 24) + currentTime.hours + (currentTime.minutes/60);
 
                     const percent = (currentHours/totalHours) * 100;
-                    appFlow('Porcentaje: ' + percent);
-                    if (percent <= light.red) caseLight = 0;
+                    // appFlow('Porcentaje: ' + percent);
+                    if (percent <= light.red) 
+                    {
+                        caseLight = 0;
+                        const update =  await Flow.findOneAndUpdate({'_id':flow[p]._id}, {
+                            light: 0
+                            },{
+                                new: true
+                            });
+                    }
                     if (percent >= light.green) caseLight = 100;
-                    appFlow('Semaforo: ' + caseLight);
+                    // appFlow('Semaforo: ' + caseLight);
                     //Falta Actualizar los tiempos en el radicado
                 }
                 if(!result) appFlow('Radicado Vencido.')
                 if(!result) caseLight = 0;
+            }
+            
             
             //Verificar el estado del semaforo del usuario
                 appFlow('##' + flow[p] + '##');
