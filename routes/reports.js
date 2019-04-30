@@ -354,8 +354,8 @@ router.get('/records/opens/:file', async (req, res) => {
 router.post('/records/closes', async (req, res) => {
     try {
         
-            // const dropCustomers =  await Reports.collection.drop();
-            // if (!dropCustomers) return res.status(404).send({'ERROR': 'No se pudo borrar la base de datos.'}); // Error 404
+            const dropCustomers =  await Reports.collection.drop();
+            if (!dropCustomers) return res.status(404).send({'ERROR': 'No se pudo borrar la base de datos.'}); // Error 404
         
         //Validate Data
         //If invalid, return 404 - Bad Request
