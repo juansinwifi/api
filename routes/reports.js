@@ -14,6 +14,7 @@ const fs = require('fs');
 const es = require('event-stream');
 var randomstring = require("randomstring");
 const Json2csvParser = require('json2csv').Parser;
+const json2csv = require('json2csv');
 //Intento 2 para convertir CSV to Json
 //const createCsvWriter = require('csv-writer').createObjectCsvWriter; 
 //Intento 3 para convertir CSV to Json
@@ -539,15 +540,13 @@ router.post('/records/closes', async (req, res) => {
         const json2csvParser = new Json2csvParser({fields});
         const closeReport = await Reports.find().stream()
         .pipe(es.map(function (data, cb) {
-            var formated = data;
-            const csv = json2csvParser.parse(data);
-            //var csv = Json2csvParser({data:formated, fields:fields, hasCSVColumnTitle:true});
+            var csv = Json2csvParser({data:data, fields:fields, hasCSVColumnTitle:true});
             cb(null, csv)
           }))
       .pipe(wstream);
 
         if (!closeReport) return res.status(404).send('Reporte no encontrado'); // Error 404 
-        res.send({ 'file': name});
+        if (closeReport) send({ 'file': name});
         
         
         /*
