@@ -546,7 +546,7 @@ router.post('/records/closes', async (req, res) => {
       .pipe(wstream);
 
         if (!closeReport) return res.status(404).send('Reporte no encontrado'); // Error 404 
-        if (closeReport) send({ 'file': name});
+        if (closeReport) res.send({ 'file': name});
         
         
         /*
