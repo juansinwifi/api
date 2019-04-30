@@ -536,10 +536,10 @@ router.post('/records/closes', async (req, res) => {
         const name = 'Closesx' + random +'.csv'
         const fileName = './downloads/' + name;
         var wstream = fs.createWriteStream(fileName);
+        const json2csvParser = new Json2csvParser({fields});
         const closeReport = await Reports.find().stream()
         .pipe(es.map(function (data, cb) {
             var formated = data;
-            const json2csvParser = new Json2csvParser({fields});
             const csv = json2csvParser.parse(data);
             //var csv = Json2csvParser({data:formated, fields:fields, hasCSVColumnTitle:true});
             cb(null, csv)
