@@ -37,7 +37,7 @@ const appReportUser = require('debug')('app:reportsUser');
 router.get('/:id', async (req, res) => {
     try{
         
-        const flow = await Flow.find({"user": req.params.id, "status": true}).sort({finDate: -1}).limit(50);;
+        const flow = await Flow.find({"user": req.params.id, "status": true});
         if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
         
 
