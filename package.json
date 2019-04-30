@@ -18,6 +18,7 @@
     "csvjson": "^5.1.0",
     "csvtojson": "^2.0.8",
     "debug": "^4.1.0",
+    "event-stream": "^4.0.1",
     "express": "^4.16.3",
     "express-fileupload": "^1.0.0",
     "fs-extra": "^7.0.1",

@@ -11,7 +11,7 @@ const express = require('express');
 const router = express.Router();
 const moment = require('moment');
 const fs = require('fs');
-
+const es = require('event-stream');
 var randomstring = require("randomstring");
 const Json2csvParser = require('json2csv').Parser;
 //Intento 2 para convertir CSV to Json
@@ -354,8 +354,8 @@ router.get('/records/opens/:file', async (req, res) => {
 router.post('/records/closes', async (req, res) => {
     try {
         
-            const dropCustomers =  await Reports.collection.drop();
-            if (!dropCustomers) return res.status(404).send({'ERROR': 'No se pudo borrar la base de datos.'}); // Error 404
+            // const dropCustomers =  await Reports.collection.drop();
+            // if (!dropCustomers) return res.status(404).send({'ERROR': 'No se pudo borrar la base de datos.'}); // Error 404
         
         //Validate Data
         //If invalid, return 404 - Bad Request
@@ -408,7 +408,7 @@ router.post('/records/closes', async (req, res) => {
                         if (flow[0].case == 1)   nameCase = 'Rechazar - Devolver';
                         if (flow[0].case == 2)   nameCase = 'Finalizar -Avanzar';
 
-                        
+
                         if (flow[0].case == 3)   nameCase = 'En Gestión';
                         if (flow[0].case == 4)   nameCase = 'Cerrar Caso';
                         if (flow[0].case == 5)   nameCase = 'Abierto';
@@ -450,12 +450,8 @@ router.post('/records/closes', async (req, res) => {
         tequila++;
         }
         appReport("Termino el ciclo");
-
-        const closeReport = await Reports.find();
-        if (!closeReport) return res.status(404).send('Reporte no encontrado'); // Error 404 
-        
          //Convertir respuesta a CSV 
-        const fields = [
+         const fields = [
             {
                 label: 'RADICADO',
                 value: 'RADICADO'
@@ -536,17 +532,39 @@ router.post('/records/closes', async (req, res) => {
             }
     ];
 
-        const json2csvParser = new Json2csvParser({fields});
-        const csv = json2csvParser.parse(closeReport);
-        //appReport(csv);
         const random = randomstring.generate(8);
         const name = 'Closesx' + random +'.csv'
         const fileName = './downloads/' + name;
-        fs.writeFile(fileName, csv, function (err) {
-        if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
-            appReport('Saved!');
-            res.send({ 'file': name});
-        });
+        var wstream = fs.createWriteStream(fileName);
+        const closeReport = await Reports.find().stream()
+        .pipe(es.map(function (data, cb) {
+            var formated = data;
+            const json2csvParser = new Json2csvParser({fields});
+            const csv = json2csvParser.parse(data);
+            //var csv = Json2csvParser({data:formated, fields:fields, hasCSVColumnTitle:true});
+            cb(null, csv)
+          }))
+      .pipe(wstream);
+
+        if (!closeReport) return res.status(404).send('Reporte no encontrado'); // Error 404 
+        res.send({ 'file': name});
+        
+        
+        /*
+        BEFORE
+        */
+        // const json2csvParser = new Json2csvParser({fields});
+        // const csv = json2csvParser.parse(closeReport);
+        // //appReport(csv);
+        // const random = randomstring.generate(8);
+        // const name = 'Closesx' + random +'.csv'
+        // const fileName = './downloads/' + name;
+        
+        // fs.writeFile(fileName, csv, function (err) {
+        // if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
+        //     appReport('Saved!');
+        //     res.send({ 'file': name});
+        // });
     }
     catch(ex){
         console.log(ex);
