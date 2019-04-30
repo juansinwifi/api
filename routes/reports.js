@@ -540,7 +540,8 @@ router.post('/records/closes', async (req, res) => {
         // const json2csvParser = new Json2csvParser({fields});
         const closeReport = await Reports.find().stream()
         .pipe(es.map(function (data, cb) {
-            var csv = json2csv({data:data, fields:fields, hasCSVColumnTitle:true});
+            const json2csvParser = new Json2csvParser({fields});
+            const csv = json2csvParser.parse(data);
             cb(null, csv)
           }))
       .pipe(wstream);
