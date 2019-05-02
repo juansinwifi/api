@@ -83,6 +83,7 @@ mongoose.set('useCreateIndex', true);
 app.use(express.json()); //Lee entradas en formato json
 app.use(cors());
 app.use(express.static('uploads/records')); //Acceso a una carpeta estatica
+// app.use(express.static('downloads/')); //Acceso a una carpeta estatica
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(hemlet());
