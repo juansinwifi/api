@@ -698,7 +698,7 @@ router.get('/customers/updates/:file', async (req, res) => {
 /* CASOS ABIERTOS*/
 
 //Ultimos 3 dias 
-router.get('/opensday/', async (req, res) => {
+router.get('/opensday', async (req, res) => {
     try {
 
         const fileName =  './downloads/opens3days.csv';
