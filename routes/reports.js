@@ -738,7 +738,7 @@ router.get('/records/opensweek/', async (req, res) => {
 });
 
 //Ultima Mes 
-router.get('/records/opensweek/', async (req, res) => {
+router.get('/records/opensmonth/', async (req, res) => {
     try {
 
         const fileName =  './downloads/opensmonth.csv';
