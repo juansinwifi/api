@@ -37,7 +37,7 @@ const appReportUser = require('debug')('app:reportsUser');
 router.get('/:id', async (req, res) => {
     try{
         
-        const flow = await Flow.find({"user": req.params.id, "status": true}).limit(200);
+        const flow = await Flow.find({"user": req.params.id, "status": true});
         if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
         
 
@@ -45,8 +45,8 @@ router.get('/:id', async (req, res) => {
         i = flow.length;
         p = i - 1 ;
         while ( i > 0){
-            const findRecord = await Records.find({"_id": flow[p].record});
-            appFlow('#' + flow[0] + '#');
+            let findRecord = await Records.find({"_id": flow[p].record});
+           appFlow('#' + flow[0] + '#');
             if (!findRecord || findRecord.length == 0) return res.send([]); // Error 404
             
             let typification = await Typifications.findById(findRecord[0].typification);

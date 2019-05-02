@@ -533,38 +533,22 @@ router.post('/records/closes', async (req, res) => {
             }
     ];
 
-        const random = randomstring.generate(8);
-        const name = 'Closesx' + random +'.csv'
-        const fileName = './downloads/' + name;
-        var wstream = fs.createWriteStream(fileName);
-        // const json2csvParser = new Json2csvParser({fields});
-        const closeReport = await Reports.find().stream()
-        .pipe(es.map(function (data, cb) {
-            const json2csvParser = new Json2csvParser({fields});
-            const csv = json2csvParser.parse(data);
-            cb(null, csv)
-          }))
-      .pipe(wstream);
-
-        if (!closeReport) return res.status(404).send('Reporte no encontrado'); // Error 404 
-        if (closeReport) res.send({ 'file': name});
-        
         
         /*
         BEFORE
         */
-        // const json2csvParser = new Json2csvParser({fields});
-        // const csv = json2csvParser.parse(closeReport);
-        // //appReport(csv);
-        // const random = randomstring.generate(8);
-        // const name = 'Closesx' + random +'.csv'
-        // const fileName = './downloads/' + name;
+        const json2csvParser = new Json2csvParser({fields});
+        const csv = json2csvParser.parse(closeReport);
+        //appReport(csv);
+        const random = randomstring.generate(8);
+        const name = 'Closesx' + random +'.csv'
+        const fileName = './downloads/' + name;
         
-        // fs.writeFile(fileName, csv, function (err) {
-        // if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
-        //     appReport('Saved!');
-        //     res.send({ 'file': name});
-        // });
+        fs.writeFile(fileName, csv, function (err) {
+        if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
+            appReport('Saved!');
+            res.send({ 'file': name});
+        });
     }
     catch(ex){
         console.log(ex);
@@ -710,113 +694,23 @@ router.get('/customers/updates/:file', async (req, res) => {
     }
 });
 
-//Test Generar Reporte en csv
-router.get('/test', async (req, res) => {
-    try { 
-        const closeReport = await Reports.find();
-        if (!closeReport) return res.status(404).send('Reporte no encontrado'); // Error 404 
-        
-         //Convertir respuesta a CSV 
-        const fields = [
-            {
-                label: 'RADICADO',
-                value: 'RADICADO'
-            },
-            {
-                label: 'CLIENTE',
-                value: 'CLIENTE'
-            },
-            {
-                label: 'CREDITO', 
-                value: 'CREDITO'
-            },
-            {
-                label: 'CREADO',
-                value: 'CREADO',
-            },
-            {
-                label: 'RADICADOR',
-                value: 'RADICADOR'
-            },
-            {
-                label: 'FINALIZADOR',
-                value: 'FINALIZADOR'
-            },
-            {
-                label: 'SEMAFORO_USUARIO',
-                value: 'SEMAFORO_USUARIO'
-            },
-            {	
-                label: 'SEMAFORO_CASO',
-                value: 'SEMAFORO_CASO'
-                
-            },
-            {
-                label: 'TIPIFICACION',
-                value: 'TIPIFICACION'
-            },
-            {
-                label: 'TIPIFICACION_ESPECIFICA',
-                value: 'TIPIFICACION_ESPECIFICA'
-                
-            },
-            {
-                label: 'PQR',
-                value: 'PQR'
-            },
-            {
-                label: 'VENCIMIENTO_USUARIO',
-                value: 'VENCIMIENTO_USUARIO'
-            },
-            {
-                label: 'VENCIMIENTO_CASO',
-                value: 'VENCIMIENTO_CASO'
-            },
-            {
-                label: 'FECHA_SEGUIMIENTO',
-                value: 'FECHA_SEGUIMIENTO'
-            },
-            {
-                label: 'ULTIMO_INGREO_RADICADOR',
-                value: 'ULTIMO_INGREO_RADICADOR',
-            },
-            {
-                label: 'FECHA_CIERRE',
-                value: 'FECHA_CIERRE',
-            },
-            {
-                label: 'TIPO_GESTION',
-                value: 'TIPO_GESTION',
-            },
-            {
-                label: 'CAUSAL_RECHAZO',
-                value: 'CAUSAL_RECHAZO'
-            },
-            {
-                label: 'OBSERVACIONES',
-                value: 'OBSERVACIONES'
-            }
-    ];
 
-        const json2csvParser = new Json2csvParser({fields});
-        const csv = json2csvParser.parse(closeReport);
-        //appReport(csv);
-        const random = randomstring.generate(8);
-        const name = 'Open' + random +'.csv'
-        const fileName = './downloads/' + name;
-        fs.writeFile(fileName, csv, function (err) {
-        if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo'});
-            appReport('Saved!');
-            res.send({ 'file': name});
-        });
+/* CASOS ABIERTOS*/
 
+//Ultimos 3 dias 
+router.get('/records/opensd/', async (req, res) => {
+    try {
 
-        // res.send("Mama Miaaa!!!");
-        }
+        const fileName =  './downloads/opens3days.csv';
+        //Creamos un Stream para seguir el archivo y luego borrarlo
+        let file = fs.createReadStream(fileName);
+        res.download(fileName, 'ultimos_3_dias.csv');
+        file.pipe(res);
+       
+    }
     catch(ex){
         console.log(ex);
         res.status(500).send({ 'Error': 'Algo salio mal :('});
     }
 });
-
 module.exports = router;
