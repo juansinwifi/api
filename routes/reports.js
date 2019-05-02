@@ -802,7 +802,7 @@ router.get('/records/closesweek/', async (req, res) => {
 router.get('/records/closesmonth/', async (req, res) => {
     try {
 
-        const fileName =  './downloads/closemonth.csv';
+        const fileName =  'downloads/closemonth.csv';
         //Creamos un Stream para seguir el archivo y luego borrarlo
         // let file = fs.createReadStream(fileName);
         // file.on('error', function(error){
@@ -810,7 +810,8 @@ router.get('/records/closesmonth/', async (req, res) => {
         //   });
         // res.download(fileName, 'cerrados_ultimo_mes.csv');
         // file.pipe(res);
-        res.sendFile(fileName);
+        var path = require('path');
+        res.sendFile(path.resolve(fileName));
        
     }
     catch(ex){
