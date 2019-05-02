@@ -762,7 +762,7 @@ router.get('/records/opensmonth/', async (req, res) => {
 router.get('/records/closesday/', async (req, res) => {
     try {
 
-        const fileName =  './downloads/closes3days.csv';
+        const fileName =  './downloads/close3days.csv';
         //Creamos un Stream para seguir el archivo y luego borrarlo
         let file = fs.createReadStream(fileName);
         file.on('error', function(error){
