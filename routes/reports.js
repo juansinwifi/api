@@ -698,13 +698,56 @@ router.get('/customers/updates/:file', async (req, res) => {
 /* CASOS ABIERTOS*/
 
 //Ultimos 3 dias 
-router.get('/records/opensd/', async (req, res) => {
+router.get('/records/opensday/', async (req, res) => {
     try {
 
         const fileName =  './downloads/opens3days.csv';
         //Creamos un Stream para seguir el archivo y luego borrarlo
         let file = fs.createReadStream(fileName);
+        file.on('error', function(error){
+            res.status(500).send({ 'Error': 'Archivo no encontrado'});
+          });
         res.download(fileName, 'ultimos_3_dias.csv');
+        file.pipe(res);
+       
+    }
+    catch(ex){
+        console.log(ex);
+        res.status(500).send({ 'Error': 'Algo salio mal :('});
+    }
+});
+
+//Ultima Semana 
+router.get('/records/opensweek/', async (req, res) => {
+    try {
+
+        const fileName =  './downloads/opensweek.csv';
+        //Creamos un Stream para seguir el archivo y luego borrarlo
+        let file = fs.createReadStream(fileName);
+        file.on('error', function(error){
+            res.status(500).send({ 'Error': 'Archivo no encontrado'});
+          });
+        res.download(fileName, 'ultima_semana.csv');
+        file.pipe(res);
+       
+    }
+    catch(ex){
+        console.log(ex);
+        res.status(500).send({ 'Error': 'Algo salio mal :('});
+    }
+});
+
+//Ultima Mes 
+router.get('/records/opensweek/', async (req, res) => {
+    try {
+
+        const fileName =  './downloads/opensmonth.csv';
+        //Creamos un Stream para seguir el archivo y luego borrarlo
+        let file = fs.createReadStream(fileName);
+        file.on('error', function(error){
+            res.status(500).send({ 'Error': 'Archivo no encontrado'});
+          });
+        res.download(fileName, 'ultimo_mes.csv');
         file.pipe(res);
        
     }
