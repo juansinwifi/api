@@ -538,8 +538,12 @@ router.post('/records/closes', async (req, res) => {
         /*
         BEFORE
         */
+
+       const closeReport = await Reports.find();
+       if (!closeReport) return res.status(404).send('Reporte no encontrado'); // Error 404 
+       
         const json2csvParser = new Json2csvParser({fields});
-        const csv = json2csvParser.parse(reports);
+        const csv = json2csvParser.parse(closeReport);
         //appReport(csv);
         const random = randomstring.generate(8);
         const name = 'Closesx' + random +'.csv'
