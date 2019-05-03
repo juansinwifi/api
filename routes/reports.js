@@ -533,12 +533,13 @@ router.post('/records/closes', async (req, res) => {
             }
     ];
 
+    // res.send({ 'file': name});
         
         /*
         BEFORE
         */
         const json2csvParser = new Json2csvParser({fields});
-        const csv = json2csvParser.parse(closeReport);
+        const csv = json2csvParser.parse(reports);
         //appReport(csv);
         const random = randomstring.generate(8);
         const name = 'Closesx' + random +'.csv'
@@ -550,8 +551,8 @@ router.post('/records/closes', async (req, res) => {
             res.send({ 'file': name});
         });
     }
-    catch(ex){
-        console.log(ex);
+    catch(err){
+        console.log(err);
         res.status(500).send({ 'Error': 'Algo salio mal :('});
     }
 });
