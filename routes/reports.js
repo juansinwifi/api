@@ -182,6 +182,7 @@ router.post('/records/opens/', async (req, res) => {
 
                         //Observaciones 
                         let lastLevel = flow[0].level - 1;
+                        if (flow[0].level == -1) lastLevel = -1;
                         console.log(lastLevel);
                         let lastObservation = await Flow.findOne({"record": records[i]._id, "level": lastLevel});
                         console.log(lastObservation.observations);
