@@ -183,10 +183,21 @@ router.post('/records/opens/', async (req, res) => {
                         //Observaciones 
                         let lastLevel = flow[0].level - 1;
                         if (flow[0].level == -1) lastLevel = -1;
-                        console.log(lastLevel);
                         let lastObservation = await Flow.findOne({"record": records[i]._id, "level": lastLevel});
-                        console.log(lastObservation.observations);
-                        let myForms = JSON.stringify(records[i].forms);
+                    
+                        let finalForms = [];
+
+                        if(records[i].forms){
+                            let myForms = records[i].forms;
+                            let t = records[i].forms.length;
+                            let content = "";
+                            while(myForms[t]){
+                              content =  myForms[t].value + ":" +myForms[t].description;
+                              finalForms.push(content);
+                            t++;
+                            }
+
+                        }
                       
                         let opens = new Opens({ 
                             RADICADO: records[i].number,
@@ -207,7 +218,7 @@ router.post('/records/opens/', async (req, res) => {
                             TIPO_GESTION: nameCase,
                             CAUSAL_RECHAZO: nameReject,
                             OBSERVACIONES: lastObservation.observations,
-                            FORMULARIOS:  myForms
+                            FORMULARIOS: finalForms
                         });
 
                     opens = await opens.save();
