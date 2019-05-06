@@ -190,11 +190,11 @@ router.post('/records/opens/', async (req, res) => {
                         if(records[i].forms){
                             let myForms = records[i].forms;
                             let t = 0;
-                            console.log(t);
+                            
                             let content = "";
                             while(myForms[t]){
                               content =  myForms[t].value + ":" +myForms[t].description;
-                              console.log(content);
+                              
                               finalForms.push(content);
                             t++;
                             }
