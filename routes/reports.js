@@ -182,8 +182,9 @@ router.post('/records/opens/', async (req, res) => {
 
                         //Observaciones 
                         let lastLevel = flow[0].level - 1;
-                        const lastObservation = await Flow.findOne({"record": records[i]._id, "level": lastLevel});
-
+                        console.log(lastLevel);
+                        let lastObservation = await Flow.findOne({"record": records[i]._id, "level": lastLevel});
+                        console.log(lastObservation.observations);
                         let myForms = JSON.stringify(records[i].forms);
                       
                         let opens = new Opens({ 
