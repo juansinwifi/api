@@ -180,6 +180,10 @@ router.post('/records/opens/', async (req, res) => {
                         if (flow[0].case == 5)   nameCase = 'Abierto';
                         if (flow[0].case == 6)   nameCase = 'Reasignar Caso';
 
+                        //Observaciones 
+                        let lastLevel = flow[0].level - 1;
+                        const lastObservation = await Flow.findOne({"record": records[i]._id, "level": lastLevel});
+
                         let myForms = JSON.stringify(records[i].forms);
                       
                         let opens = new Opens({ 
@@ -200,7 +204,7 @@ router.post('/records/opens/', async (req, res) => {
                             ULTIMO_INGREO_RADICADOR: lastEdit.timestamp,
                             TIPO_GESTION: nameCase,
                             CAUSAL_RECHAZO: nameReject,
-                            OBSERVACIONES: flow[0].observations,
+                            OBSERVACIONES: lastObservation.observations,
                             FORMULARIOS:  myForms
                         });
 
@@ -554,7 +558,7 @@ router.post('/records/closes', async (req, res) => {
             appReport('Saved!');
             res.send({ 'file': name});
         });
-    }
+    } 
     catch(err){
         console.log(err);
         res.status(500).send({ 'Error': 'Algo salio mal :('});

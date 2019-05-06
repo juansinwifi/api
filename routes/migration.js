@@ -79,7 +79,7 @@ router.get('/',  async (req, res) => {
         //Flujo de quien creo el radicado (Record)
         const iniFlow = {};
         iniFlow.record = saveRecord._id;
-        iniFlow.user =  "5c9c22e45b4aff38867efa69";
+        iniFlow.user =  "5ccf7346ccc5db180485186b";
         iniFlow.level = -1;
         iniFlow.status = false;
         iniFlow.observations = " ";
