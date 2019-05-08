@@ -446,13 +446,13 @@ router.post('/records/closes', async (req, res) => {
                         if(records[i].forms){
                             
                             let myForms = records[i].forms;
-                            console.log(myForms)
+                            
                             let t = 0;
                             
                             let content = " ";
                             while(myForms[t]){
                               content =  myForms[t].value + ":" +myForms[t].description;
-                              
+                              console.log(content)
                               finalForms.push(content);
                             t++;
                             }
