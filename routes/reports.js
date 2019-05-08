@@ -440,6 +440,22 @@ router.post('/records/closes', async (req, res) => {
                         //Ultimo ingreso del radicado
                         const lastEdit = await Flow.findOne({"record": records[i]._id, "level": -1});
 
+                        let finalForms = [];
+
+                        if(records[i].forms){
+                            let myForms = records[i].forms;
+                            let t = 0;
+                            
+                            let content = "";
+                            while(myForms[t]){
+                              content =  myForms[t].value + ":" +myForms[t].description;
+                              
+                              finalForms.push(content);
+                            t++;
+                            }
+
+                        }
+
                         let reports = new Reports({
                             RADICADO: records[i].number,
                             CLIENTE: records[i].customer,
@@ -459,7 +475,8 @@ router.post('/records/closes', async (req, res) => {
                             FECHA_CIERRE: closeDate,
                             TIPO_GESTION: nameCase,
                             CAUSAL_RECHAZO: nameReject,
-                            OBSERVACIONES: observations
+                            OBSERVACIONES: observations,
+                            FORMULARIOS: finalForms
                         });
                         reports = await reports.save();  
                     }
@@ -549,6 +566,10 @@ router.post('/records/closes', async (req, res) => {
             {
                 label: 'OBSERVACIONES',
                 value: 'OBSERVACIONES'
+            },
+            {
+                label: 'FORMULARIOS',
+                value: 'FORMULARIOS'
             }
     ];
 
