@@ -443,9 +443,11 @@ router.post('/records/closes', async (req, res) => {
                         const lastEdit = await Flow.findOne({"record": records[i]._id, "level": -1});
 
                         let finalForms = [];
-                        if(records[i].forms)  finalForms.push('Verdad');
+                        console.log ($$) 
+                        
 
                         if(records[i].forms){
+                            console.log("fomulario")
                             let myForms = records[i].forms;
                             let t = 0;
                             
