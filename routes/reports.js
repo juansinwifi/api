@@ -421,7 +421,9 @@ router.post('/records/closes', async (req, res) => {
                         // Fecha de Cierre
                         let closeDate = flow[0].timestamp;
                         //observations
-                        let observations = flow[0].observations;
+                       
+                        let observations = " ";
+                        if(flow[0].observations) observations = flow[0].observations;
 
                         //Tipo de Gestion
                         let nameCase = '';
