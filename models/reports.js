@@ -20,7 +20,8 @@ const reportsSchema = new mongoose.Schema({
         FECHA_CIERRE: { type: String},
         TIPO_GESTION: { type: String},
         CAUSAL_RECHAZO: { type: String},
-        OBSERVACIONES: { type: String}
+        OBSERVACIONES: { type: String},
+        FORMULARIOS: { type: String}
 
 });
 
