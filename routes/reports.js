@@ -443,7 +443,7 @@ router.post('/records/closes', async (req, res) => {
                         const lastEdit = await Flow.findOne({"record": records[i]._id, "level": -1});
 
                         let finalForms = [];
-                        console.log ($$) 
+                        console.log ("$$") 
                         
 
                         if(records[i].forms){
