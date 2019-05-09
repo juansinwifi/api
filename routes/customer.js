@@ -50,7 +50,7 @@ router.get('/records/:id', async (req, res) => {
         //If not existing, return 404 - Not Found
         const records = await Records.find({"number": req.params.id});
         if (!records) return res.status(404).send({'Error':'No se encuentran el radicados.'}); // Error 404 
-        if (records==[]) return res.status(404).send({'Error':'No se encuentran el radicados.'}); // Error 404 
+        if (!records[0]) return res.status(404).send({'Error':'No se encuentran el radicados.'}); // Error 404 
         const customer = records[0].customer;
         res.send(customer+'');
     }
