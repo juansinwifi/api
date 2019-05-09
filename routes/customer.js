@@ -43,6 +43,26 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+//'BUSCAR UN CLIENTE ESPECIFICO' GET Method
+router.get('records/:id', async (req, res) => {
+    try{
+        //Look up the Profiles
+        //If not existing, return 404 - Not Found
+        const records = await Records.find({"number": req.params.id});
+        if (!records) return res.status(404).send({'Error':'No se encuentran el radicados.'}); // Error 404 
+        console.log (records);
+        const customer = records[0].customer;
+
+        const customers = await Customer.find({"id": customer});
+        if (!customers) return res.status(404).send('Cliente no encontrado'); // Error 404 
+        res.send(customers);
+    }
+    catch(ex){
+        console.log(ex);
+        res.status(500).send({ 'Error': 'Algo salio mal :('});
+    }
+});
+
 //'BUSCAR UN CREDITO especifico' GET Method
 router.get('/ref/:id', async (req, res) => {
     try{
