@@ -184,7 +184,8 @@ router.post('/records/opens/', async (req, res) => {
                         let lastLevel = flow[0].level - 1;
                         if (flow[0].level == -1) lastLevel = -1;
                         let lastObservation = await Flow.findOne({"record": records[i]._id, "level": lastLevel});
-                    
+                        let myObservations = lastObservation.observations.replace(/\s{2,}/g, ' ');
+
                         let finalForms = [];
 
                         if(records[i].forms){
@@ -219,7 +220,7 @@ router.post('/records/opens/', async (req, res) => {
                             ULTIMO_INGREO_RADICADOR: lastEdit.timestamp,
                             TIPO_GESTION: nameCase,
                             CAUSAL_RECHAZO: nameReject,
-                            OBSERVACIONES: lastObservation.observations,
+                            OBSERVACIONES: myObservations,
                             FORMULARIOS: finalForms
                         });
 
@@ -423,7 +424,7 @@ router.post('/records/closes', async (req, res) => {
                         //observations
                        
                         let observations = " ";
-                        if(flow[0].observations) observations = flow[0].observations;
+                        if(flow[0].observations) observations = flow[0].observations.replace(/\s{2,}/g, ' ');
 
                         //Tipo de Gestion
                         let nameCase = '';
