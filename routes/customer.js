@@ -52,10 +52,7 @@ router.get('records/:id', async (req, res) => {
         if (!records) return res.status(404).send({'Error':'No se encuentran el radicados.'}); // Error 404 
         console.log (records);
         const customer = records[0].customer;
-
-        const customers = await Customer.find({"id": customer});
-        if (!customers) return res.status(404).send('Cliente no encontrado'); // Error 404 
-        res.send(customers);
+        res.send(customer);
     }
     catch(ex){
         console.log(ex);
