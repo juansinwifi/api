@@ -698,10 +698,10 @@ router.post('/customers/updates', async (req, res) => {
                             value: 'date'
                         }
                     ];
-        // const json2csvParser = new Json2csvParser({ fields });
-        // const csv = json2csvParser.parse(response);
-        const csv = jsonexport(response); 
-        appReport(csv);
+        const json2csvParser = new Json2csvParser({ fields });
+        const csv = json2csvParser.parse(response);
+        // const csv = jsonexport(response); 
+        // appReport(csv);
         const random = randomstring.generate(8);
         const name = 'customerUpdates' + random +'.txt';
         const fileName = './downloads/' + name;
