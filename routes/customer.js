@@ -44,7 +44,7 @@ router.get('/:id', async (req, res) => {
 });
 
 //'BUSCAR UN CLIENTE ESPECIFICO' GET Method
-router.get('records/:id', async (req, res) => {
+router.get('/records/:id', async (req, res) => {
     try{
         //Look up the Profiles
         //If not existing, return 404 - Not Found
