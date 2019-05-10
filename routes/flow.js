@@ -301,7 +301,13 @@ router.get('/flow/:id', async(req, res) => {
         console.log(currentLevel);
         let currentUser = 0;
         if (currentLevel < 0) currentUser = records[0].createdBy;
-        if (currentLevel >= 0) currentUser = child.levels[currentLevel].user;
+        if (currentLevel >= 0) {
+            currentUser = child.levels;
+            console.log(currentUser);
+            console.log("---");
+            currentUser = currentUser[currentLevel].user;
+            console.log(currentUser);
+        }
         let user = await Users.findById(currentUser);
         if (!user || user.length == 0) return res.status(404).send('No se encontro el usuario.'); // Error 404 
 
