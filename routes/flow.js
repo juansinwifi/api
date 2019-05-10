@@ -305,8 +305,8 @@ router.get('/flow/:id', async(req, res) => {
             currentUser = child.levels;
             let length = currentUser.length - 1;
             console.log(length);
-            if (currentLevel < length) currentUser = currentUser[0].user;
-            if (currentLevel >= length) currentUser = currentUser[currentLevel].user;
+            if (currentLevel >= length) currentUser = currentUser[0].user;
+            if (currentLevel < length) currentUser = currentUser[currentLevel].user;
 
             console.log(currentUser);
         }
