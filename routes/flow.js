@@ -303,6 +303,7 @@ router.get('/flow/:id', async(req, res) => {
         if (currentLevel < 0) currentUser = records[0].createdBy;
         if (currentLevel >= 0) {
             currentUser = child.levels;
+            console.log(currentLevel.length);
             if (currentLevel < currentLevel.length) currentUser = currentUser[0].user;
             if (currentLevel >= currentLevel.length) currentUser = currentUser[currentLevel].user;
 
