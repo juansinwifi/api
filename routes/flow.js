@@ -334,14 +334,14 @@ router.post('/search/', async(req, res) => {
         const user = req.body.user;
         const search = req.body.search;
 
-        // //Por RADICADO
-        // if (filter == 0) {
-        //     let findRecord = await Records.find({ "number": search });
-        //     if (!findRecord || findRecord.length == 0) return res.send([]); // Error 404
-
-        //     // let flow = await Flow.find({ "user": user, "status": true, "record":    });
-        //     // if (!flow) return res.status(404).send('No se encontrarón radicados'); // Error 404                
-        // }
+        //Por RADICADO
+        if (filter == 0) {
+            let findRecord = await Records.find({ "number": search });
+            if (!findRecord || findRecord.length == 0) return res.send([]); // Error 404
+            console.log(findRecord);
+            // let flow = await Flow.find({ "user": user, "status": true, "record":    });
+            // if (!flow) return res.status(404).send('No se encontrarón radicados'); // Error 404                
+        }
 
         res.send(filter + '/' + user + '/' + search);
 
