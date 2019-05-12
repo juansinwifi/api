@@ -343,7 +343,7 @@ router.post('/search/', async(req, res) => {
         //     // if (!flow) return res.status(404).send('No se encontrarón radicados'); // Error 404                
         // }
 
-        res.send('Mama miaa!!');
+        res.send(filter + '' + user + '' + search);
 
     } catch (ex) {
         console.log(ex);
