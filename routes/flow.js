@@ -34,7 +34,7 @@ const appReportUser = require('debug')('app:reportsUser');
 /**********/
 //Numero de casos de un usuario GET Method
 router.get('/records/:id', async(req, res) => {
-    const flow = await Flow.count({ "record": req.params.id });
+    const flow = await Flow.count({ "user": req.params.id, "status": true });
     if (!flow) return res.status(404).send('Flujo no encontrado'); // Error 404 
     res.send(flow);
 });
