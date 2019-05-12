@@ -40,8 +40,151 @@ router.get('/records/:id', async(req, res) => {
 });
 
 
-//'BUSCAR TODOS LOS RADICADOS DE UN USUARIO' GET Method
+//'BUSCAR top 50 de  LOS RADICADOS DE UN USUARIO' GET Method
 router.get('/:id', async(req, res) => {
+    try {
+
+        const flow = await Flow.find({ "user": req.params.id, "status": true }).limit(50);
+        if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
+
+
+        const response = [];
+        i = flow.length;
+        p = i - 1;
+        while (i > 0) {
+            let findRecord = await Records.find({ "_id": flow[p].record });
+            appFlow('#' + flow[0] + '#');
+            if (!findRecord || findRecord.length == 0) return res.send([]); // Error 404
+
+            let typification = await Typifications.findById(findRecord[0].typification);
+            if (!typification || typification.length == 0) return res.status(404).send('No se encontro una tipificación.'); // Error 404 
+
+            let child = await ChildTypifications.findById(findRecord[0].child);
+            if (!child || child.length == 0) return res.status(404).send('No se encontro una tipificación especifica.'); // Error 404 
+
+            const light = await Lights.findOne({ "name": 'CASO' });
+            if (!light) return res.status(404).send('Semaforo de casos no encontrado'); // Error 404 
+
+            const lightUser = await Lights.findOne({ "name": 'USUARIO' });
+            if (!lightUser) return res.status(404).send('Semaforo de usuario no encontrado'); // Error 404 
+
+            //Verificar el estado del semaforo del caso
+            const creation = findRecord[0].date;
+            const now = moment()
+            const then = findRecord[0].caseFinDate;
+            const result = moment(now).isBefore(then);
+
+            let caseLight = 0;
+            if (flow[p].light > 0) {
+                caseLight = 50; //Por Defecto el semaforo es amarillo
+
+
+                if (result) {
+                    // appFlow('Radicado aun con tiempo.');
+                    // appFlow('/* Creado: ' + creation );
+                    // appFlow('/* Finaliza: ' + then);
+                    // appFlow('*/ Hoy: ' + now.format('YYYY-MM-DD HH:mm') );
+                    const totalTime = await diffDate(creation, then);
+                    const currentTime = await diffDate(now, then);
+                    // appFlow('Diferencia Total'); 
+                    // appFlow(totalTime);
+                    // appFlow('Diferencia Actual');
+                    // appFlow(currentTime);
+
+                    const totalHours = (totalTime.days * 24) + totalTime.hours + (totalTime.minutes / 60);
+                    const currentHours = (currentTime.days * 24) + currentTime.hours + (currentTime.minutes / 60);
+
+                    const percent = (currentHours / totalHours) * 100;
+                    // appFlow('Porcentaje: ' + percent);
+                    if (percent <= light.red) {
+                        caseLight = 0;
+                        const update = await Flow.findOneAndUpdate({ '_id': flow[p]._id }, {
+                            light: 0
+                        }, {
+                            new: true
+                        });
+                    }
+                    if (percent >= light.green) caseLight = 100;
+                    // appFlow('Semaforo: ' + caseLight);
+                    //Falta Actualizar los tiempos en el radicado
+                }
+                if (!result) {
+                    appFlow('Radicado Vencido.');
+                    const update = await Flow.findOneAndUpdate({ '_id': flow[p]._id }, {
+                        light: 0
+                    }, {
+                        new: true
+                    });
+                }
+                if (!result) caseLight = 0;
+            }
+
+
+            //Verificar el estado del semaforo del usuario
+            appFlow('##' + flow[p] + '##');
+
+            const creationUser = findRecord[0].date;
+            const nowUser = moment()
+            const thenUser = flow[p].finDate;
+
+            let userLight = 50; //Por Defecto el semaforo es amarillo
+
+            const resultUser = moment(nowUser).isBefore(thenUser);
+            if (result) {
+                appFlowUser('Usuario aun con tiempo.');
+                appFlowUser('/* Creado: ' + creationUser);
+                appFlowUser('/* Finaliza: ' + thenUser);
+                appFlowUser('*/ Hoy: ' + nowUser.format('YYYY-MM-DD HH:mm'));
+                const totalTimeUser = await diffDate(creationUser, thenUser);
+                const currentTimeUser = await diffDate(nowUser, thenUser);
+                appFlowUser('Diferencia Total');
+                appFlowUser(totalTimeUser);
+                appFlowUser('Diferencia Actual');
+                appFlowUser(currentTimeUser);
+
+                const totalHoursUser = (totalTimeUser.days * 24) + totalTimeUser.hours + (totalTimeUser.minutes / 60);
+                const currentHoursUser = (currentTimeUser.days * 24) + currentTimeUser.hours + (currentTimeUser.minutes / 60);
+
+                const percentUser = (currentHoursUser / totalHoursUser) * 100;
+                appFlowUser('Porcentaje: ' + percentUser);
+                if (percentUser <= lightUser.red) userLight = 0;
+                if (percentUser >= lightUser.green) userLight = 100;
+                appFlowUser('Semaforo: ' + userLight);
+                //Falta Actualizar los tiempos en el radicado
+            }
+            if (!resultUser) appFlowUser('Radicado Vencido.')
+            if (!resultUser) userLight = 0;
+
+            const caseType = flow[p].case;
+
+            const record = {
+                _id: findRecord[0]._id,
+                number: findRecord[0].number,
+                customer: findRecord[0].customer,
+                ref: findRecord[0].ref,
+                userLight: userLight,
+                caseLight: caseLight,
+                typification: typification.name,
+                child: child.name,
+                date: findRecord[0].date,
+                userFinDate: thenUser,
+                case: caseType
+            };
+
+            response.push(record);
+            i = i - 1;
+            p = p - 1;
+        }
+
+        res.send(response);
+    } catch (ex) {
+        console.log(ex);
+        res.status(500).send({ 'Error': 'Algo salio mal :(' });
+    }
+});
+
+//'BUSCAR TODOS LOS RADICADOS DE UN USUARIO' GET Method
+router.get('/all/:id', async(req, res) => {
     try {
 
         const flow = await Flow.find({ "user": req.params.id, "status": true });
