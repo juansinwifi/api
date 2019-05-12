@@ -332,7 +332,7 @@ router.post('/search/', async(req, res) => {
     try {
         const filter = req.body.filter;
         const user = req.body.user;
-        const search = req.body.user;
+        const search = req.body.search;
 
         // //Por RADICADO
         // if (filter == 0) {
@@ -343,7 +343,7 @@ router.post('/search/', async(req, res) => {
         //     // if (!flow) return res.status(404).send('No se encontrarón radicados'); // Error 404                
         // }
 
-        res.send(filter + '' + user + '' + search);
+        res.send(filter + '/' + user + '/' + search);
 
     } catch (ex) {
         console.log(ex);
