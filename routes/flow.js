@@ -44,7 +44,7 @@ router.get('/records/:id', async(req, res) => {
 router.get('/:id', async(req, res) => {
     try {
 
-        const flow = await Flow.find({ "user": req.params.id, "status": true }).sort({ timestamp: 1 }).limit(30);
+        const flow = await Flow.find({ "user": req.params.id, "status": true }).limit(30);
         if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
 
 
@@ -320,6 +320,31 @@ router.get('/all/:id', async(req, res) => {
         }
 
         res.send(response);
+    } catch (ex) {
+        console.log(ex);
+        res.status(500).send({ 'Error': 'Algo salio mal :(' });
+    }
+});
+
+//'Busca de acuerdo a filtros' POST method
+router.post('/search/', async(req, res) => {
+
+    try {
+        const filter = req.body.filter;
+        const user = req.body.user;
+        const search = req.body.user;
+
+        //Por RADICADO
+        if (filter == 0) {
+            let findRecord = await Records.find({ "number": search });
+            if (!findRecord || findRecord.length == 0) return res.send([]); // Error 404
+
+            // let flow = await Flow.find({ "user": user, "status": true, "record":    });
+            // if (!flow) return res.status(404).send('No se encontrarón radicados'); // Error 404                
+        }
+
+        res.send('Mama miaa!!');
+
     } catch (ex) {
         console.log(ex);
         res.status(500).send({ 'Error': 'Algo salio mal :(' });
