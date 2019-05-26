@@ -86,6 +86,15 @@ const recordSchema = new mongoose.Schema({
     createdBy:{
         type: String,
         required: true
+    },
+    pastdueAge:{
+        type: String
+    },
+    totalPay:{
+        type: String
+    },
+    minPay:{
+        type: String
     }
 
 });
@@ -107,7 +116,10 @@ function validateRecords(requiement) {
         observations: Joi.string(),
         trackingDate: Joi.date(),
         status: Joi.boolean(),
-        user: Joi.string().min(24).required()
+        user: Joi.string().min(24).required(),
+        pastdueAge: Joi.string(),
+        totalPay: Joi.string(),
+        minPay:  Joi.string(),
     };
 
     return Joi.validate(requiement, schema);

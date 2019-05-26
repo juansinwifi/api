@@ -64,7 +64,10 @@ async function createRecord ( req ) {
     "caseLight",
     "area",
     "levels",
-    "createdBy"
+    "createdBy",
+    "pastdueAge",
+    "totalPay",
+    "minPay"
     ]));
 
     record = await record.save();

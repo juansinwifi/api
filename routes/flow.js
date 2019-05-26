@@ -1,7 +1,7 @@
 const auth = require('../middleware/auth');
 const { backFlow, nextFlow, changeFlow, closeFlow, assingFlow, diffDate } = require('../middleware/flow');
 const { Records } = require('../models/record');
-const { Flow, validateFlow } = require('../models/flow');
+const { Flow, validateFlow, validateSearch } = require('../models/flow');
 const { Typifications } = require('../models/typification');
 const { ChildTypifications } = require('../models/childtypification');
 const { Channels } = require('../models/channels');
@@ -10,9 +10,10 @@ const { Customer } = require('../models/customer');
 const { Lights } = require('../models/lights');
 const { Users } = require('../models/user');
 const { Areas } = require('../models/areas');
-const appFlow = require('debug')('app:flow');
+const appFlow = require('debug')('app:Flow');
 const appFlowUser = require('debug')('app:flowUser');
-const appHistory = require('debug')('app:History');
+const appInbox = require('debug')('app:Inbox');
+const appSearch = require('debug')('app:Search');
 const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
@@ -34,7 +35,7 @@ const appReportUser = require('debug')('app:reportsUser');
 /**********/
 //Numero de casos de un usuario GET Method
 router.get('/records/:id', async(req, res) => {
-    const flow = await Flow.count({ "user": req.params.id, "status": true });
+    const flow = await Flow.countDocuments({ "user": req.params.id, "status": true });
     if (!flow) return res.status(404).send('Flujo no encontrado'); // Error 404 
     res.send(flow + '');
 });
@@ -45,40 +46,41 @@ router.get('/:id', async(req, res) => {
     try {
 
         const flow = await Flow.find({ "user": req.params.id, "status": true }).limit(30);
+       
         if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
-
+        
 
         const response = [];
-        i = flow.length;
-        p = i - 1;
-        while (i > 0) {
-            let findRecord = await Records.find({ "_id": flow[p].record });
-            appFlow('#' + flow[0] + '#');
+        let i = 0;
+       
+        while (flow[i]) {
+            
+            let findRecord = await Records.findById(flow[i].record);
             if (!findRecord || findRecord.length == 0) return res.send([]); // Error 404
-
-            let typification = await Typifications.findById(findRecord[0].typification);
+           
+            let typification = await Typifications.findById(findRecord.typification);
             if (!typification || typification.length == 0) return res.status(404).send('No se encontro una tipificación.'); // Error 404 
-
-            let child = await ChildTypifications.findById(findRecord[0].child);
+          
+            let child = await ChildTypifications.findById(findRecord.child);
             if (!child || child.length == 0) return res.status(404).send('No se encontro una tipificación especifica.'); // Error 404 
-
+        
             const light = await Lights.findOne({ "name": 'CASO' });
             if (!light) return res.status(404).send('Semaforo de casos no encontrado'); // Error 404 
-
+           
             const lightUser = await Lights.findOne({ "name": 'USUARIO' });
             if (!lightUser) return res.status(404).send('Semaforo de usuario no encontrado'); // Error 404 
-
+            
             //Verificar el estado del semaforo del caso
-            const creation = findRecord[0].date;
+            const creation = findRecord.date;
             const now = moment()
-            const then = findRecord[0].caseFinDate;
+            const then = findRecord.caseFinDate;
             const result = moment(now).isBefore(then);
 
             let caseLight = 0;
-            if (flow[p].light > 0) {
+            
+            if (flow[i].light > 0) {
+
                 caseLight = 50; //Por Defecto el semaforo es amarillo
-
-
                 if (result) {
                     // appFlow('Radicado aun con tiempo.');
                     // appFlow('/* Creado: ' + creation );
@@ -98,7 +100,7 @@ router.get('/:id', async(req, res) => {
                     // appFlow('Porcentaje: ' + percent);
                     if (percent <= light.red) {
                         caseLight = 0;
-                        const update = await Flow.findOneAndUpdate({ '_id': flow[p]._id }, {
+                        const update = await Flow.findOneAndUpdate({ '_id': flow[i]._id }, {
                             light: 0
                         }, {
                             new: true
@@ -109,71 +111,69 @@ router.get('/:id', async(req, res) => {
                     //Falta Actualizar los tiempos en el radicado
                 }
                 if (!result) {
-                    appFlow('Radicado Vencido.');
-                    const update = await Flow.findOneAndUpdate({ '_id': flow[p]._id }, {
+                    caseLight = 0;
+                    const update = await Flow.findOneAndUpdate({ '_id': flow[i]._id }, {
                         light: 0
                     }, {
                         new: true
                     });
                 }
-                if (!result) caseLight = 0;
             }
 
 
             //Verificar el estado del semaforo del usuario
-            appFlow('##' + flow[p] + '##');
+           
 
-            const creationUser = findRecord[0].date;
+            const creationUser = findRecord.date;
             const nowUser = moment()
-            const thenUser = flow[p].finDate;
+            const thenUser = flow[i].finDate;
 
             let userLight = 50; //Por Defecto el semaforo es amarillo
 
             const resultUser = moment(nowUser).isBefore(thenUser);
             if (result) {
-                appFlowUser('Usuario aun con tiempo.');
-                appFlowUser('/* Creado: ' + creationUser);
-                appFlowUser('/* Finaliza: ' + thenUser);
-                appFlowUser('*/ Hoy: ' + nowUser.format('YYYY-MM-DD HH:mm'));
+                // appFlowUser('Usuario aun con tiempo.');
+                // appFlowUser('/* Creado: ' + creationUser);
+                // appFlowUser('/* Finaliza: ' + thenUser);
+                // appFlowUser('*/ Hoy: ' + nowUser.format('YYYY-MM-DD HH:mm'));
                 const totalTimeUser = await diffDate(creationUser, thenUser);
                 const currentTimeUser = await diffDate(nowUser, thenUser);
-                appFlowUser('Diferencia Total');
-                appFlowUser(totalTimeUser);
-                appFlowUser('Diferencia Actual');
-                appFlowUser(currentTimeUser);
+                // appFlowUser('Diferencia Total');
+                // appFlowUser(totalTimeUser);
+                // appFlowUser('Diferencia Actual');
+                // appFlowUser(currentTimeUser);
 
                 const totalHoursUser = (totalTimeUser.days * 24) + totalTimeUser.hours + (totalTimeUser.minutes / 60);
                 const currentHoursUser = (currentTimeUser.days * 24) + currentTimeUser.hours + (currentTimeUser.minutes / 60);
 
                 const percentUser = (currentHoursUser / totalHoursUser) * 100;
-                appFlowUser('Porcentaje: ' + percentUser);
+                // appFlowUser('Porcentaje: ' + percentUser);
                 if (percentUser <= lightUser.red) userLight = 0;
                 if (percentUser >= lightUser.green) userLight = 100;
-                appFlowUser('Semaforo: ' + userLight);
+                // appFlowUser('Semaforo: ' + userLight);
                 //Falta Actualizar los tiempos en el radicado
             }
-            if (!resultUser) appFlowUser('Radicado Vencido.')
+            // if (!resultUser) appFlowUser('Radicado Vencido.')
             if (!resultUser) userLight = 0;
 
-            const caseType = flow[p].case;
+            const caseType = flow[i].case;
 
             const record = {
-                _id: findRecord[0]._id,
-                number: findRecord[0].number,
-                customer: findRecord[0].customer,
-                ref: findRecord[0].ref,
+                _id: findRecord._id,
+                number: findRecord.number,
+                customer: findRecord.customer,
+                ref: findRecord.ref,
                 userLight: userLight,
                 caseLight: caseLight,
                 typification: typification.name,
                 child: child.name,
-                date: findRecord[0].date,
+                date: findRecord.date,
                 userFinDate: thenUser,
                 case: caseType
             };
-
+            appInbox(response.length)
             response.push(record);
-            i = i - 1;
-            p = p - 1;
+            i++;
         }
 
         res.send(response);
@@ -189,14 +189,185 @@ router.get('/all/:id', async(req, res) => {
 
         const flow = await Flow.find({ "user": req.params.id, "status": true });
         if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
-
+        
 
         const response = [];
+        let i = 0;
+       
+        while (flow[i]) {
+            
+            let findRecord = await Records.findById(flow[i].record);
+            if (!findRecord || findRecord.length == 0) return res.send([]); // Error 404
+           
+            let typification = await Typifications.findById(findRecord.typification);
+            if (!typification || typification.length == 0) return res.status(404).send('No se encontro una tipificación.'); // Error 404 
+          
+            let child = await ChildTypifications.findById(findRecord.child);
+            if (!child || child.length == 0) return res.status(404).send('No se encontro una tipificación especifica.'); // Error 404 
+        
+            const light = await Lights.findOne({ "name": 'CASO' });
+            if (!light) return res.status(404).send('Semaforo de casos no encontrado'); // Error 404 
+           
+            const lightUser = await Lights.findOne({ "name": 'USUARIO' });
+            if (!lightUser) return res.status(404).send('Semaforo de usuario no encontrado'); // Error 404 
+            
+            //Verificar el estado del semaforo del caso
+            const creation = findRecord.date;
+            const now = moment()
+            const then = findRecord.caseFinDate;
+            const result = moment(now).isBefore(then);
+
+            let caseLight = 0;
+            
+            if (flow[i].light > 0) {
+
+                caseLight = 50; //Por Defecto el semaforo es amarillo
+                if (result) {
+                    // appFlow('Radicado aun con tiempo.');
+                    // appFlow('/* Creado: ' + creation );
+                    // appFlow('/* Finaliza: ' + then);
+                    // appFlow('*/ Hoy: ' + now.format('YYYY-MM-DD HH:mm') );
+                    const totalTime = await diffDate(creation, then);
+                    const currentTime = await diffDate(now, then);
+                    // appFlow('Diferencia Total'); 
+                    // appFlow(totalTime);
+                    // appFlow('Diferencia Actual');
+                    // appFlow(currentTime);
+
+                    const totalHours = (totalTime.days * 24) + totalTime.hours + (totalTime.minutes / 60);
+                    const currentHours = (currentTime.days * 24) + currentTime.hours + (currentTime.minutes / 60);
+
+                    const percent = (currentHours / totalHours) * 100;
+                    // appFlow('Porcentaje: ' + percent);
+                    if (percent <= light.red) {
+                        caseLight = 0;
+                        const update = await Flow.findOneAndUpdate({ '_id': flow[i]._id }, {
+                            light: 0
+                        }, {
+                            new: true
+                        });
+                    }
+                    if (percent >= light.green) caseLight = 100;
+                    // appFlow('Semaforo: ' + caseLight);
+                    //Falta Actualizar los tiempos en el radicado
+                }
+                if (!result) {
+                    caseLight = 0;
+                    const update = await Flow.findOneAndUpdate({ '_id': flow[i]._id }, {
+                        light: 0
+                    }, {
+                        new: true
+                    });
+                }
+            }
+
+
+            //Verificar el estado del semaforo del usuario
+           
+
+            const creationUser = findRecord.date;
+            const nowUser = moment()
+            const thenUser = flow[i].finDate;
+
+            let userLight = 50; //Por Defecto el semaforo es amarillo
+
+            const resultUser = moment(nowUser).isBefore(thenUser);
+            if (result) {
+                // appFlowUser('Usuario aun con tiempo.');
+                // appFlowUser('/* Creado: ' + creationUser);
+                // appFlowUser('/* Finaliza: ' + thenUser);
+                // appFlowUser('*/ Hoy: ' + nowUser.format('YYYY-MM-DD HH:mm'));
+                const totalTimeUser = await diffDate(creationUser, thenUser);
+                const currentTimeUser = await diffDate(nowUser, thenUser);
+                // appFlowUser('Diferencia Total');
+                // appFlowUser(totalTimeUser);
+                // appFlowUser('Diferencia Actual');
+                // appFlowUser(currentTimeUser);
+
+                const totalHoursUser = (totalTimeUser.days * 24) + totalTimeUser.hours + (totalTimeUser.minutes / 60);
+                const currentHoursUser = (currentTimeUser.days * 24) + currentTimeUser.hours + (currentTimeUser.minutes / 60);
+
+                const percentUser = (currentHoursUser / totalHoursUser) * 100;
+                // appFlowUser('Porcentaje: ' + percentUser);
+                if (percentUser <= lightUser.red) userLight = 0;
+                if (percentUser >= lightUser.green) userLight = 100;
+                // appFlowUser('Semaforo: ' + userLight);
+                //Falta Actualizar los tiempos en el radicado
+            }
+            // if (!resultUser) appFlowUser('Radicado Vencido.')
+            if (!resultUser) userLight = 0;
+
+            const caseType = flow[i].case;
+            
+
+            const record = {
+                _id: findRecord._id,
+                number: findRecord.number,
+                customer: findRecord.customer,
+                ref: findRecord.ref,
+                userLight: userLight,
+                caseLight: caseLight,
+                typification: typification.name,
+                child: child.name,
+                date: findRecord.date,
+                userFinDate: thenUser,
+                case: caseType
+            };
+            appInbox(response.length)
+            response.push(record);
+            i++;
+        }
+
+        res.send(response);
+    } catch (ex) {
+        console.log(ex);
+        res.status(500).send({ 'Error': 'Algo salio mal :(' });
+    }
+});
+
+//'Busca de acuerdo a filtros' POST method
+router.post('/search/', async(req, res) => {
+
+    try {
+        const { error } = validateFlow(req.body);
+        const filter = req.body.filter;
+        const user = req.body.user;
+        const search = req.body.search;
+        let flow = null;
+        let findRecord = null;
+        appSearch(filter + '/'+ user + '/' + search)
+        //Por RADICADO
+        if (filter == 0) {
+            findRecord = await Records.find({ "number": search });
+            if (!findRecord || findRecord.length == 0) return res.send([]); // Error 404
+            appSearch(findRecord);
+            flow = await Flow.find({ "user": user, "status": true, "record": findRecord[0]._id });
+            if (!flow) return res.status(404).send('No se encontrarón radicados'); // Error 404       
+            appSearch(flow);         
+        }
+        //Por CLiente
+        if (filter == 1) {
+            findRecord = await Records.find({ "customer": search });
+            if (!findRecord || findRecord.length == 0) return res.send([]); // Error 404
+            let tq = 0;
+            let myFlows = []
+            while(findRecord[tq]){
+            //appSearch(findRecord[tq]._id); 
+            flows = await Flow.find({ "user": user, "status": true, "record": findRecord[tq]._id });
+            if(flows.length != 0) myFlows.push(flows[0])
+            tq++;
+            }      
+            flow = myFlows;    
+        }
+        appSearch(flow)
+        const response = [];
         i = flow.length;
+        appSearch('Tamaño:'+ i)
         p = i - 1;
+        p = parseInt(p, 10);
         while (i > 0) {
             let findRecord = await Records.find({ "_id": flow[p].record });
-            appFlow('#' + flow[0] + '#');
+            
             if (!findRecord || findRecord.length == 0) return res.send([]); // Error 404
 
             let typification = await Typifications.findById(findRecord[0].typification);
@@ -216,7 +387,7 @@ router.get('/all/:id', async(req, res) => {
             const now = moment()
             const then = findRecord[0].caseFinDate;
             const result = moment(now).isBefore(then);
-
+            appSearch(flow[0]);
             let caseLight = 0;
             if (flow[p].light > 0) {
                 caseLight = 50; //Por Defecto el semaforo es amarillo
@@ -320,36 +491,53 @@ router.get('/all/:id', async(req, res) => {
         }
 
         res.send(response);
+
     } catch (ex) {
         console.log(ex);
         res.status(500).send({ 'Error': 'Algo salio mal :(' });
     }
 });
 
-//'Busca de acuerdo a filtros' POST method
-router.post('/search/', async(req, res) => {
-
+//'Busca los creditos de un cliente por numero de cedula'
+router.get('/credits/:id', async(req, res) => {
     try {
-        const filter = req.body.filter;
-        const user = req.body.user;
-        const search = req.body.search;
-
-        //Por RADICADO
-        if (filter == 0) {
-            let findRecord = await Records.find({ "number": search });
-            if (!findRecord || findRecord.length == 0) return res.send([]); // Error 404
-            console.log(findRecord);
-            // let flow = await Flow.find({ "user": user, "status": true, "record":    });
-            // if (!flow) return res.status(404).send('No se encontrarón radicados'); // Error 404                
+        const records = await Records.find({ "customer": req.params.id});
+        if (!records.length) return res.send([]); // Devuelvo vacio
+        
+        let i = 0;
+        const credits = [];
+        while(records[i]){
+                let credit = records[i].ref;
+                let found = credits.find(element => element == credit);
+                if (credit != found) credits.push(credit);
+            i++;
         }
 
-        res.send(filter + '/' + user + '/' + search);
+        res.send(credits);
 
     } catch (ex) {
         console.log(ex);
         res.status(500).send({ 'Error': 'Algo salio mal :(' });
     }
 });
+
+//Busca el nombre del cliente
+router.get('/customer/:id', async(req, res) => {
+    try {
+        const records = await Records.find({ "customer": req.params.id});
+        if (!records.length) return res.send([]); // Error 404 
+        
+        let customerName = { name: "Sin nombre"};
+        if (records[0].customerName) customerName  = {name : records[0].customerName};
+
+        res.send(customerName);
+
+    } catch (ex) {
+        console.log(ex);
+        res.status(500).send({ 'Error': 'Algo salio mal :(' });
+    }
+});
+
 
 //'BUSCAR TODOS LOS RADICADOS DE UN USUARIO' GET Method
 router.get('/close/:id', async(req, res) => {
@@ -557,102 +745,138 @@ router.post('/report/:id', async(req, res) => {
 
         const flow = await Flow.find({ "user": req.params.id, "status": true });
         if (!flow) return res.status(404).send('Inbox no encontrado'); // Error 404 
-
+        
 
         const response = [];
-        i = flow.length;
-        p = i - 1;
-        while (i > 0) {
-            const findRecord = await Records.find({ "_id": flow[p].record });
-
+        let i = 0;
+       
+        while (flow[i]) {
+            
+            let findRecord = await Records.findById(flow[i].record);
             if (!findRecord || findRecord.length == 0) return res.send([]); // Error 404
-
-            let typification = await Typifications.findById(findRecord[0].typification);
+           
+            let typification = await Typifications.findById(findRecord.typification);
             if (!typification || typification.length == 0) return res.status(404).send('No se encontro una tipificación.'); // Error 404 
-
-            let child = await ChildTypifications.findById(findRecord[0].child);
+          
+            let child = await ChildTypifications.findById(findRecord.child);
             if (!child || child.length == 0) return res.status(404).send('No se encontro una tipificación especifica.'); // Error 404 
-
+        
             const light = await Lights.findOne({ "name": 'CASO' });
             if (!light) return res.status(404).send('Semaforo de casos no encontrado'); // Error 404 
-
+           
             const lightUser = await Lights.findOne({ "name": 'USUARIO' });
             if (!lightUser) return res.status(404).send('Semaforo de usuario no encontrado'); // Error 404 
-
+            
             //Verificar el estado del semaforo del caso
-            const creation = findRecord[0].date;
+            const creation = findRecord.date;
             const now = moment()
-            const then = findRecord[0].caseFinDate;
-            let caseLight = 50; //Por Defecto el semaforo es amarillo
-
+            const then = findRecord.caseFinDate;
             const result = moment(now).isBefore(then);
 
+            let caseLight = 0;
+            
+            if (flow[i].light > 0) {
 
-            if (result) {
+                caseLight = 50; //Por Defecto el semaforo es amarillo
+                if (result) {
+                    // appFlow('Radicado aun con tiempo.');
+                    // appFlow('/* Creado: ' + creation );
+                    // appFlow('/* Finaliza: ' + then);
+                    // appFlow('*/ Hoy: ' + now.format('YYYY-MM-DD HH:mm') );
+                    const totalTime = await diffDate(creation, then);
+                    const currentTime = await diffDate(now, then);
+                    // appFlow('Diferencia Total'); 
+                    // appFlow(totalTime);
+                    // appFlow('Diferencia Actual');
+                    // appFlow(currentTime);
 
-                const totalTime = await diffDate(creation, then);
-                const currentTime = await diffDate(now, then);
+                    const totalHours = (totalTime.days * 24) + totalTime.hours + (totalTime.minutes / 60);
+                    const currentHours = (currentTime.days * 24) + currentTime.hours + (currentTime.minutes / 60);
 
-
-                const totalHours = (totalTime.days * 24) + totalTime.hours + (totalTime.minutes / 60);
-                const currentHours = (currentTime.days * 24) + currentTime.hours + (currentTime.minutes / 60);
-
-                const percent = (currentHours / totalHours) * 100;
-
-                if (percent <= light.red) caseLight = 0;
-                if (percent >= light.green) caseLight = 100;
-
-                //Falta Actualizar los tiempos en el radicado
+                    const percent = (currentHours / totalHours) * 100;
+                    // appFlow('Porcentaje: ' + percent);
+                    if (percent <= light.red) {
+                        caseLight = 0;
+                        const update = await Flow.findOneAndUpdate({ '_id': flow[i]._id }, {
+                            light: 0
+                        }, {
+                            new: true
+                        });
+                    }
+                    if (percent >= light.green) caseLight = 100;
+                    // appFlow('Semaforo: ' + caseLight);
+                    //Falta Actualizar los tiempos en el radicado
+                }
+                if (!result) {
+                    caseLight = 0;
+                    const update = await Flow.findOneAndUpdate({ '_id': flow[i]._id }, {
+                        light: 0
+                    }, {
+                        new: true
+                    });
+                }
             }
 
-            if (!result) caseLight = 0;
 
             //Verificar el estado del semaforo del usuario
+           
 
-            const creationUser = findRecord[0].date;
+            const creationUser = findRecord.date;
             const nowUser = moment()
-            const thenUser = flow[p].finDate;
+            const thenUser = flow[i].finDate;
 
             let userLight = 50; //Por Defecto el semaforo es amarillo
 
             const resultUser = moment(nowUser).isBefore(thenUser);
             if (result) {
-
+                // appFlowUser('Usuario aun con tiempo.');
+                // appFlowUser('/* Creado: ' + creationUser);
+                // appFlowUser('/* Finaliza: ' + thenUser);
+                // appFlowUser('*/ Hoy: ' + nowUser.format('YYYY-MM-DD HH:mm'));
                 const totalTimeUser = await diffDate(creationUser, thenUser);
                 const currentTimeUser = await diffDate(nowUser, thenUser);
-
+                // appFlowUser('Diferencia Total');
+                // appFlowUser(totalTimeUser);
+                // appFlowUser('Diferencia Actual');
+                // appFlowUser(currentTimeUser);
 
                 const totalHoursUser = (totalTimeUser.days * 24) + totalTimeUser.hours + (totalTimeUser.minutes / 60);
                 const currentHoursUser = (currentTimeUser.days * 24) + currentTimeUser.hours + (currentTimeUser.minutes / 60);
 
                 const percentUser = (currentHoursUser / totalHoursUser) * 100;
-
+                // appFlowUser('Porcentaje: ' + percentUser);
                 if (percentUser <= lightUser.red) userLight = 0;
                 if (percentUser >= lightUser.green) userLight = 100;
-
+                // appFlowUser('Semaforo: ' + userLight);
                 //Falta Actualizar los tiempos en el radicado
             }
-
+            // if (!resultUser) appFlowUser('Radicado Vencido.')
             if (!resultUser) userLight = 0;
 
-            const caseType = flow[p].case;
+            
+            let caseType = flow[i].case;
+            if (flow[i].case == 1) caseType = 'Rechazar - Devolver';
+            if (flow[i].case == 2) caseType = 'Finalizar -Avanzar';
+            if (flow[i].case == 3) caseType = 'En Gestion';
+            if (flow[i].case == 4) caseType = 'Cerrar Caso';
+            if (flow[i].case == 5) caseType = 'Abierto';
+            if (flow[i].case == 6) caseType = 'Reasignar Caso';
 
             const record = {
-                RADICADO: findRecord[0].number,
-                CLIENTE: findRecord[0].customer,
-                CREDITO: findRecord[0].ref,
+                RADICADO: findRecord.number,
+                CLIENTE: findRecord.customer,
+                CREDITO: findRecord.ref,
                 SEMAFORO_CASO: caseLight,
                 SEMAFORO_USUARIO: userLight,
                 TIPIFICACION: typification.name,
                 TIPIFICACION_ESPECIFICA: child.name,
-                FECHA: findRecord[0].date,
+                FECHA: findRecord.date,
                 VENCIMINETO: thenUser,
                 GESTION: caseType
             };
-
+            appInbox(response.length)
             response.push(record);
-            i = i - 1;
-            p = p - 1;
+            i++;
         }
 
         if (!response.length) return res.status(404).send({ 'ERROR': 'No se encuentran Radicados para esta fecha.' }); // Error 404 

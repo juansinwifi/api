@@ -97,6 +97,7 @@ router.post('/',  async (req, res) => {
     if (!dropCustomers) return res.status(404).send({'ERROR': 'No se pudo borrar la base de datos.'}); // Error 404
     
     let i = 0;
+    appCsv(jsonArray[i]);
     while(jsonArray[i]){
 
         let customer = jsonArray[i];
@@ -120,42 +121,66 @@ router.post('/',  async (req, res) => {
 });
 
 
+//Buscar Cliente en el Historico
+router.get('/history/:id', async (req, res) => {
+    try{
+        //Look up the Profiles
+        //If not existing, return 404 - Not Found
+        const customers = await CustomersUpdates.findOne({"customer": req.params.id});
+        if (!customers) return res.send([]); // Error 404 
+        res.send(customers);
+    }
+    catch(ex){
+        console.log(ex);
+        res.status(500).send({ 'Error': 'Algo salio mal :('});
+    }
+});
+
 //Actualizar Clientes
 router.put('/:id',  async (req, res) => {
 
     //Validate Data
     //If invalid, return 404 - Bad Request
-    const { error } = validateInformation(req.body);
-    //if (error) return res.status(400).send(error.details[0].message);
-    if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
-
+    // const { error } = validateInformation(req.body);
+    // //if (error) return res.status(400).send(error.details[0].message);
+    // if (error) return res.status(400).send('ERROR: ' + error.details[0].message + '. PATH: ' + error.details[0].path);
+   let customer = [];
    const date = moment().format('YYYY-MM-DD HH:mm');
 
    const currentUser = await Users.findOne({"_id": req.body.user});
    if (!currentUser) return res.status(404).send('Usuario no encontrado'); // Error 404 
 
-   const customer = await Customer.updateMany({'id': req.params.id}, {
-        phone1: req.body.phone1,
-        phone2: req.body.phone2,
-        email: req.body.email
-    },{
-        new: true
-    });
+   //Si el cliente ya existe, actualizo el historico
+   const customersHistory = await CustomersUpdates.findOne({"customer": req.params.id});
+   if(customersHistory){
+       console.log(req.body.name);
+        customer = await CustomersUpdates.findByIdAndUpdate(customersHistory._id, {
+            user: currentUser.name,
+            phone1: req.body.phone1,
+            phone2: req.body.phone2,
+            email: req.body.email,
+            name: req.body.name,
+            date: date
+        },{
+            new: true
+        });
+   }
 
-     //If not existing, return 404 - Not Found
-     if (!customer) return res.status(404).send('Cliente no encontrado'); // Error 404 
-
-    let customerUpdate = new CustomersUpdates({
-        customer: req.params.id,
-        user: currentUser.name,
-        phone1: req.body.phone1,
-        phone2: req.body.phone2,
-        email: req.body.email,
-        date: date
-    });
-   
-    customerUpdate = await customerUpdate.save();
-   
+   //Si el cliente no existe, lo creo nuevo
+   else{
+    console.log(req.body.name);
+        customer = new CustomersUpdates({
+            customer: req.params.id,
+            user: currentUser.name,
+            phone1: req.body.phone1,
+            phone2: req.body.phone2,
+            email: req.body.email,
+            name: req.body.name,
+            date: date
+        });
+    
+        customer = await customer.save();
+    }
     //Return the updated course
     res.send(customer);
     

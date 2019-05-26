@@ -61,5 +61,19 @@ function validateFlow(requiement) {
     return Joi.validate(requiement, schema);
 }
 
+//Funcion de Validación de Campos del Radicado
+function validateSearch(requiement) {
+
+    const schema = {
+        user: Joi.number().required(),
+        filter: Joi.number().required(),
+        search: Joi.string().required()
+       
+    };
+
+    return Joi.validate(requiement, schema);
+}
+
 module.exports.Flow = Flow;
 module.exports.validateFlow = validateFlow;
+module.exports.validateSearch = validateSearch;

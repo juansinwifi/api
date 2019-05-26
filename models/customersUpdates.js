@@ -6,6 +6,9 @@ const customersUpdatesSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    name:{
+        type: String
+    },
     user:{
         type: String,
         required: true

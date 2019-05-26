@@ -7,6 +7,7 @@ const { ChildTypifications } = require('../models/childtypification');
 const { Channels } = require('../models/channels');
 const { Contacts } = require('../models/contacts');
 const { Customer } = require('../models/customer');
+const {CustomersUpdates} = require('../models/customersUpdates');
 const {Lights} = require('../models/lights');
 const {Users} = require('../models/user');
 const {Areas} = require('../models/areas');
@@ -26,28 +27,28 @@ const moment = require('moment');
 
 
 //Actualizar Clientes
-router.put('/',  async (req, res) => {
+router.get('/',  async (req, res) => {
 
-    const flow = await Flow.find({file: null});
-    
-    let i = 0;
-    while(flow[i]){
-        const fix = await Flow.findByIdAndUpdate(flow[i]._id, {
-                file: " "
-            },{
-                new: true
-            });
-        i++;
+    try {
+        const customer = await CustomersUpdates.find({ "customer": req.params.id});
+        if (!customer.length) return res.send([]); // Devuelvo vacio
+        
+        let i = 0;
+        const credits = [];
+        while(records[i]){
+                let credit = records[i].ref;
+                let found = credits.find(element => element == credit);
+                if (credit != found) credits.push(credit);
+            i++;
+        }
+
+        res.send(credits);
+
+    } catch (ex) {
+        console.log(ex);
+        res.status(500).send({ 'Error': 'Algo salio mal :(' });
     }
-    
-
-    // const fix = await Flow.findByIdAndUpdate(req.params.id, {
-    //     date: req.body.date
-    // },{
-    //     new: true
-    // });
-
-    res.send('Mama Miaa!!');
+        res.send('Mama Mia!!!');
     
 });
 

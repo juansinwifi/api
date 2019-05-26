@@ -1,0 +1,8 @@
+#Todo el folder de Dowloads
+downloads/
+
+#Backup de Base de datos
+dump/
+
+#Adjuntos
+uploads/records/

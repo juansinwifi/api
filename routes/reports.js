@@ -25,6 +25,8 @@ const { Typifications } = require('../models/typification');
 const { ChildTypifications } = require('../models/childtypification');
 const { Lights } = require('../models/lights');
 const { Users } = require('../models/user');
+const { Channels } = require('../models/channels');
+const { Contacts } = require('../models/contacts');
 
 /*************/
 /* REPORTES */
@@ -52,7 +54,9 @@ router.post('/records/opens/', async(req, res) => {
         }
         let tequila = 0;
         while (dates[tequila]) {
-            const records = await Records.find({ "date": new RegExp(dates[tequila]), "status": false });
+            //const records = await Records.find({ "date": new RegExp(dates[tequila]), "status": false });
+            //Todos los casos abiertos
+            const records = await Records.find({ "status": false });
             if (!records) return res.status(404).send({ 'ERROR': 'No se encuentran Radicados para esta fecha.' }); // Error 404 
 
             if (records) {
@@ -76,6 +80,12 @@ router.post('/records/opens/', async(req, res) => {
 
                         const lightUser = await Lights.findOne({ "name": 'USUARIO' });
                         if (!lightUser) return res.status(404).send('Semaforo de usuario no encontrado'); // Error 404 
+
+                        const channel =  await Channels.findById(records[i].channel);
+                        if (!channel) return res.status(404).send('Canal de comunciaciones no encontrado'); // Error 404 
+
+                        const contact =  await Contacts.findById(records[i].contact);
+                        if (!contact) return res.status(404).send('Tipo de contacto no encontrado'); // Error 404 
 
                         //Buscamos el Usuario
                         const user = flow[0].user;
@@ -202,10 +212,23 @@ router.post('/records/opens/', async(req, res) => {
 
                         }
 
+                        //Nombre del cliente
+                        let customerName = records[i].customerName;
+                        if(!records[i].customerName) customerName = " ";
+
+                        //Información de Creditos
+                        let pastdueAge = records[i].pastdueAge;
+                        let minPay = records[i].minPay;
+                        let totalPay = records[i].totalPay;
+                        if(!records[i].pastdueAge) pastdueAge = " ";
+                        if(!records[i].minPay) minPay = " ";
+                        if(!records[i].totalPay) totalPay = " ";
+
                         let opens = new Opens({
                             RADICADO: records[i].number,
                             CLIENTE: records[i].customer,
                             CREDITO: records[i].ref,
+                            NOMBRE:  customerName,
                             CREADO: records[i].date,
                             RADICADOR: createdUser.name,
                             FINALIZADOR: lastUser.name,
@@ -213,13 +236,20 @@ router.post('/records/opens/', async(req, res) => {
                             SEMAFORO_CASO: caseLight,
                             TIPIFICACION: typification.name,
                             TIPIFICACION_ESPECIFICA: child.name,
+                            EDAD_MORA: pastdueAge,
+                            PAGO_MIN: minPay,
+                            PAGO_TOTAL: totalPay,
                             PQR: requirement.type,
                             VENCIMIENTO_USUARIO: flow[0].finDate,
                             VENCIMIENTO_CASO: records[i].caseFinDate,
                             FECHA_SEGUIMIENTO: records[i].trackingDate,
                             ULTIMO_INGREO_RADICADOR: lastEdit.timestamp,
+                            FECHA_CIERRE: " ",
                             TIPO_GESTION: nameCase,
                             CAUSAL_RECHAZO: nameReject,
+                            CANAL_COMUNICACIONES: channel.name,
+                            TIPO_CONTACTO: contact.name,
+                            ESTADO: "Abierto",
                             OBSERVACIONES: myObservations,
                             FORMULARIOS: finalForms
                         });
@@ -345,6 +375,8 @@ router.post('/records/opens/', async(req, res) => {
     }
 });
 
+
+
 //'Casos Abiertos tomar el archivo y borrarlo
 router.get('/records/opens/:file', async(req, res) => {
     try {
@@ -367,6 +399,277 @@ router.get('/records/opens/:file', async(req, res) => {
         res.status(500).send({ 'Error': 'Algo salio mal :(' });
     }
 });
+
+//Generar Casos Cerrados
+// router.post('/records/closes', async(req, res) => {
+//     try {
+
+//         const dropCustomers = await Reports.collection.drop();
+//         if (!dropCustomers) return res.status(404).send({ 'ERROR': 'No se pudo borrar la base de datos.' }); // Error 404
+
+//         //Validate Data
+//         //If invalid, return 404 - Bad Request
+//         const { error } = validateReport(req.body);
+//         if (error) return res.status(400).send({ 'ERROR': error.details[0].message });
+
+//         //Generar fechas
+//         const dates = [];
+//         let ini = moment(req.body.iniDate).format('YYYY-MM-DD');
+//         dates.push(ini);
+//         const fin = moment(req.body.finDate).format('YYYY-MM-DD');
+//         while (ini != fin) {
+//             ini = moment(ini).add(1, 'days').format('YYYY-MM-DD');
+//             dates.push(ini);
+//         }
+//         let tequila = 0;
+
+//         while (dates[tequila]) {
+
+//             const flowCloses = await Flow.find({ "timestamp": new RegExp(dates[tequila]), "status": false, "case": 4 });
+
+//             let x = 0;
+//             while(flowCloses[x]){
+//                 const records = await Records.find({"_id": flowCloses[x].record , "createdBy":{$ne: "5ccf7346ccc5db180485186b"}});
+//                 if (!records) return res.status(404).send({ 'ERROR': 'No se encuentran Radicados para esta fecha.' }); // Error 404 
+
+//                 if (records) {
+//                     let i = 0;
+//                     while (records[i]) {
+//                         const flow = await Flow.find({ "record": records[i]._id, "status": false, "case": 4 });
+//                         if (flow) {
+//                             //Usuario Radicador
+//                             let createdUser = await Users.findById(records[i].createdBy);
+//                             //Usuario Finalizador
+//                             let lastUser = await Users.findById(flow[0].user);
+//                             //Semaforo Usuario
+//                             let userLight = flow[0].light;
+//                             //Semaforo Caso
+//                             let caseLight = records[i].caseLight;
+//                             //Buscar Tipificacion 
+//                             let typification = await Typifications.findById(records[i].typification);
+//                             //Buscar Tipificacion Especifica
+//                             let child = await ChildTypifications.findById(records[i].child);
+//                             //Buscar tipo PQR
+//                             let requirement = await Requirements.findById(child.requirement);
+//                             // Fecha de Vencimiento Usuario
+//                             let finUser = flow[0].finDate;
+//                             // Fecha de Cierre
+//                             let closeDate = flow[0].timestamp;
+//                             //observations
+//                             const channel =  await Channels.findById(records[i].channel);
+//                             if (!channel) return res.status(404).send('Canal de comunciaciones no encontrado'); // Error 404 
+
+//                             const contact =  await Contacts.findById(records[i].contact);
+//                             if (!contact) return res.status(404).send('Tipo de contacto no encontrado'); // Error 404 
+
+
+//                             let observations = " ";
+//                             if (flow[0].observations) {
+//                                 observations = flow[0].observations.replace(/\s{2,}/g, ' ');
+//                                 observations = observations.replace("\n", " ");
+//                             }
+
+//                             //Tipo de Gestion
+//                             let nameCase = '';
+//                             if (flow[0].case == 1) nameCase = 'Rechazar - Devolver';
+//                             if (flow[0].case == 2) nameCase = 'Finalizar -Avanzar';
+
+
+//                             if (flow[0].case == 3) nameCase = 'En Gestión';
+//                             if (flow[0].case == 4) nameCase = 'Cerrar Caso';
+//                             if (flow[0].case == 5) nameCase = 'Abierto';
+//                             if (flow[0].case == 6) nameCase = 'Reasignar Caso';
+//                             //Causal de Rechazo
+//                             const reject = await Rejects.findOne({ "_id": flow[0].reject });
+//                             let nameReject = '  ';
+//                             if (reject) nameReject = reject.name
+//                                 //Ultimo ingreso del radicado
+//                             const lastEdit = await Flow.findOne({ "record": records[i]._id, "level": -1 });
+
+//                             let finalForms = [];
+//                             if (records[i].forms) {
+
+//                                 let myForms = records[i].forms;
+
+//                                 let t = 0;
+
+//                                 let content = " ";
+//                                 while (myForms[t]) {
+//                                     content = myForms[t].value + ":" + myForms[t].description;
+
+//                                     finalForms.push(content);
+
+//                                     t++;
+//                                 }
+
+//                             }
+
+//                             //Nombre del cliente
+//                             let customerName = records[i].customerName;
+//                             if(!records[i].customerName) customerName = " ";
+
+//                             //Información de Creditos
+//                             let pastdueAge = records[i].pastdueAge;
+//                             let minPay = records[i].minPay;
+//                             let totalPay = records[i].totalPay;
+//                             if(!records[i].pastdueAge) pastdueAge = " ";
+//                             if(!records[i].minPay) minPay = " ";
+//                             if(!records[i].totalPay) totalPay = " ";
+
+//                             let reports = new Reports({
+//                                 RADICADO: records[i].number,
+//                                 CLIENTE: records[i].customer,
+//                                 CREDITO: records[i].ref,
+//                                 NOMBRE:  customerName,
+//                                 CREADO: records[i].date,
+//                                 RADICADOR: createdUser.name,
+//                                 FINALIZADOR: lastUser.name,
+//                                 SEMAFORO_USUARIO: userLight,
+//                                 SEMAFORO_CASO: caseLight,
+//                                 TIPIFICACION: typification.name,
+//                                 TIPIFICACION_ESPECIFICA: child.name,
+//                                 EDAD_MORA: pastdueAge,
+//                                 PAGO_MIN: minPay,
+//                                 PAGO_TOTAL: totalPay,
+//                                 PQR: requirement.type,
+//                                 VENCIMIENTO_USUARIO: finUser,
+//                                 VENCIMIENTO_CASO: records[i].caseFinDate,
+//                                 FECHA_SEGUIMIENTO: records[i].trackingDate,
+//                                 ULTIMO_INGREO_RADICADOR: lastEdit.timestamp,
+//                                 FECHA_CIERRE: closeDate,
+//                                 TIPO_GESTION: nameCase,
+//                                 CAUSAL_RECHAZO: nameReject,
+//                                 CANAL_COMUNICACIONES: channel.name,
+//                                 TIPO_CONTACTO: contact.name,
+//                                 ESTADO: "Cerrado",
+//                                 CAUSAL_RECHAZO: nameReject,
+//                                 OBSERVACIONES: observations,
+//                                 FORMULARIOS: finalForms
+//                             });
+//                             reports = await reports.save();
+//                         }
+
+//                         i++;
+//                     }
+//                 }
+//                 tequila++;
+//             x++;
+//             }
+
+            
+//         }
+//         appReport("Termino el ciclo");
+//         //Convertir respuesta a CSV 
+//         const fields = [{
+//                 label: 'RADICADO',
+//                 value: 'RADICADO'
+//             },
+//             {
+//                 label: 'CLIENTE',
+//                 value: 'CLIENTE'
+//             },
+//             {
+//                 label: 'CREDITO',
+//                 value: 'CREDITO'
+//             },
+//             {
+//                 label: 'CREADO',
+//                 value: 'CREADO',
+//             },
+//             {
+//                 label: 'RADICADOR',
+//                 value: 'RADICADOR'
+//             },
+//             {
+//                 label: 'FINALIZADOR',
+//                 value: 'FINALIZADOR'
+//             },
+//             {
+//                 label: 'SEMAFORO_USUARIO',
+//                 value: 'SEMAFORO_USUARIO'
+//             },
+//             {
+//                 label: 'SEMAFORO_CASO',
+//                 value: 'SEMAFORO_CASO'
+
+//             },
+//             {
+//                 label: 'TIPIFICACION',
+//                 value: 'TIPIFICACION'
+//             },
+//             {
+//                 label: 'TIPIFICACION_ESPECIFICA',
+//                 value: 'TIPIFICACION_ESPECIFICA'
+
+//             },
+//             {
+//                 label: 'PQR',
+//                 value: 'PQR'
+//             },
+//             {
+//                 label: 'VENCIMIENTO_USUARIO',
+//                 value: 'VENCIMIENTO_USUARIO'
+//             },
+//             {
+//                 label: 'VENCIMIENTO_CASO',
+//                 value: 'VENCIMIENTO_CASO'
+//             },
+//             {
+//                 label: 'FECHA_SEGUIMIENTO',
+//                 value: 'FECHA_SEGUIMIENTO'
+//             },
+//             {
+//                 label: 'ULTIMO_INGREO_RADICADOR',
+//                 value: 'ULTIMO_INGREO_RADICADOR',
+//             },
+//             {
+//                 label: 'FECHA_CIERRE',
+//                 value: 'FECHA_CIERRE',
+//             },
+//             {
+//                 label: 'TIPO_GESTION',
+//                 value: 'TIPO_GESTION',
+//             },
+//             {
+//                 label: 'CAUSAL_RECHAZO',
+//                 value: 'CAUSAL_RECHAZO'
+//             },
+//             {
+//                 label: 'OBSERVACIONES',
+//                 value: 'OBSERVACIONES'
+//             },
+//             {
+//                 label: 'FORMULARIOS',
+//                 value: 'FORMULARIOS'
+//             }
+//         ];
+
+//         // res.send({ 'file': name});
+
+//         /*
+//         BEFORE
+//         */
+
+//         const closeReport = await Reports.find();
+//         if (!closeReport) return res.status(404).send('Reporte no encontrado'); // Error 404 
+
+//         const json2csvParser = new Json2csvParser({ fields });
+//         const csv = json2csvParser.parse(closeReport);
+//         //appReport(csv);
+//         const random = randomstring.generate(8);
+//         const name = 'Closesx' + random + '.csv'
+//         const fileName = './downloads/' + name;
+
+//         fs.writeFile(fileName, csv, function(err) {
+//             if (err) res.status(500).send({ 'Error': 'No se pudo generar el archivo' });
+//             appReport('Saved!');
+//             res.send({ 'file': name });
+//         });
+//     } catch (err) {
+//         console.log(err);
+//         res.status(500).send({ 'Error': 'Algo salio mal :(' });
+//     }
+// });
 
 //Generar Casos Cerrados
 router.post('/records/closes', async(req, res) => {
@@ -392,7 +695,11 @@ router.post('/records/closes', async(req, res) => {
         let tequila = 0;
 
         while (dates[tequila]) {
-            const records = await Records.find({ "date": new RegExp(dates[tequila]), "status": true });
+
+            const flowCloses = await Flow.find({ "timestamp": new RegExp(dates[tequila]), "status": false, "case": 4 });
+
+
+            const records = await Records.find({ "date": new RegExp(dates[tequila]), "status": true, "createdBy":{$ne: "5ccf7346ccc5db180485186b"}});
             if (!records) return res.status(404).send({ 'ERROR': 'No se encuentran Radicados para esta fecha.' }); // Error 404 
 
             if (records) {
@@ -419,6 +726,12 @@ router.post('/records/closes', async(req, res) => {
                         // Fecha de Cierre
                         let closeDate = flow[0].timestamp;
                         //observations
+                        const channel =  await Channels.findById(records[i].channel);
+                        if (!channel) return res.status(404).send('Canal de comunciaciones no encontrado'); // Error 404 
+
+                        const contact =  await Contacts.findById(records[i].contact);
+                        if (!contact) return res.status(404).send('Tipo de contacto no encontrado'); // Error 404 
+
 
                         let observations = " ";
                         if (flow[0].observations) {
@@ -461,10 +774,23 @@ router.post('/records/closes', async(req, res) => {
 
                         }
 
+                        //Nombre del cliente
+                        let customerName = records[i].customerName;
+                        if(!records[i].customerName) customerName = " ";
+
+                        //Información de Creditos
+                        let pastdueAge = records[i].pastdueAge;
+                        let minPay = records[i].minPay;
+                        let totalPay = records[i].totalPay;
+                        if(!records[i].pastdueAge) pastdueAge = " ";
+                        if(!records[i].minPay) minPay = " ";
+                        if(!records[i].totalPay) totalPay = " ";
+
                         let reports = new Reports({
                             RADICADO: records[i].number,
                             CLIENTE: records[i].customer,
                             CREDITO: records[i].ref,
+                            NOMBRE:  customerName,
                             CREADO: records[i].date,
                             RADICADOR: createdUser.name,
                             FINALIZADOR: lastUser.name,
@@ -472,6 +798,9 @@ router.post('/records/closes', async(req, res) => {
                             SEMAFORO_CASO: caseLight,
                             TIPIFICACION: typification.name,
                             TIPIFICACION_ESPECIFICA: child.name,
+                            EDAD_MORA: pastdueAge,
+                            PAGO_MIN: minPay,
+                            PAGO_TOTAL: totalPay,
                             PQR: requirement.type,
                             VENCIMIENTO_USUARIO: finUser,
                             VENCIMIENTO_CASO: records[i].caseFinDate,
@@ -479,6 +808,10 @@ router.post('/records/closes', async(req, res) => {
                             ULTIMO_INGREO_RADICADOR: lastEdit.timestamp,
                             FECHA_CIERRE: closeDate,
                             TIPO_GESTION: nameCase,
+                            CAUSAL_RECHAZO: nameReject,
+                            CANAL_COMUNICACIONES: channel.name,
+                            TIPO_CONTACTO: contact.name,
+                            ESTADO: "Cerrado",
                             CAUSAL_RECHAZO: nameReject,
                             OBSERVACIONES: observations,
                             FORMULARIOS: finalForms

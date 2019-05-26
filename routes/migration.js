@@ -64,7 +64,7 @@ router.get('/',  async (req, res) => {
         newRecord.levels = [];
         newRecord.caseLight = 100;
         newRecord.status = true;
-        newRecord.createdBy = "5c9c22e45b4aff38867efa69";
+        newRecord.createdBy = "5ccf7346ccc5db180485186b";
         newRecord.customerName = record[i].name;
         newRecord.area = record[i].area;
         appFlow(newRecord);
